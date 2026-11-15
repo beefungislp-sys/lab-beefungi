@@ -16,7 +16,7 @@ El build genera `dist/` y la copia publicable `docs/`, con index.html y version.
 En PowerShell, después de terminar y revisar una tanda:
 
 ```powershell
-./scripts/publicar-tanda.ps1 -Tanda E
+./scripts/publicar-tanda.ps1 -Tanda E0
 ```
 
 En GitHub, Pages usa Deploy from a branch: main, carpeta /docs. Las notas de cada tanda están en `outputs/`. El respaldo de código no guarda partidas: recargar reinicia la partida y no hay sincronización de progreso entre celular y computadora.
@@ -27,7 +27,7 @@ WASD para caminar, E para entrar/salir y cerrar menús. Arrastre o doble clic pa
 
 ## Estado
 
-Tandas históricas A–D y sesión actual A0, B0, C0 y D0 implementadas y publicadas. Mejoras completas, asistentes, deshidratación, guardado y sprites propios para nuevas especies siguen pendientes.
+Tandas históricas A–D y sesión actual A0, B0, C0, D0 y E0 implementadas y publicadas. E0 añade modelos por especie, cosechas separadas, precios y entregas táctiles. Mejoras completas, asistentes, deshidratación y guardado siguen pendientes. Cordyceps tiene vista previa y precio, pero todavía no se cultiva.
 
 Configuración de publicación basada en la documentación oficial: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 

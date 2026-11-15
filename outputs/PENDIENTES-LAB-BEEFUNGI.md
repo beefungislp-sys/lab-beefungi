@@ -50,3 +50,7 @@ A0 (respaldo/publicación, preparación en bolsa y pedidos compactos), B0 (inter
 ## Sesión 0 — D0 terminada
 
 Cabina con bolsa esterilizada, bote interior, guía inicial, limpieza opcional, inoculación por arrastre/doble clic y sellado/salida automática. Verificado en navegador público y veintiocho grupos de pruebas. A0, B0, C0 y D0 implementadas y publicadas.
+
+## Sesión 0 — E0 terminada
+
+Modelos propios por especie, cosechas separadas, precios provisionales y entregas mediante toque, arrastre o botón nativo. Ver TANDA-E0.md. Verificación pública en horizontal y vertical, 36 grupos de pruebas y build correctos. Cordyceps sigue sin ruta de cultivo. Las notas anteriores conservan el historial; este cierre sustituye el pendiente de sprites y entrega móvil. Continúan pendientes mejoras completas, asistentes, deshidratación, guardado y prueba física en otros teléfonos.

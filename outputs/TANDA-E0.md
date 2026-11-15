@@ -9,6 +9,6 @@
 
 Causa verificada del fallo anterior: zona fija del primer cliente y ausencia de entrega por toque simple. Los nuevos controles son independientes del selector de micelio y de la ficha de oficina.
 
-Validación en curso.
+Validación terminada: 36 grupos de pruebas de lógica y build correctos. En el navegador público se verificaron los modelos, las cosechas separadas y las ventas de Pleurotus, melena y reishi con sus precios. Se entregó a un segundo cliente con toque simple y mediante el botón Entregar. A 844×390 y 390×844 los controles nativos miden 44 px de alto, sin desbordamiento horizontal; consola sin errores. Los eventos táctiles también se verificaron en pruebas automatizadas. La prueba física en otros teléfonos queda pendiente.
 
 El botón de prueba de fructificación llena huecos con Pleurotus, melena y reishi para revisar los modelos; no genera cordyceps ni sustituye la producción manual.
