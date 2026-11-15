@@ -27,7 +27,7 @@ WASD para caminar, E para entrar/salir y cerrar menús. Arrastre o doble clic pa
 
 ## Estado
 
-Tandas históricas A–D y sesión actual A0, B0, C0, D0, E0, F0 y G0 implementadas y publicadas. E0 añade modelos por especie, cosechas separadas, precios y entregas táctiles. F0 añade tolvas, agua automática, llenadora y asistente de preparación. G0 añade cámaras 4/6/8, control climático de menor duración y venta de composta. La progresión definitiva, asistentes de otras zonas, deshidratación y guardado siguen pendientes. Cordyceps tiene vista previa y precio, pero todavía no se cultiva.
+Tandas históricas A–D y sesión actual A0, B0, C0, D0, E0, F0, G0 y H0 implementadas y publicadas. E0 añade modelos por especie, cosechas separadas, precios y entregas táctiles. F0 añade tolvas, agua automática, llenadora y asistente de preparación. G0 añade cámaras 4/6/8, control climático de menor duración y venta de composta. H0 añade movimiento al tocar suelo, salida automática de sustrato y llenadora de depósitos 4+4. La progresión definitiva, asistentes de otras zonas, deshidratación y guardado siguen pendientes. Cordyceps tiene vista previa y precio, pero todavía no se cultiva.
 
 Configuración de publicación basada en la documentación oficial: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 

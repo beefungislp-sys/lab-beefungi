@@ -62,3 +62,7 @@ Mejoras de prueba por módulo: triturador con tolva 3/4 y cesto 12, agua automá
 ## Sesión 0 — G0 terminada
 
 Incubación y fructificación con mejoras independientes de 4 a 6 y 8 espacios y control climático de 10% menos tiempo. Composta vendible a una moneda por unidad con un toque. Ver TANDA-G0.md. Asistente del área de cultivo anotado para después de mejorar el área estéril; no construido. Pendientes balance/precios definitivos y las demás mejoras del cuarto estéril.
+
+## Sesión 0 — H0 terminada
+
+Movimiento por toque con rutas y prioridad de módulos. Mesa de sustrato sin cierre manual ni cubo de adorno, salida automática, mejoras de llave y llenadora de depósitos 4+4. Espera de bolsas preparadas sin límite; cuatro visibles y olla de dos cargas. Ver TANDA-H0.md. Siguen pendientes las otras mejoras del esterilizador/cabina y el asistente de esta área y cultivo.

@@ -1,0 +1,10 @@
+# Tanda H0 — movimiento táctil y preparación de madera
+
+- Tocar/clicar suelo en sala principal, cuarto estéril, cultivo o tienda ordena caminar. Se calcula una ruta por el suelo que rodea los muebles. Módulos, puertas, clientes y materiales conservan prioridad sobre caminar. Una nueva selección cancela la ruta; WASD también la cancela. No se camina dentro de vistas cercanas ni con menús abiertos.
+- Cambio base de sustrato: ya no hay botón Cerrar bolsa. Al integrarse agua, aserrín y nutrientes, la bolsa cerrada se anima fuera de la mesa y aumenta el inventario preparado del esterilizador una sola vez. Se retiraron el cubo gris y la bolsa decorativa sobre él; la mesa permanece vacía hasta colocar una bolsa real.
+- Mejora de prueba 1: agua automática al colocar la bolsa, sin mantener la llave. Conserva el llenado de dos segundos y la integración.
+- Mejora de prueba 2: llenadora de sustrato, depósitos independientes de cuatro unidades de aserrín y cuatro de nutrientes. Se cargan antes o después de colocar la bolsa. Cada bolsa toma una unidad de cada depósito, añade agua y se integra automáticamente; el usuario coloca las bolsas una por una. Espera sin perder material cuando falta un ingrediente. No genera bolsas ni repone ingredientes.
+- Inventario de bolsas preparadas sin límite numérico. El esterilizador muestra hasta cuatro bolsas, con el total real indicado. La olla conserva dos cargas por ciclo; este cambio amplía la espera, no su capacidad ni el almacén de bolsas esterilizadas.
+- Mejoras gratuitas por botón de prueba. No se agrega asistente estéril ni de cultivo.
+
+Validación: npm test (51 grupos), build y revisión del diff. Pruebas de colisiones, prioridad de módulos, interrupción de rutas, consumo único, salida automática, inventario superior a dos, límite visual de cuatro y depósitos 4+4. Navegador con tamaños 844×390 y 390×844: mesa inicial sin cubo, llave automática, llenadora y tres bolsas transferidas a la espera del esterilizador. Sin errores de consola ni desbordamiento; botones de 44 px. Falta prueba física en otros teléfonos. Partida y mejoras siguen en memoria, sin guardado.
