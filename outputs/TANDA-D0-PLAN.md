@@ -10,3 +10,7 @@ Pulido de cabina con guantes:
 Representar la bolsa esterilizada como bolsa cerrada, no cubo café. No consumir una segunda bolsa ni duplicar insumos al animar. Mantener especie y riesgo de la bolsa al salir a espera de incubación. El detalle de si la limpieza guía es solo inicial u obligatoria por ciclo se conserva para revisar al implementar; no cambiar silenciosamente la regla anterior de limpieza opcional.
 
 D0 no está implementada todavía. C0 permanece centrada en mesa de sustrato, guía, agua y olla de presión.
+
+## Implementación
+
+Se implementó D0; ver TANDA-D0.md. La limpieza sigue siendo opcional y la guía inicial la recomienda tras colocar los materiales.
