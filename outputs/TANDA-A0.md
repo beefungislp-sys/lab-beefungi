@@ -19,3 +19,7 @@ Aserrín representado por una montañita. Preparación manual: colocar una bolsa
 Repositorio creado: https://github.com/beefungislp-sys/lab-beefungi
 Página estable: https://beefungislp-sys.github.io/lab-beefungi/
 GitHub Pages usa main/docs y se actualiza automáticamente después de cada subida. El script de cierre ejecuta pruebas y build antes del commit/push. La configuración no requiere ampliar el permiso OAuth workflow. El respaldo guarda código e historial, no partidas.
+
+## Cierre
+
+A0 implementada, respaldada y publicada. Verificación del hash de fuente contra version.json público, veinte grupos de pruebas y revisión de pedidos en navegador con viewport de celular. El botón de pedido tiene etiqueta accesible coherente al alternar paja/madera. El enlace estable queda en README.md.

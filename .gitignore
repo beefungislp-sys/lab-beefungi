@@ -9,3 +9,4 @@ outputs/*.png
 *.log
 .DS_Store
 Thumbs.db
+outputs/*.jpg
