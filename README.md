@@ -27,7 +27,7 @@ WASD para caminar, E para entrar/salir y cerrar menús. Arrastre o doble clic pa
 
 ## Estado
 
-Tandas históricas A–D y sesión actual A0, B0 y C0 implementadas y publicadas. D0 está anotada, sin construir. Mejoras completas, asistentes, deshidratación, guardado y sprites propios para nuevas especies siguen pendientes.
+Tandas históricas A–D y sesión actual A0, B0, C0 y D0 implementadas y publicadas. Mejoras completas, asistentes, deshidratación, guardado y sprites propios para nuevas especies siguen pendientes.
 
 Configuración de publicación basada en la documentación oficial: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 

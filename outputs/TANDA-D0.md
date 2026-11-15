@@ -9,3 +9,7 @@
 - La guía se recuerda en el navegador después de completar la primera bolsa; no es guardado de partida.
 
 Validación local: 28 grupos de pruebas, incluidos ambos órdenes, arrastre fuera/dentro, doble consumo, limpieza opcional, continuación fuera de vista y dos ciclos consecutivos. Revisión visual publicada pendiente.
+
+## Cierre publicado
+
+Revisión real del enlace público: preparación de una bolsa desde aserrín, esterilización, compra de micelio de melena, carga de bolsa y bote, limpieza, arrastre del bote interior sobre bolsa, vertido y salida automática con EN ESPERA 1. Cabina vacía al completar el ciclo; sin errores de consola. Revisado a 844×390 y 390×844, sin desbordamiento horizontal. Captura local de revisión: D0-CABINA.jpg. Veintiocho grupos de pruebas y build aprobados.

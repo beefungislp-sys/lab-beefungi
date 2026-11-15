@@ -46,3 +46,7 @@ A, B, C y D implementadas. D incorpora burbujas de pedido, tanque visual 2/4/6, 
 ## Sesión 0 — cierre C0
 
 A0 (respaldo/publicación, preparación en bolsa y pedidos compactos), B0 (interfaz móvil) y C0 (guía, expansión, acero y olla) implementadas y publicadas. D0 pendiente: guía y animaciones de cabina; ver TANDA-D0-PLAN.md. Revisión real de navegador a tamaños móviles realizada. Juego: https://beefungislp-sys.github.io/lab-beefungi/
+
+## Sesión 0 — D0 terminada
+
+Cabina con bolsa esterilizada, bote interior, guía inicial, limpieza opcional, inoculación por arrastre/doble clic y sellado/salida automática. Verificado en navegador público y veintiocho grupos de pruebas. A0, B0, C0 y D0 implementadas y publicadas.

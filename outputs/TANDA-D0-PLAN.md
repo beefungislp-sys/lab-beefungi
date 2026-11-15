@@ -14,3 +14,7 @@ D0 no está implementada todavía. C0 permanece centrada en mesa de sustrato, gu
 ## Implementación
 
 Se implementó D0; ver TANDA-D0.md. La limpieza sigue siendo opcional y la guía inicial la recomienda tras colocar los materiales.
+
+## Estado final
+
+D0 terminada y verificada en la página pública, en horizontal y vertical. Este estado sustituye las notas de pendiente.
