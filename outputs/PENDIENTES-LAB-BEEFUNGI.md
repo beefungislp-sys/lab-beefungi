@@ -66,3 +66,7 @@ Incubación y fructificación con mejoras independientes de 4 a 6 y 8 espacios y
 ## Sesión 0 — H0 terminada
 
 Movimiento por toque con rutas y prioridad de módulos. Mesa de sustrato sin cierre manual ni cubo de adorno, salida automática, mejoras de llave y llenadora de depósitos 4+4. Espera de bolsas preparadas sin límite; cuatro visibles y olla de dos cargas. Ver TANDA-H0.md. Siguen pendientes las otras mejoras del esterilizador/cabina y el asistente de esta área y cultivo.
+
+## Sesión 0 — I0 terminada
+
+Esterilizador ampliable 2/4/6 y después agua automática; corregido límite oculto de salida esterilizada. Asistente de preparación más lento con burbujas de faltantes. Las mejoras de agua funcionan al visitar su estación y no rellenan después de terminar fuera. Ver TANDA-I0.md. Pendientes mejoras de cabina, asistentes estéril/cultivo y balance definitivo.
