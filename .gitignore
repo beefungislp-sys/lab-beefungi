@@ -1,0 +1,11 @@
+work/
+dist/
+node_modules/
+outputs/*.png
+*.bundle
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
