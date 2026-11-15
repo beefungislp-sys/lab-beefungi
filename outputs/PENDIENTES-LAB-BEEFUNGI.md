@@ -58,3 +58,7 @@ Modelos propios por especie, cosechas separadas, precios provisionales y entrega
 ## Sesión 0 — F0 terminada
 
 Mejoras de prueba por módulo: triturador con tolva 3/4 y cesto 12, agua automática y llenadora con limpieza cada seis bolsas. Asistente de preparación desbloqueable, contratación y salario provisionales, animación de recorrido y uso de suministros existentes. Ver TANDA-F0.md. Sustituye el pendiente de automatización en estos tres módulos; faltan economía definitiva, mejoras/asistentes de otras zonas, deshidratación y guardado.
+
+## Sesión 0 — G0 terminada
+
+Incubación y fructificación con mejoras independientes de 4 a 6 y 8 espacios y control climático de 10% menos tiempo. Composta vendible a una moneda por unidad con un toque. Ver TANDA-G0.md. Asistente del área de cultivo anotado para después de mejorar el área estéril; no construido. Pendientes balance/precios definitivos y las demás mejoras del cuarto estéril.
