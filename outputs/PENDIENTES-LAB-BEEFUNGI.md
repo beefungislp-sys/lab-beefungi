@@ -42,3 +42,7 @@ A, B y C implementadas. C incorpora ficha cíclica, colores, cuarto estéril y f
 ## D terminada
 
 A, B, C y D implementadas. D incorpora burbujas de pedido, tanque visual 2/4/6, límites y contadores por capacidad, caja de paja pasteurizada e icono de cultivo. Validación de lógica y renders realizada; prueba real en navegador/celular pendiente. Permanecen como trabajo futuro asistentes, mejoras completas por zona, deshidratación, sprites propios de especies nuevas y guardado de partida.
+
+## Sesión 0 — cierre C0
+
+A0 (respaldo/publicación, preparación en bolsa y pedidos compactos), B0 (interfaz móvil) y C0 (guía, expansión, acero y olla) implementadas y publicadas. D0 pendiente: guía y animaciones de cabina; ver TANDA-D0-PLAN.md. Revisión real de navegador a tamaños móviles realizada. Juego: https://beefungislp-sys.github.io/lab-beefungi/

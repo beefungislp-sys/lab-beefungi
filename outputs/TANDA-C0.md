@@ -10,3 +10,7 @@
 Mecánicas simbólicas del juego. No son instrucciones reales de esterilización.
 
 D0 queda anotada aparte para el pulido guiado de la cabina y animación de inoculación/sellado/salida.
+
+## Cierre y validación publicada
+
+Veintitrés grupos de pruebas aprobados. Verificado en el navegador público a 844×390: entrada al cuarto, preparación real de dos bolsas usando controles, agua, cierre, carga de olla, llenado, inicio, tapa cerrada, reloj, vapor y salida lista. Captura de revisión local C0-OLLA-MOVIL.jpg. B0 también verificada con controles extra: altura de página 390 en viewport 844×390, sin scroll de la pantalla de juego. Revisión vertical realizada a 390×844. D0 permanece anotada y sin implementar.
