@@ -74,3 +74,7 @@ Esterilizador ampliable 2/4/6 y después agua automática; corregido límite ocu
 ## Sesión 0 — J0 terminada
 
 Cabina con mechero, ampliación a 3+3 y transformación a campana laminar. Reservas reales sin límite de capacidad, inoculación por arrastre y salida automática. Ver TANDA-J0.md. Sustituye el pendiente de mejoras de cabina; asistentes estéril/cultivo y balance definitivo continúan pendientes.
+
+## Sesión 0 — K0 terminada
+
+Barras de depósitos y agua rápida; protagonista y nuevo asistente con bata. Laboratorio automatiza sustrato/esterilizador y cámaras (clima por mayoría, colocación, traslado, cosecha y composta); inoculación manual. Árbol completo desbloquea asistente y sala de cultivo líquido; hay botón de desbloqueo total de prueba. Ruta de Cordyceps: Petri comprado, frasco nutritivo esterilizado, campana existente e incubación con agitación hasta reserva líquida. Ver TANDA-K0.md. Pendientes bloques/frutos de Cordyceps, contaminación específica del líquido, balance/economía finales, deshidratación y guardado.
