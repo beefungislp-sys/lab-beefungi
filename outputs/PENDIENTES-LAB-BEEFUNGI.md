@@ -70,3 +70,7 @@ Movimiento por toque con rutas y prioridad de módulos. Mesa de sustrato sin cie
 ## Sesión 0 — I0 terminada
 
 Esterilizador ampliable 2/4/6 y después agua automática; corregido límite oculto de salida esterilizada. Asistente de preparación más lento con burbujas de faltantes. Las mejoras de agua funcionan al visitar su estación y no rellenan después de terminar fuera. Ver TANDA-I0.md. Pendientes mejoras de cabina, asistentes estéril/cultivo y balance definitivo.
+
+## Sesión 0 — J0 terminada
+
+Cabina con mechero, ampliación a 3+3 y transformación a campana laminar. Reservas reales sin límite de capacidad, inoculación por arrastre y salida automática. Ver TANDA-J0.md. Sustituye el pendiente de mejoras de cabina; asistentes estéril/cultivo y balance definitivo continúan pendientes.
