@@ -78,3 +78,7 @@ Cabina con mechero, ampliación a 3+3 y transformación a campana laminar. Reser
 ## Sesión 0 — K0 terminada
 
 Barras de depósitos y agua rápida; protagonista y nuevo asistente con bata. Laboratorio automatiza sustrato/esterilizador y cámaras (clima por mayoría, colocación, traslado, cosecha y composta); inoculación manual. Árbol completo desbloquea asistente y sala de cultivo líquido; hay botón de desbloqueo total de prueba. Ruta de Cordyceps: Petri comprado, frasco nutritivo esterilizado, campana existente e incubación con agitación hasta reserva líquida. Ver TANDA-K0.md. Pendientes bloques/frutos de Cordyceps, contaminación específica del líquido, balance/economía finales, deshidratación y guardado.
+
+## Sesión 0 — L0 terminada
+
+Ciclo Cordyceps completo mediante selectores de preparación, olla y campana. El cuarto líquido de K0 se sustituye por una sola mesa de agitación en el cuarto estéril. CL maduro y sustrato esterilizado generan un bloque para incubación/fructificación, cosecha y venta. Ver TANDA-L0.md. Sustituye el pendiente de bloques/frutos Cordyceps; siguen pendientes contaminación específica del líquido, balance/economía finales, deshidratación y guardado.
