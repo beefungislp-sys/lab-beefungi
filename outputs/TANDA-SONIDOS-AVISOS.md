@@ -11,3 +11,5 @@ Un fallo manual muestra el mensaje dentro del juego durante un momento y marca l
 Validación: 104 grupos de pruebas y build correctos. Se verifican las frecuencias/generación y silencio con un contexto de audio simulado, los avisos únicos por cámara y el faltante manual con contador rojo y caducidad. Revisión en navegador con tamaño móvil: contador rojo, aviso visible, control de sonido y ausencia de errores de consola. No se verificó la salida física de los altavoces del usuario.
 
 Siguiente tanda autorizada por separado: tienda con inventario completo sobre mesa central, unidades y monedas al entregar, sin selector de productos.
+
+Continuación: la [tanda de tienda visual](TANDA-TIENDA-VISUAL-UNIFICADA.md) implementa el inventario completo sobre la mesa y evita que el mensaje de una entrega parcial correcta active una falsa alarma de faltante.
