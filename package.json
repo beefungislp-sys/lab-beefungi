@@ -5,6 +5,11 @@
   "description": "Prototipo pixel art de Lab BeeFungi",
   "scripts": {
     "test": "node tests/game.cjs",
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "format": "prettier --write outputs/BEEFUNGI-MESA-PAJA.html",
+    "catalog": "node scripts/catalogo-grafico.mjs"
+  },
+  "devDependencies": {
+    "prettier": "3.10.1"
   }
 }

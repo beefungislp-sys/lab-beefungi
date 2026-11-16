@@ -4,7 +4,7 @@ Prototipo de juego pixel art sobre producción de hongos. Fuente actual: `output
 
 ## Revisar y publicar
 
-Sin dependencias externas de npm:
+El juego no requiere dependencias externas en ejecución. Para las herramientas de desarrollo, instalar con `npm ci` (incluye Prettier con versión fijada):
 
 ```sh
 npm test
@@ -42,6 +42,10 @@ Química A–D: acceso por la puerta inferior de la sala principal. Extracción 
 ## Progresión en diseño
 
 [Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): decisiones confirmadas, secuencia recomendada, revisión de dependencias y puntos pendientes. Es una propuesta para revisar; los bloqueos y logros descritos todavía no están aplicados al juego.
+
+## Organización y catálogo gráfico
+
+[Catálogo gráfico](outputs/CATALOGO-GRAFICO.md): inventario de estaciones, sprites, interfaz, colores y referencias a líneas de código. `npm run format` ordena la fuente; `npm run catalog` regenera las referencias después de mover código. El archivo HTML continúa como fuente única; no se edita `docs/` a mano.
 
 ## Enlaces
 
