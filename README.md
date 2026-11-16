@@ -31,6 +31,10 @@ Tandas históricas A–D y sesión actual A0, B0, C0, D0, E0, F0, G0, H0, I0, J0
 
 Configuración de publicación basada en la documentación oficial: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 
+## Laboratorio de química
+
+Química A–D: acceso por la puerta inferior de la sala principal. Extracción desde 250 g cosechados, envasado de cada matraz en cuatro goteros, sales gratuitas para nutrientes y reactor de espirulina. La tienda alterna entre setas, goteros por especie y espirulina con inventarios y precios separados. Las notas y verificaciones están en [Química A–D](outputs/QUIMICA-TANDAS.md). Estas letras identifican la expansión química y no cambian los nombres de tandas históricas.
+
 ## Enlaces
 
 Juego: https://beefungislp-sys.github.io/lab-beefungi/

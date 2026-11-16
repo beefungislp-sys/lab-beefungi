@@ -24,6 +24,10 @@ Validación: 91 grupos de pruebas y build correctos; arrastre de ambas sales y r
 
 ## Química D — cultivo de espirulina
 
-Autorizada: reactor en esta sala, agua y nutrientes, encendido de luz, crecimiento verde y burbujas, reloj, cosecha parcial y cultivo remanente. Sin controles extra de pH o temperatura por ahora.
+Implementada. Cuarto puesto de la sala: reactor de vidrio con cultivo inicial incluido. Llave mantenida durante dos segundos; arrastrar solución nutritiva producida en C y encender la luz. El crecimiento tarda treinta segundos activos, se intensifica el verde y aparecen burbujas. Funciona fuera de la estación. El reloj listo permite arrastrar una cosecha al recipiente (o doble clic), deja 15% de cultivo y requiere nueva agua/solución/luz para repetir. La llave se detiene al soltar, cancelar, salir o perder foco.
+
+Inventario y venta de espirulina separados de setas/goteros; precio provisional de dos monedas. La tienda alterna tres productos, muestra su inventario y genera pedidos del producto disponible. Clientes aceptan solo el producto correcto, con los controles de toque, botón Entregar y arrastre. Las cuatro mesas ya tienen iconos distintos y relojes sincronizados en la sala. Los goteros se llenan visualmente durante envasado. Sin parámetros reales de cultivo ni controles extra de pH o temperatura.
+
+Validación: 96 grupos de pruebas y build correctos, incluyendo el circuito de las cuatro especies hasta venta, casos de falta de recursos, inventarios separados y dobles entregas. Navegador a 844 × 390: creación de solución, llenado mantenido, alimento, encendido, crecimiento verde, estado listo y cosecha por arrastre al inventario, sin errores de consola. También se revisó la sala completa a 390 × 844 sin solapamiento de mesas y con Regresar/Pedidos dentro del marco. Son pruebas en navegador con tamaño móvil, no en un teléfono físico. Química C publicada y confirmada mediante version.json antes del cierre de D. Balance definitivo, pulido general y pulido visual quedan como las siguientes etapas autorizadas para planear, sin expandir más salas.
 
 La partida continúa solo en memoria; la publicación no guarda ni sincroniza partidas.
