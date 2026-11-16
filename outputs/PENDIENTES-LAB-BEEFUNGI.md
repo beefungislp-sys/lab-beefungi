@@ -86,3 +86,7 @@ Ciclo Cordyceps completo mediante selectores de preparación, olla y campana. El
 ## Sesión 1 — A1 terminada
 
 Controles integrados arriba, retirada de recetas incompletas, arroz redondeado y frasco vacío para CL. Entrada común del esterilizador con tandas mixtas de madera/sustrato Cordyceps y CL separado, conservando tipos de salida. Ver TANDA-A1.md. Sustituye la restricción de un solo tipo sólido por tanda de L0. Siguen pendientes balance/economía, contaminación específica del líquido, deshidratación y guardado.
+
+## Sesión 2 — A2 terminada
+
+Ayudante principal con tarea propia de agua y verificación de relleno por laboratorio en tandas consecutivas. CL maduro permanece en la agitadora hasta consumirse desde la campana; sin recogida manual. Mejora de agitación a seis puestos. Ver TANDA-A2.md. Sustituye la espera por visita del jugador al agua de I0 cuando hay un asistente operando, y la recogida de CL de K0/L0.
