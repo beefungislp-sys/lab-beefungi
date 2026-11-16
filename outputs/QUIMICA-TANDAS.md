@@ -12,7 +12,9 @@ Validación: 86 grupos de pruebas y build correctos. Revisión visual del acceso
 
 ## Química B — envasado
 
-Autorizada, siguiente: cada matraz rinde cuatro goteros de su especie, pasan al inventario y podrán venderse.
+Implementada. Arrastrar un matraz a la llenadora (o doble clic) inicia el envasado; tras dos segundos entrega cuatro goteros de su especie. Consume un solo matraz, funciona fuera de la mesa y conserva inventarios separados de setas/extractos/goteros. En tienda un botón integrado alterna setas/goteros; clientes pueden pedir goteros de una especie, con uno o dos por pedido. Toque al cliente, Entregar y arrastre funcionan sin vender producto/especie incorrectos. Precio provisional: doble del precio de una porción de setas de esa especie.
+
+Validación: 89 grupos de pruebas y build correctos; acceso y vista de envasado revisados en navegador sin errores de consola. Química A fue publicada y confirmada mediante version.json antes de cerrar B.
 
 ## Química C — mesa de química
 
