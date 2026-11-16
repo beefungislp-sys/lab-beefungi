@@ -18,7 +18,9 @@ Validación: 89 grupos de pruebas y build correctos; acceso y vista de envasado 
 
 ## Química C — mesa de química
 
-Autorizada: sales A/B gratuitas; selector entre cinco nutrientes de hongos y solución para espirulina, con tiempo de preparación. Sin ampliar pedidos.
+Implementada. Sales A/B gratuitas, con arrastre a un recipiente central o doble clic. Ambas sales inician una mezcla de ocho segundos. Selector integrado alterna entre cinco nutrientes para hongos (el inventario ya usado por el cuarto estéril) y una solución para espirulina. El selector se bloquea hasta terminar la mezcla y no añade filas a pedidos.
+
+Validación: 91 grupos de pruebas y build correctos; arrastre de ambas sales y reloj revisados en navegador a 844 × 390, sin errores de consola. Se comprobó Química B publicada mediante version.json.
 
 ## Química D — cultivo de espirulina
 
