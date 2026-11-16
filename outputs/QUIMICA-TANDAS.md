@@ -31,3 +31,7 @@ Inventario y venta de espirulina separados de setas/goteros; precio provisional 
 Validación: 96 grupos de pruebas y build correctos, incluyendo el circuito de las cuatro especies hasta venta, casos de falta de recursos, inventarios separados y dobles entregas. Navegador a 844 × 390: creación de solución, llenado mantenido, alimento, encendido, crecimiento verde, estado listo y cosecha por arrastre al inventario, sin errores de consola. También se revisó la sala completa a 390 × 844 sin solapamiento de mesas y con Regresar/Pedidos dentro del marco. Son pruebas en navegador con tamaño móvil, no en un teléfono físico. Química C publicada y confirmada mediante version.json antes del cierre de D. Balance definitivo, pulido general y pulido visual quedan como las siguientes etapas autorizadas para planear, sin expandir más salas.
 
 La partida continúa solo en memoria; la publicación no guarda ni sincroniza partidas.
+
+## Continuación confirmada: A2 espirulina
+
+El flujo de Química D descrito arriba corresponde a su versión inicial. [A2 espirulina](TANDA-A2-ESPIRULINA.md) lo reemplaza con agua automática, mezcla, inoculación del garrafón y réplica independiente de matraces madre/secundario; conserva los inventarios y ventas.
