@@ -82,3 +82,7 @@ Barras de depósitos y agua rápida; protagonista y nuevo asistente con bata. La
 ## Sesión 0 — L0 terminada
 
 Ciclo Cordyceps completo mediante selectores de preparación, olla y campana. El cuarto líquido de K0 se sustituye por una sola mesa de agitación en el cuarto estéril. CL maduro y sustrato esterilizado generan un bloque para incubación/fructificación, cosecha y venta. Ver TANDA-L0.md. Sustituye el pendiente de bloques/frutos Cordyceps; siguen pendientes contaminación específica del líquido, balance/economía finales, deshidratación y guardado.
+
+## Sesión 1 — A1 terminada
+
+Controles integrados arriba, retirada de recetas incompletas, arroz redondeado y frasco vacío para CL. Entrada común del esterilizador con tandas mixtas de madera/sustrato Cordyceps y CL separado, conservando tipos de salida. Ver TANDA-A1.md. Sustituye la restricción de un solo tipo sólido por tanda de L0. Siguen pendientes balance/economía, contaminación específica del líquido, deshidratación y guardado.
