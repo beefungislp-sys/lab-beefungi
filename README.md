@@ -35,6 +35,10 @@ Configuración de publicación basada en la documentación oficial: https://docs
 
 Química A–D: acceso por la puerta inferior de la sala principal. Extracción desde 250 g cosechados, envasado de cada matraz en cuatro goteros, sales gratuitas para nutrientes y reactor de espirulina. La tienda reúne setas, goteros por especie y espirulina en una mesa central, con existencias en unidades y monedas al vender; conserva inventarios y precios separados. [Sonidos y avisos](outputs/TANDA-SONIDOS-AVISOS.md) añade dos señales mínimas. [Avisos mínimos](outputs/TANDA-AVISOS-MINIMOS.md) deja sólo un marco rojo sobre el requisito pendiente, sin cartel explicativo. [Tienda visual](outputs/TANDA-TIENDA-VISUAL-UNIFICADA.md) detalla el acomodo sin selector de inventarios. Las notas y verificaciones están en [Química A–D](outputs/QUIMICA-TANDAS.md). Estas letras identifican la expansión química y no cambian los nombres de tandas históricas. [A2 espirulina](outputs/TANDA-A2-ESPIRULINA.md) cambia el reactor por un garrafón de agua automática, mezcla previa e inoculación con un matraz secundario; un matraz madre permite replicar el inóculo con maduración visual por color, en paralelo al cultivo.
 
+## Balance inicial de Pleurotus
+
+[Primera pasada de balance](outputs/BALANCE-PLEUROTUS.md): partida normal con 6 monedas y kit inicial, compras reales, mejoras graduales tras la primera venta y margen comprobado para reponer una tanda. Las herramientas gratuitas se activan sólo desde Modo prueba en Ayuda; los demás árboles siguen provisionales.
+
 ## Enlaces
 
 Juego: https://beefungislp-sys.github.io/lab-beefungi/

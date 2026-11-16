@@ -90,3 +90,7 @@ Controles integrados arriba, retirada de recetas incompletas, arroz redondeado y
 ## Sesión 2 — A2 terminada
 
 Ayudante principal con tarea propia de agua y verificación de relleno por laboratorio en tandas consecutivas. CL maduro permanece en la agitadora hasta consumirse desde la campana; sin recogida manual. Mejora de agitación a seis puestos. Ver TANDA-A2.md. Sustituye la espera por visita del jugador al agua de I0 cuando hay un asistente operando, y la recogida de CL de K0/L0.
+
+## Primera pasada de balance — Pleurotus
+
+Compras reales y saldo finito, precios graduales en trituradora/pasteurizado/mezcla y cámaras, primera venta como inicio de mejoras y herramientas gratuitas separadas en Modo prueba. Ver [Balance Pleurotus](BALANCE-PLEUROTUS.md). La economía de las otras especies, cuarto estéril, química y espirulina sigue provisional. Después de calibrar el balance, el orden acordado es pulido general y luego visual. Guardado y deshidratación continúan como pendientes históricos sin prioridad nueva.
