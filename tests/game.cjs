@@ -1,6 +1,7 @@
 const vm=require('vm'),fs=require('fs');
 const source=fs.readFileSync('outputs/BEEFUNGI-MESA-PAJA.html','utf8').split('<script>')[1].split('</script>')[0];
-function fresh(sandbox=true){const noop=()=>{},events={},nodes={},ctx=new Proxy({},{get:(o,k)=>o[k]??noop,set:(o,k,v)=>(o[k]=v,true)});const node=()=>({open:false,hidden:false,textContent:'',innerHTML:'',getContext:()=>ctx,focus:noop,setPointerCapture:noop,matches:()=>false,getBoundingClientRect:()=>({left:0,top:0,width:320,height:240}),showModal(){this.open=true},close(){this.open=false}});const env={Math,performance:{now:()=>0},requestAnimationFrame:noop,localStorage:{getItem:()=>null,setItem:noop},window:{addEventListener:noop},document:{hidden:false,querySelector:q=>nodes[q]??=node(),addEventListener:(name,fn)=>events[name]=fn}};vm.createContext(env);vm.runInContext(source,env);if(sandbox)vm.runInContext('testMode=true;saleCoins=0',env);return env}
+// Las regresiones históricas conservan su configuración anterior; checkProgression usa el arranque público real.
+function fresh(sandbox=true,progressionRun=false){const noop=()=>{},events={},nodes={},ctx=new Proxy({},{get:(o,k)=>o[k]??noop,set:(o,k,v)=>(o[k]=v,true)});const node=()=>({open:false,hidden:false,textContent:'',innerHTML:'',getContext:()=>ctx,focus:noop,setPointerCapture:noop,matches:()=>false,getBoundingClientRect:()=>({left:0,top:0,width:320,height:240}),showModal(){this.open=true},close(){this.open=false}});const env={Math,performance:{now:()=>0},requestAnimationFrame:noop,localStorage:{getItem:()=>null,setItem:noop},window:{addEventListener:noop},document:{hidden:false,querySelector:q=>nodes[q]??=node(),addEventListener:(name,fn)=>events[name]=fn}};vm.createContext(env);vm.runInContext(source,env);if(!progressionRun)vm.runInContext('progressionPreview=false;progressionBypass=true;shopUnlocked=true',env);if(sandbox)vm.runInContext('testMode=true;saleCoins=0',env);return env}
 function check(name,code){vm.runInContext(code,fresh());console.log('OK '+name)}
 function checkBalance(name,code){vm.runInContext(code,fresh(false));console.log('OK '+name)}
 check('Triturador y limite de seis cargas',`close=true;for(let i=0;i<3;i++){grind();for(let j=0;j<21;j++)frame(last+150)}if(loads!==6||bales!==0)throw Error('Produccion');bales=1;grind();if(job||bales!==1)throw Error('Capacidad');scene(0)`);
@@ -141,4 +142,83 @@ checkBalance('Balance Pleurotus: extracto agrega valor moderado y margen esperad
 checkBalance('Balance Pleurotus: primera venta de gotero tambien abre la progresion',`dropperStock.Pleurotus=1;shopQueue=[{id:1,product:'dropper',species:'Pleurotus',y:143,remaining:1,wait:0}];serveShopCustomer(1);if(saleCoins!==6.5||!hasFirstSale()||soldGrams)throw Error('Primera venta');close=true;document.querySelector('#module-upgrade').onclick();if(crusherLevel!==1||saleCoins!==3.5)throw Error('Mejora por gotero')`);
 check('Organizacion: umbral comun de drag captura datos y cancelar no consume',`let captures=0;cv.setPointerCapture=()=>captures++;beginDrag({clientX:20,clientY:30,pointerId:7},{kind:'jar',slot:2});updateDrag({clientX:23,clientY:34});if(drag.moved||drag.kind!=='jar'||drag.slot!==2||captures!==1)throw Error('Inicio o umbral');updateDrag({clientX:26,clientY:30});if(!drag.moved)throw Error('Movimiento');const n=micelio;cv.onpointercancel();if(drag||micelio!==n)throw Error('Cancelar consume')`);
 check('Organizacion: una capa de avisos por vista y tienda sin paginas heredadas',`let frames=0;drawSignalFeedback=()=>frames++;for(const view of [null,'shop','chemistry','extraction','bottling','nutrients','spirulina']){auxView=view;scene(0)}if(frames!==7||typeof shopPlateRects!=='undefined'||typeof handleShopPointerDown!=='undefined')throw Error('Capas heredadas')`);
-console.log('125 grupos de verificacion aprobados.');
+
+function checkProgression(name,code){vm.runInContext(code,fresh(false,true));console.log('OK Progresion gratis: '+name)}
+const mainProgressionRun=`
+function ticks(n){for(let i=0;i<n;i++)frame(last+150)}
+close=true;grind();ticks(21);auxView='pasteur';tankAdd('water');ticks(28);tankAdd('lime');tankAdd('raw');ticks(68);
+enterMix();addStraw();addJar();fillBag();ticks(18);openIncubation();placeIncubation(0);incubation[0].contaminationRoll=1;incubation[0].climateRoll=1;advanceIncubation(incubation[0],30);moveToFruiting(0);placeFruiting(0);advanceFruiting(fruitShelves[0],35);harvestBag(0);
+if(!shopUnlocked||progression.sterile||progression.reishi||liquidUnlocked||progression.chemistry)throw Error('Primera cosecha');
+sellMushrooms(250,'Pleurotus');refreshProgression();
+auxView=null;close=true;mixView=false;buyStationUpgrade();buyStationUpgrade();
+auxView='pasteur';buyStationUpgrade('tank');buyStationUpgrade('tank');buyStationUpgrade();
+enterMix();buyStationUpgrade();openIncubation();buyStationUpgrade();
+if(progression.sterile||helperUnlocked())throw Error('Abre antes de fructificacion');
+openFruiting();buyStationUpgrade();
+if(!progression.sterile||!helperUnlocked()||incubationCapacity!==6||fruitingCapacity!==6||labUnlocked()||liquidUnlocked)throw Error('Hito principal');
+`;
+const sterileUpgradeRun=`
+enterSterileRoom();openWoodStation('woodPrep');for(let i=0;i<3;i++)buyStationUpgrade();
+openWoodStation('woodSterilizer');for(let i=0;i<3;i++)buyStationUpgrade();
+openWoodStation('glovebox');for(let i=0;i<3;i++)buyStationUpgrade();
+if(!labUnlocked()||!sterileTreeComplete())throw Error('Arbol esteril');
+`;
+checkProgression('inicio oculto y entradas por clic, E y caminar bloqueadas',`
+frame(150);if(shopUnlocked||sterileAvailable()||chemistryAvailable()||liquidUnlocked||availableSpecies().length!==1)throw Error('Inicio abierto');
+enterSterileRoom();enterChemistry();enterShop();openWoodStation('glovebox');openChemistryStation('extraction');openLiquid('liquidStir');if(auxView)throw Error('Acceso directo');
+player={x:15,y:149};keys.add('a');movePlayer(.1);keys.clear();if(auxView)throw Error('Caminar esteril');player={x:160,y:225};interactNearby();if(auxView==='chemistry')throw Error('E quimica');auxView=null;close=false;
+for(const p of [[8,149],[160,225],[160,44]]){cv.onpointerdown({clientX:p[0],clientY:p[1],pointerId:1});cv.onpointerup({clientX:p[0],clientY:p[1],pointerId:1})}if(auxView)throw Error('Clic puerta');
+setSpecies('Reishi');if(selectedSpecies!=='Pleurotus')throw Error('Seleccion bloqueada');
+let labels=[];c.fillText=t=>labels.push(t);scene(0);if(labels.some(t=>['ESTERIL','QUIMICA','TIENDA'].includes(t)))throw Error('Puerta anticipada');
+for(const id of ['module-upgrade','assistant-buy','lab-hire','test-lab-unlock'])if(!document.querySelector('#'+id).hidden)throw Error('Boton anticipado '+id);
+const mode=testMode;document.querySelector('#test-mode').onclick();if(testMode!==mode)throw Error('Salto por modo prueba');
+`);
+checkProgression('pedidos gratis, materiales y selectores solo disponibles',`
+const coins=saleCoins,before=bales;renderOrders();const html=document.querySelector('#order-items').innerHTML;if(html.includes('Nutrientes')||html.includes('frascos')||html.includes('Reishi'))throw Error('Pedido futuro');
+const click=data=>document.querySelector('#order-items').onclick({target:{dataset:data}});
+click({substrate:'switch'});click({species:'choose'});click({order:'paja'});click({order:'nutrientes'});click({order:'frascos'});
+if(selectedSubstrate!=='paja'||selectedSpecies!=='Pleurotus'||bales!==before+1||saleCoins!==coins||nutrientStock!==3||liquidEmpty!==4||supplyPrice('micelio')!==0)throw Error('Compra gratis o filtro');
+openMyceliumInventory();if(document.querySelector('#mycelium-list').innerHTML.includes('Reishi'))throw Error('Inventario futuro');
+if(buyStationUpgrade()||crusherLevel)throw Error('Mejoras antes de venta');
+`);
+checkProgression('circuito real Pleurotus, tienda, venta y todas las mejoras principales',mainProgressionRun+`
+if(saleCoins!==pleuroBalance.startCoins+speciesPrices.Pleurotus||balanceStats.upgrades||balanceStats.supplies)throw Error('Coste');
+enterSterileRoom();if(selectedSpecies!=='Melena de leon'||auxView!=='sterileRoom')throw Error('Entrada util');
+if(availableSpecies().map(s=>s.name).join(',')!=='Pleurotus,Melena de leon'||orderAvailable('frascos')||visiblePreparedCards().length!==1||visibleShopCards().length!==2)throw Error('Contenido futuro');
+const notices=progression.notices.length;refreshProgression();refreshProgression();if(progression.notices.length!==notices)throw Error('Aviso repetido');
+`);
+checkProgression('completar esteril no salta Melena y no requiere camaras maximas',mainProgressionRun+sterileUpgradeRun+`
+if(liquidUnlocked||speciesAvailable('Cordyceps')||speciesAvailable('Reishi')||incubationCapacity!==6||incubationControl)throw Error('Salto o requisito extra');
+const coins=saleCoins;hireHelper();hireLab();advanceAutomation(31);advanceLabHelper(31);if(!helper.hired||!labHelper.hired||saleCoins!==coins||helper.paused||labHelper.paused)throw Error('Contratos y mantenimiento gratis');
+`);
+checkProgression('Melena abre Reishi y despues Cordyceps con ruta completa',mainProgressionRun+sterileUpgradeRun+`
+setSpecies('Melena de leon');sterileWood=1;fillWoodBag();if(!woodBagJob){addGloveJar();fillWoodBag()} // Reserva de micelio comprada antes de inocular.
+if(!woodBagJob){document.querySelector('#order-items').onclick({target:{dataset:{order:'micelio'}}});fillWoodBag()}
+if(!woodBagJob)throw Error('Inoculacion melena');advanceWood(2.5);placeIncubation(1);incubation[1].contaminationRoll=1;incubation[1].climateRoll=1;climate=1;advanceIncubation(incubation[1],35);moveToFruiting(1);placeFruiting(1);fruitClimate=2;advanceFruiting(fruitShelves[1],40);harvestBag(1);
+if(!progression.reishi||!liquidUnlocked||progression.chemistry||labHelper.hired||!orderAvailable('frascos')||visiblePreparedCards().length!==3||availableSpecies().length!==4)throw Error('Ruta cordy');
+setSpecies('Cordyceps');openWoodStation('woodPrep');cycleStationMode();if(prepMode!=='liquid')throw Error('Medio CL');openWoodStation('glovebox');if(!isCordyHood())throw Error('Petri');cycleHoodMode();if(!isCordyBlockHood())throw Error('Bloque');openLiquid('liquidStir');if(auxView!=='liquidStir')throw Error('Agitacion');
+const notices=progression.notices.length;refreshProgression();if(progression.notices.length!==notices)throw Error('Repite desbloqueo');
+`);
+checkProgression('primera cosecha Cordyceps abre quimica y victoria una sola vez',mainProgressionRun+sterileUpgradeRun+`
+progression.harvested.add('Melena de leon');refreshProgression();
+fruitShelves[2]={species:'Cordyceps',fruitProgress:1,fruitQuality:1};harvestBag(2);if(!progression.chemistry||!chemistryAvailable())throw Error('Quimica');
+enterChemistry();if(auxView!=='chemistry')throw Error('Entrada');for(const v of ['extraction','bottling','nutrients','spirulina']){openChemistryStation(v);if(auxView!==v)throw Error('Mesa '+v)}
+const count=progression.notices.filter(n=>n.includes('Completaste')).length;fruitShelves[2].fruitProgress=1;harvestBag(2);if(count!==1||progression.notices.filter(n=>n.includes('Completaste')).length!==1)throw Error('Victoria repetida');
+while(progression.notices.length)document.querySelector('#unlock-next').onclick();if(!document.querySelector('#unlock-notice').hidden)throw Error('Cerrar avisos');
+`);
+
+checkProgression('ruta CL y arroz desde pedidos hasta cosecha sin depender de quimica',mainProgressionRun+sterileUpgradeRun+`
+progression.harvested.add('Melena de leon');refreshProgression();setSpecies('Cordyceps');
+document.querySelector('#order-items').onclick({target:{dataset:{order:'micelio'}}});
+for(const mode of ['liquid','cordy']){
+openWoodStation('woodPrep');prepMode=mode;placeWoodPrepBag();if(mode==='cordy')addWoodSawdust();addWoodNutrients();advanceWood(1);advanceWood(.7);advanceWood(.7);
+if(preparedFor(mode)!==1)throw Error('Preparacion '+mode);
+openWoodStation('woodSterilizer');loadWood(mode);advanceWood(1);startWoodCycle();advanceWood(8);advanceWood(.4);
+if(sterileFor(mode)!==1)throw Error('Esterilizacion '+mode);
+}
+openWoodStation('glovebox');hoodMode='liquid';startLiquidInoculation();advanceLiquid(2.5);openLiquid('liquidStir');placeLiquid(0);advanceLiquid(30);
+if(!matureLiquidCount()||progression.chemistry)throw Error('CL maduro');
+openWoodStation('glovebox');hoodMode='cordy';startCordyBlock();advanceLiquid(2.5);placeIncubation(1);incubation[1].climateRoll=1;incubation[1].contaminationRoll=1;climate=1;advanceIncubation(incubation[1],40);moveToFruiting(1);placeFruiting(1);fruitClimate=1;advanceFruiting(fruitShelves[1],45);harvestBag(1);
+if(!progression.chemistry||!harvestCart.some(h=>h.species==='Cordyceps')||matureLiquidCount()||sterileCordy||liquidSterile)throw Error('Fin ruta');
+`);
+console.log('132 grupos de verificacion aprobados.');

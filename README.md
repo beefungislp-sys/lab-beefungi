@@ -27,7 +27,7 @@ WASD para caminar, E para entrar/salir y cerrar menús. Arrastre o doble clic pa
 
 ## Estado
 
-Tandas históricas A–D y sesión actual A0, B0, C0, D0, E0, F0, G0, H0, I0, J0, K0, L0, A1 y A2 implementadas y publicadas. E0 añade modelos por especie, cosechas separadas, precios y entregas táctiles. F0 añade tolvas, agua automática, llenadora y asistente de preparación. G0 añade cámaras 4/6/8, control climático de menor duración y venta de composta. H0 añade movimiento al tocar suelo, salida automática de sustrato y llenadora de depósitos 4+4. I0 añade esterilizador 2/4/6, elimina el bloqueo de salida, normaliza el agua al visitar estaciones y ralentiza al asistente con avisos. J0 añade mechero, cabina 3+3 y campana laminar con reserva sin límite de capacidad. K0 añade barras, agua rápida, asistente de laboratorio y cultivo líquido. L0 integra la preparación/esterilización en las estaciones existentes, conserva solo una mesa de agitación y completa Cordyceps hasta cosecha y venta. A1 integra selector, Regresar y Retirar dentro del área de juego, renueva los materiales y permite tandas mixtas de madera/Cordyceps con CL separado. A2 permite al ayudante llenar el agua por sí mismo y usar CL maduro directamente desde una mesa de agitación ampliable a seis puestos. La progresión definitiva, asistentes de otras zonas, deshidratación y guardado siguen pendientes. Cordyceps se desbloquea como Petri; el líquido maduro permite inocular su sustrato esterilizado y producir bloques y frutos.
+Tandas históricas A–D y sesión actual A0, B0, C0, D0, E0, F0, G0, H0, I0, J0, K0, L0, A1 y A2 implementadas y publicadas. E0 añade modelos por especie, cosechas separadas, precios y entregas táctiles. F0 añade tolvas, agua automática, llenadora y asistente de preparación. G0 añade cámaras 4/6/8, control climático de menor duración y venta de composta. H0 añade movimiento al tocar suelo, salida automática de sustrato y llenadora de depósitos 4+4. I0 añade esterilizador 2/4/6, elimina el bloqueo de salida, normaliza el agua al visitar estaciones y ralentiza al asistente con avisos. J0 añade mechero, cabina 3+3 y campana laminar con reserva sin límite de capacidad. K0 añade barras, agua rápida, asistente de laboratorio y cultivo líquido. L0 integra la preparación/esterilización en las estaciones existentes, conserva solo una mesa de agitación y completa Cordyceps hasta cosecha y venta. A1 integra selector, Regresar y Retirar dentro del área de juego, renueva los materiales y permite tandas mixtas de madera/Cordyceps con CL separado. A2 permite al ayudante llenar el agua por sí mismo y usar CL maduro directamente desde una mesa de agitación ampliable a seis puestos. La progresión ya está activa en un recorrido gratuito de revisión. Asistentes de otras zonas, deshidratación y guardado siguen pendientes. Cordyceps se desbloquea como Petri; el líquido maduro permite inocular su sustrato esterilizado y producir bloques y frutos.
 
 Configuración de publicación basada en la documentación oficial: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 
@@ -37,11 +37,11 @@ Química A–D: acceso por la puerta inferior de la sala principal. Extracción 
 
 ## Balance inicial de Pleurotus
 
-[Primera pasada de balance](outputs/BALANCE-PLEUROTUS.md): partida normal con 6 monedas y kit inicial, compras reales, mejoras graduales tras la primera venta y margen comprobado para reponer una tanda. Las herramientas gratuitas se activan sólo desde Modo prueba en Ayuda; los demás árboles siguen provisionales.
+[Primera pasada de balance](outputs/BALANCE-PLEUROTUS.md): referencia previa de precios y margen. Temporalmente el juego inicia con compras, mejoras y asistentes gratis para revisar el árbol; los insumos siguen consumiéndose y se piden sin coste. No se habilita el desbloqueo total del prototipo.
 
-## Progresión en diseño
+## Progresión activa — prueba gratuita
 
-[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): decisiones confirmadas, secuencia recomendada, revisión de dependencias y puntos pendientes. Es una propuesta para revisar; los bloqueos y logros descritos todavía no están aplicados al juego.
+[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): condiciones actuales de cada desbloqueo. Pleurotus → primera cosecha/tienda → primera venta/mejoras → hito principal/sala estéril y Melena → cosecha Melena/Reishi → árbol estéril completo/Cordyceps y agitación → cosecha Cordyceps/victoria y química. Sólo aparecen las opciones disponibles. [Nota de la tanda](outputs/TANDA-DESBLOQUEOS-GRATUITOS.md).
 
 ## Organización y catálogo gráfico
 

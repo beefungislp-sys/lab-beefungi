@@ -69,7 +69,7 @@ Los estilos están en el bloque \`<style>\`: marco de juego, barra superior, bot
 
 ## Interfaz generada desde JavaScript
 
-Pedidos y sus botones de compra/especie: ${locate('renderOrders')}. Inventario de micelios: ${locate('openMyceliumInventory')}. Botones de mejoras: ${locate('updateUpgradeControls')}. Economía/saldo y modo prueba: ${locate('updateEconomyControls')} y ${locate('updateWallet')}. Controles del cuarto estéril: ${locate('updateK0Controls')}. Entregas de tienda: ${locate('updateShopControls')}. Preferencia de sonido: ${locate('updateSoundButton')}.
+Pedidos y sus botones de compra/especie: ${locate('renderOrders')}. Inventario de micelios: ${locate('openMyceliumInventory')}. Botones de mejoras: ${locate('updateUpgradeControls')}. Economía/saldo y modo prueba: ${locate('updateEconomyControls')} y ${locate('updateWallet')}. Controles del cuarto estéril: ${locate('updateK0Controls')}. Entregas de tienda: ${locate('updateShopControls')}. Preferencia de sonido: ${locate('updateSoundButton')}. Avisos de desbloqueo: ${locate('renderUnlockNotice')}. Visibilidad del recorrido: ${locate('updateProgressionControls')} y ${locate('refreshProgression')}.
 
 ## Contrato de interacción
 
@@ -92,7 +92,7 @@ ${colors.length} colores hexadecimales encontrados en fuente/estilos. Son valore
 
 ${colors.map(color => `\`${color}\``).join(' · ')}
 
-## Organización y limpieza de esta tanda
+## Base de organización y estado actual
 
 - Fuente formateada en HTML, CSS y JavaScript legibles; se conserva como archivo único.
 - Inicio y movimiento de arrastre centralizados, usados por todas las estaciones que arrastran materiales.
@@ -100,7 +100,7 @@ ${colors.map(color => `\`${color}\``).join(' · ')}
 - Tienda con un renderizador vigente y un único actualizador de controles para los tres productos.
 - Retirados renderizadores, selectores y manejadores de la antigua tienda por páginas, sus tipos de arrastre sin productores y estado sin referencias.
 - No se borran adaptadores activos sólo por parecer antiguos: siguen existiendo capas de eventos en otros módulos. Su migración completa requiere otra refactorización por estación, con las regresiones existentes.
-- No se aplican las puertas bloqueadas ni los logros del documento de progresión; tampoco se cambia el balance de esta tanda.
+- La progresión activa oculta puertas, especies y materiales futuros. Las condiciones están centralizadas en la sección PROGRESION; el recorrido actual es gratuito para revisar sus hitos.
 `;
 await writeFile('outputs/CATALOGO-GRAFICO.md', doc, 'utf8');
 console.log(`Catálogo: ${scenes.length} áreas, ${functions.length} dibujantes, ${native.length} elementos nativos.`);

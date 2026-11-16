@@ -158,6 +158,7 @@
       margin: 0 0 8px;
     }
     .game-frame {
+      position: relative;
       overflow: hidden;
       background: #324c60;
       border: 4px solid #617b86;
@@ -359,6 +360,26 @@
     #test-mode {
       font-size: 12px;
     }
+    .unlock-notice {
+      position: absolute;
+      top: 48px;
+      left: 8px;
+      right: 8px;
+      z-index: 6;
+      background: #c4d6bc;
+      color: #17283a;
+      padding: 8px;
+      border: 2px solid #edbd69;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .unlock-notice button {
+      margin: 6px 0 0;
+      min-height: 44px;
+    }
+    [hidden] {
+      display: none !important;
+    }
   </style>
   <main>
     <h1>LAB BEEFUNGI</h1>
@@ -375,6 +396,11 @@
         tabindex="0"
         aria-label="Mesa de preparación. Selecciona la mesa para acercarte."
       ></canvas>
+      <div id="unlock-notice" class="unlock-notice" hidden role="status">
+        <span id="unlock-message"></span><br /><button id="unlock-next">
+          Continuar
+        </button>
+      </div>
       <footer>
         <button id="more">Pedidos / celular</button
         ><button data-extra class="shop-control" id="shop-species" hidden>
@@ -402,55 +428,16 @@
         ><button id="sound-toggle" aria-pressed="true">Sonido: activado</button>
         <p id="status" role="status">Selecciona una estación para acercarte.</p>
         <p>
-          Sala: toca el suelo para caminar; los módulos tienen prioridad. WASD
-          para caminar; E para entrar o salir de la estación cercana; selecciona
-          TRITURADOR o MEZCLA para acercarte. Oficina con inventario, ficha de
-          Pleurotus y pedidos. Puerta derecha: incubación y fructificación.
-          Puerta izquierda: cuarto estéril para reishi y melena de león.
-          Cordyceps: Petri → cultivo líquido → agitación → sustrato esterilizado
-          → incubación y fructificación. Vitrina inicial: seis botes de micelio.
-          Secuencia: triturar → pasteurizar → mezclar. Remojo de prueba con
-          reloj gráfico; regla ficticia, no una receta real. Capacidad inicial
-          del tanque: 2 cargas, ampliable a 4 y 6. Una paca produce dos cargas.
-          El cesto admite seis cargas; con mejora, doce. Pleurotus: compras
-          reales con 6 monedas iniciales y mejoras tras la primera venta. Tolva
-          3/4 pacas, agua automática y llenadora. Tras mejorar los tres módulos
-          y ampliar el tanque a seis, el asistente cuesta 5 monedas y cobra 0.25
-          cada 30 segundos. Usa insumos existentes; sin saldo se pausa y sin
-          insumos espera. Ayuda permite activar Modo prueba para probar sin
-          coste; sus reposiciones están ocultas durante la partida normal. Las
-          mejoras del cuarto estéril siguen en ese modo mientras se balancean
-          después. Incubación y fructificación empiezan con 4 espacios,
-          ampliables a 6 y 8; su mejora final reduce el tiempo un 10%. Toca el
-          carrito de composta para vender una unidad por 1 moneda. Mesa de
-          sustrato: salida automática al integrar los ingredientes. Mejoras de
-          prueba: llave automática y llenadora con depósitos 4+4; coloca cada
-          bolsa manualmente. Bolsas preparadas en espera sin límite, olla
-          ampliable a 2/4/6 cargas por ciclo. Las mejoras de agua automática
-          llenan solo mientras estás dentro de su estación; un ciclo que termina
-          fuera no rellena agua. La salida de bolsas esterilizadas tampoco tiene
-          límite. Los asistentes accionan las llaves sin necesitar que visites
-          la estación. El cultivo líquido al 100% permanece en la agitadora y
-          está disponible en la campana; se consume al inocular un bloque. La
-          mesa de agitación se amplía de cuatro a seis puestos. El asistente
-          espera dos segundos por acción y avisa qué insumo falta. Cabina:
-          mechero (riesgo a la mitad), caja 3+3 y campana laminar (riesgo de
-          inoculación 0.1%). K0: barras de depósitos y agua rápida de un
-          segundo. Árbol estéril y ambas cámaras completos desbloquean
-          laboratorio y mesa de agitación. Asistente de laboratorio: 10 monedas
-          y 0.5/30 s; prepara y esteriliza, coloca bolsas, elige clima por
-          mayoría y cosecha. La inoculación es manual. Prueba desbloquear L0
-          activa todo el árbol sin regalar insumos. L0: preparación y
-          esterilizador comparten modos Madera / CL Cordyceps / Sustrato
-          Cordyceps. Cambia la preparación con la mesa vacía; Retirar devuelve
-          el recipiente y descarta su contenido. La olla admite madera y
-          sustrato Cordyceps juntos; CL en tanda separada. La campana tiene
-          modos Melena, Reishi, CL y Sustrato Cordyceps. Un CL maduro inocula un
-          sustrato esterilizado y se consume. Solo se añade una mesa de
-          agitación al cuarto estéril. La campana usa las reservas disponibles
-          sin límite de capacidad; muestra dos frascos y cuatro bolsas como
-          máximo. Arrastra micelio a la bolsa para inocular, sellar y enviar.
-          Arrastra una paca al triturador o haz doble clic en ella.
+          Recorrido de progresión en prueba: compras, mejoras y asistentes
+          gratis, sin mantenimiento. Sólo se muestran las opciones disponibles.
+          Comienza con Pleurotus; la primera cosecha abre la tienda y la primera
+          venta habilita las mejoras. Completa triturador, pasteurizado y
+          mezcla, y amplía ambas cámaras a seis espacios para abrir el cuarto
+          estéril. Cosecha Melena de León para abrir Reishi. Completa las tres
+          estaciones estériles para habilitar el segundo asistente y, con Reishi
+          disponible, Cordyceps y agitación. La primera cosecha de Cordyceps
+          abre química. Toca el suelo para caminar; WASD y E también funcionan.
+          La partida permanece en memoria.
         </p>
       </div>
     </details>
@@ -480,6 +467,16 @@
         nutrientes: 1,
         frascos: 1,
       },
+    };
+    // Recorrido temporal de revisión: gratis, pero conserva todos los hitos.
+    let progressionPreview = true;
+    let progressionBypass = false; // Exclusivo de regresiones del prototipo.
+    const progression = {
+      sterile: false,
+      reishi: false,
+      chemistry: false,
+      harvested: new Set(),
+      notices: [],
     };
     let testMode = false,
       moneyFlashUntil = 0,
@@ -524,7 +521,7 @@
       selectedCustomerId = null,
       customerSerial = 0,
       salesBySpecies = {};
-    let shopUnlocked = true,
+    let shopUnlocked = false,
       shopQueue = [],
       shopDeparting = [],
       shopWait = 0,
@@ -607,8 +604,9 @@
       return speciesColors[name] || "#c4d6bc";
     }
     function cycleGuideSpecies() {
-      const i = speciesCatalog.findIndex((s) => s.name === guideSpecies);
-      guideSpecies = speciesCatalog[(i + 1) % speciesCatalog.length].name;
+      const available = availableSpecies();
+      const i = available.findIndex((s) => s.name === guideSpecies);
+      guideSpecies = available[(i + 1) % available.length].name;
     }
     function profileForSpecies(name) {
       return speciesRules[name] || speciesProfile;
@@ -617,7 +615,7 @@
       speciesStocks = {},
       mixedJarSpecies = [];
     function setSpecies(name) {
-      if (!speciesCatalog.some((s) => s.name === name)) return;
+      if (!speciesAvailable(name)) return;
       speciesStocks[selectedSpecies] = {
         visible: micelio,
         reserve: micelioStock,
@@ -655,7 +653,14 @@
       return autoMixer ? 6 : 3;
     }
     function helperUnlocked() {
-      return crusherLevel === 2 && autoWater && tankCapacity === 6 && autoMixer;
+      return (
+        crusherLevel === 2 &&
+        autoWater &&
+        tankCapacity === 6 &&
+        autoMixer &&
+        (progressionBypass ||
+          (incubationCapacity >= 6 && fruitingCapacity >= 6))
+      );
     }
     let prepMode = "wood",
       sterilizerMode = "wood",
@@ -971,10 +976,12 @@
         box(10, 51, 12, 10, "#548272");
         box(299, 55, 8, 17, "#927858");
         box(297, 51, 12, 10, "#548272");
-        box(0, 132, 17, 30, "#314654");
-        box(0, 136, 13, 22, "#b9d5cd");
-        text("<", 2, 151);
-        smallText("ESTERIL", 12, 154);
+        if (sterileAvailable()) {
+          box(0, 132, 17, 30, "#314654");
+          box(0, 136, 13, 22, "#b9d5cd");
+          text("<", 2, 151);
+          smallText("ESTERIL", 12, 154);
+        }
         box(303, 132, 17, 30, "#314654");
         box(307, 136, 13, 22, "#e8cb92");
         text(">", 308, 151);
@@ -1608,7 +1615,7 @@
         ["Bolsas", bags, "u."],
         ["Cal", lime, "botes"],
         ["Limpieza", cleaning, "usos"],
-        ["Madera", woodStock, "cargas"],
+        ...(sterileAvailable() ? [["Madera", woodStock, "cargas"]] : []),
       ];
       rows.forEach(([label, n, unit], i) => {
         const y = 75 + i * 20;
@@ -1961,7 +1968,11 @@
       const flush = b.flush || 0;
       const grams = Math.round(flushYields[flush] * (b.fruitQuality ?? 1));
       const firstHarvest = !shopUnlocked;
-      if (grams > 0) shopUnlocked = true;
+      if (grams > 0) {
+        progression.harvested.add(b.species || "Pleurotus");
+        if (progressionBypass) shopUnlocked = true;
+        refreshProgression();
+      }
       harvestCart.push({
         grams,
         flush: flush + 1,
@@ -2311,15 +2322,19 @@
     function renderOrders() {
       orderBalanceCache = saleCoins;
       document.querySelector("#order-balance").textContent =
-        (testMode ? "Modo prueba · pedidos gratis · saldo: " : "Saldo: ") +
+        (progressionPreview
+          ? "Recorrido de prueba · compras gratis · saldo: "
+          : testMode
+            ? "Modo prueba · pedidos gratis · saldo: "
+            : "Saldo: ") +
         coinsText(saleCoins) +
         " monedas";
       document.querySelector("#order-items").innerHTML =
         `<table class="orders-table"><thead><tr><th scope="col">Nombre</th><th scope="col">Exist.</th><th scope="col">Precio</th><th scope="col">Pedir</th></tr></thead><tbody>${orderCatalog
-          .filter((item) => item.id !== "frascos" || liquidUnlocked)
+          .filter((item) => orderAvailable(item.id))
           .map(
             (item) =>
-              `<tr><td>${item.id === "paja" ? `<button class="species-button" data-substrate="switch">${substrateLabel()} ↻</button>` : item.species ? `<button class="species-button" data-inventory="micelio">${selectedSpecies === "Cordyceps" ? "Petri" : item.label}</button>` : item.label}${item.species ? `<button class="species-button" style="background:${speciesColor(selectedSpecies)}" data-species="choose" aria-label="Cambiar especie">${selectedSpecies} ↻</button>` : ""}</td><td>${stockFor(item.id)}</td><td>${coinsText(supplyPrice(item.id))} m</td><td><button ${!testMode && saleCoins < supplyPrice(item.id) ? "disabled" : ""} ${item.id === "micelio" && selectedSpecies === "Cordyceps" && !liquidUnlocked ? "disabled" : ""} data-order="${item.id}" aria-label="Pedir una unidad de ${item.id === "paja" ? substrateLabel() : item.id === "micelio" && selectedSpecies === "Cordyceps" ? "Placa Petri" : item.label}">+1</button></td></tr>`,
+              `<tr><td>${item.id === "paja" ? `<button class="species-button" data-substrate="switch">${substrateLabel()} ↻</button>` : item.species ? `<button class="species-button" data-inventory="micelio">${selectedSpecies === "Cordyceps" ? "Petri" : item.label}</button>` : item.label}${item.species ? `<button class="species-button" style="background:${speciesColor(selectedSpecies)}" data-species="choose" aria-label="Cambiar especie">${selectedSpecies} ↻</button>` : ""}</td><td>${stockFor(item.id)}</td><td>${coinsText(supplyPrice(item.id))} m</td><td><button ${!progressionPreview && !testMode && saleCoins < supplyPrice(item.id) ? "disabled" : ""} ${item.id === "micelio" && selectedSpecies === "Cordyceps" && !liquidUnlocked ? "disabled" : ""} data-order="${item.id}" aria-label="Pedir una unidad de ${item.id === "paja" ? substrateLabel() : item.id === "micelio" && selectedSpecies === "Cordyceps" ? "Placa Petri" : item.label}">+1</button></td></tr>`,
           )
           .join("")}</tbody></table>`;
     }
@@ -2334,7 +2349,12 @@
       drag = null;
       waterRunning = false;
       document.querySelector("#mycelium-list").innerHTML =
-        `<table class="orders-table"><thead><tr><th>Especie</th><th>Botes / placas</th></tr></thead><tbody>${speciesCatalog.map((s) => `<tr><td style="background:${speciesColor(s.name)}">${s.name}</td><td>${speciesStockTotal(s.name)}</td></tr>`).join("")}</tbody></table>`;
+        `<table class="orders-table"><thead><tr><th>Especie</th><th>Botes / placas</th></tr></thead><tbody>${availableSpecies()
+          .map(
+            (s) =>
+              `<tr><td style="background:${speciesColor(s.name)}">${s.name}</td><td>${speciesStockTotal(s.name)}</td></tr>`,
+          )
+          .join("")}</tbody></table>`;
       document.querySelector("#mycelium-inventory").showModal();
     }
     document.querySelector("#close-mycelium").onclick = () =>
@@ -2443,9 +2463,7 @@
       document.querySelector("#orders").close();
     document.querySelector("#order-items").onclick = (e) => {
       if (e.target.dataset.substrate) {
-        const choices = liquidUnlocked
-          ? ["paja", "madera", "cordy"]
-          : ["paja", "madera"];
+        const choices = availableSubstrates();
         selectedSubstrate =
           choices[(choices.indexOf(selectedSubstrate) + 1) % choices.length];
         renderOrders();
@@ -2456,10 +2474,9 @@
         return;
       }
       if (e.target.dataset.species) {
-        const current = speciesCatalog.findIndex(
-          (s) => s.name === selectedSpecies,
-        );
-        setSpecies(speciesCatalog[(current + 1) % speciesCatalog.length].name);
+        const available = availableSpecies();
+        const current = available.findIndex((s) => s.name === selectedSpecies);
+        setSpecies(available[(current + 1) % available.length].name);
         document.querySelector("#species-info").textContent =
           selectedSpecies === "Cordyceps"
             ? liquidUnlocked
@@ -2469,7 +2486,8 @@
         return;
       }
       const id = e.target.dataset.order;
-      if (!orderCatalog.some((item) => item.id === id)) return;
+      if (!orderCatalog.some((item) => item.id === id) || !orderAvailable(id))
+        return;
       if (
         id === "micelio" &&
         selectedSpecies === "Cordyceps" &&
@@ -2483,7 +2501,7 @@
         renderOrders();
         return;
       }
-      if (!testMode) balanceStats.supplies += price;
+      if (!testMode && !progressionPreview) balanceStats.supplies += price;
       const n = 1;
       if (id === "paja") {
         if (selectedSubstrate === "paja") bales += n;
@@ -2947,7 +2965,8 @@
         !close &&
         player.x > 138 &&
         player.x < 183 &&
-        player.y >= 188
+        player.y >= 188 &&
+        chemistryAvailable()
       ) {
         enterChemistry();
         return;
@@ -3006,7 +3025,9 @@
         { r: [182, 157, 100, 45], kind: "mix" },
         { r: [34, 157, 113, 44], kind: "warehouse" },
         { r: [299, 127, 21, 40], kind: "door" },
-        { r: [0, 127, 21, 40], kind: "sterile" },
+        ...(sterileAvailable()
+          ? [{ r: [0, 127, 21, 40], kind: "sterile" }]
+          : []),
       ];
       if (shopUnlocked) stations.push({ r: [145, 29, 31, 29], kind: "shop" });
       const distance = (st) =>
@@ -3360,6 +3381,9 @@
       { r: [25, 158, 115, 49], view: "glovebox", label: "CABINA" },
     ];
     function enterSterileRoom() {
+      if (!sterileAvailable()) return;
+      if (!progressionBypass && selectedSpecies === "Pleurotus")
+        setSpecies("Melena de leon");
       auxView = "sterileRoom";
       close = false;
       mixView = false;
@@ -3371,6 +3395,7 @@
       );
     }
     function openWoodStation(view) {
+      if (!sterileAvailable()) return;
       if (!["woodPrep", "woodSterilizer", "glovebox"].includes(view)) return;
       auxView = view;
       keys.clear();
@@ -4399,7 +4424,9 @@
       }
       if (auxView === "glovebox" && inside(p, [15, 37, 182, 23])) {
         setSpecies(
-          selectedSpecies === "Melena de leon" ? "Reishi" : "Melena de leon",
+          selectedSpecies === "Melena de leon" && speciesAvailable("Reishi")
+            ? "Reishi"
+            : "Melena de leon",
         );
         return true;
       }
@@ -4655,14 +4682,16 @@
     function hireHelper() {
       if (!helperUnlocked()) return;
       if (helper.hired) return;
-      if (saleCoins < 5) {
+      if (!progressionPreview && saleCoins < 5) {
         say("Necesitas 5 monedas. Puedes añadir saldo de prueba.");
         return;
       }
-      saleCoins -= 5;
+      if (!progressionPreview) saleCoins -= 5;
       helper.hired = true;
       say(
-        "Asistente contratado: usa insumos disponibles y cobra 0.25 cada 30 segundos.",
+        progressionPreview
+          ? "Asistente contratado gratis, sin mantenimiento en este recorrido."
+          : "Asistente contratado: usa insumos disponibles y cobra 0.25 cada 30 segundos.",
       );
     }
     function pleuroStock() {
@@ -4758,14 +4787,15 @@
       if (!helper.hired || dt <= 0) return;
       helper.paid = Math.min(30, helper.paid + dt);
       if (helper.paid >= 30) {
-        if (saleCoins < 0.25) {
+        if (!progressionPreview && saleCoins < 0.25) {
           helper.paused = true;
           helper.task = null;
           helper.action = 0;
           helper.notice = "Falta saldo";
           return;
         }
-        saleCoins = Number((saleCoins - 0.25).toFixed(2));
+        if (!progressionPreview)
+          saleCoins = Number((saleCoins - 0.25).toFixed(2));
         helper.paid -= 30;
       }
       helper.paused = false;
@@ -4966,7 +4996,10 @@
     function walkObstacles(view) {
       if (view === "chemistry") return chemistryBenches;
       return view === "sterileRoom"
-        ? [...woodStations.map((s) => s.r), [182, 158, 115, 42]]
+        ? [
+            ...woodStations.map((s) => s.r),
+            ...(liquidUnlocked ? [[182, 158, 115, 42]] : []),
+          ]
         : view === "shop"
           ? [[18, 72, 191, 122]]
           : view === "cultivation"
@@ -5036,7 +5069,7 @@
         view === "shop" &&
         (inside(p, [134, 211, 52, 29]) ||
           shopCustomerAt(p) ||
-          shopInventoryCards.some((t) => inside(p, t.r)))
+          visibleShopCards().some((t) => inside(p, t.r)))
       )
         return false;
       if (
@@ -5151,6 +5184,8 @@
       box(x + 3, y + 1, 3, 2, "#87aab7");
     }
     function labUnlocked() {
+      if (!progressionBypass)
+        return sterileAvailable() && sterileTreeComplete();
       return (
         woodPrepLevel === 2 &&
         woodFastWater &&
@@ -5183,14 +5218,16 @@
     }
     function hireLab() {
       if (!labUnlocked() || labHelper.hired) return;
-      if (saleCoins < 10) {
+      if (!progressionPreview && saleCoins < 10) {
         say("El asistente de laboratorio cuesta 10 monedas.");
         return;
       }
-      saleCoins -= 10;
+      if (!progressionPreview) saleCoins -= 10;
       labHelper.hired = true;
       say(
-        "Laboratorio contratado: 0.5 monedas cada 30 segundos. Inoculación manual.",
+        progressionPreview
+          ? "Asistente de laboratorio contratado gratis, sin mantenimiento. Inoculación manual."
+          : "Laboratorio contratado: 0.5 monedas cada 30 segundos. Inoculación manual.",
       );
     }
     function majorityMode(items, phase) {
@@ -5321,15 +5358,16 @@
       return null;
     }
     function advanceLabHelper(dt) {
-      if (labUnlocked()) liquidUnlocked = true;
+      if (progressionBypass && labUnlocked()) liquidUnlocked = true;
       if (!labHelper.hired || dt <= 0) return;
       labHelper.paid = Math.min(30, labHelper.paid + dt);
       if (labHelper.paid >= 30) {
-        if (saleCoins < 0.5) {
+        if (!progressionPreview && saleCoins < 0.5) {
           labHelper.paused = true;
           return;
         }
-        saleCoins = Number((saleCoins - 0.5).toFixed(2));
+        if (!progressionPreview)
+          saleCoins = Number((saleCoins - 0.5).toFixed(2));
         labHelper.paid -= 30;
       }
       labHelper.paused = false;
@@ -5398,6 +5436,7 @@
       );
     }
     function drawLiquidDoor() {
+      if (!liquidUnlocked) return;
       drawStainlessTable(182, 158, 115, 42, 12);
       for (let i = 0; i < agitationCapacity; i++) {
         const x =
@@ -5888,7 +5927,7 @@
                 ["Cordyceps", "cordy"],
               ]
             : []),
-        ],
+        ].filter(([species]) => speciesAvailable(species)),
         i = modes.findIndex(
           ([species, mode]) => species === selectedSpecies && mode === hoodMode,
         ),
@@ -6156,7 +6195,7 @@
         shown[i] += extra;
         budget -= extra;
       }
-      preparedPoolCards.forEach((card, index) => {
+      visiblePreparedCards().forEach((card, index) => {
         const [x, y, w, h] = card.r,
           compatible = compatibleTankType(card.type);
         box(x, y, w, h, card.type === sterilizerMode ? "#e2c88f" : "#9db7b6");
@@ -6197,7 +6236,7 @@
     cv.onpointerdown = (e) => {
       if (auxView === "woodSterilizer") {
         const p = point(e),
-          card = preparedPoolCards.find((card) => inside(p, card.r));
+          card = visiblePreparedCards().find((card) => inside(p, card.r));
         if (card) {
           if (woodTank.left || (woodTank.lid || 0) > 0.1) return;
           sterilizerMode = card.type;
@@ -6216,7 +6255,9 @@
     const a1Double = cv.ondblclick;
     cv.ondblclick = (e) => {
       if (auxView === "woodSterilizer") {
-        const card = preparedPoolCards.find((card) => inside(point(e), card.r));
+        const card = visiblePreparedCards().find((card) =>
+          inside(point(e), card.r),
+        );
         if (card) loadWood(card.type);
         return;
       }
@@ -6231,6 +6272,7 @@
       [183, 167, 113, 35],
     ];
     function drawChemistryDoor() {
+      if (!chemistryAvailable()) return;
       box(145, 213, 31, 27, "#314654");
       box(149, 216, 23, 24, "#a4cfcb");
       box(158, 222, 5, 9, "#385e70");
@@ -6238,6 +6280,7 @@
       smallText("QUIMICA", 143, 210);
     }
     function enterChemistry() {
+      if (!chemistryAvailable()) return;
       auxView = "chemistry";
       close = false;
       mixView = false;
@@ -6358,6 +6401,7 @@
       );
     }
     function openChemistryStation(view) {
+      if (!chemistryAvailable()) return;
       if (view === "spirulina")
         spirulina.filling = !spirulina.inoculated && spirulina.water < 1;
       auxView = view;
@@ -7673,7 +7717,7 @@
         return;
       const red = Math.floor(feedbackTime * 8) % 2 ? "#c54442" : "#f17860",
         card = f.cardKey
-          ? shopInventoryCards.find((card) => card.key === f.cardKey)
+          ? visibleShopCards().find((card) => card.key === f.cardKey)
           : null;
       for (const rect of card ? [card.r] : f.rects || [])
         drawMissingOutline(rect, red);
@@ -7832,7 +7876,7 @@
     }
     function shopCardAt(p) {
       return (
-        shopInventoryCards
+        visibleShopCards()
           .filter((card) => inside(p, card.r))
           .sort(
             (a, b) =>
@@ -7879,7 +7923,7 @@
       box(18, 72, 191, 6, "#d7b582");
       box(18, 78, 3, 116, "#a37e5a");
       box(206, 78, 3, 116, "#a37e5a");
-      for (const card of shopInventoryCards) {
+      for (const card of visibleShopCards()) {
         const [x, y, w, h] = card.r,
           selected =
             drag?.kind === "shopInventory" && drag.card.key === card.key;
@@ -7920,7 +7964,7 @@
         );
       }
       if (!shopGuideDone) {
-        const card = shopInventoryCards.find((item) => shopUnits(item) >= 1);
+        const card = visibleShopCards().find((item) => shopUnits(item) >= 1);
         if (card) {
           const [x, y] = card.r,
             bounce = (Math.floor(performance.now() / 300) % 2) * 2;
@@ -8167,13 +8211,14 @@
           return [[268, 56, 42, 51]];
         if (/material preparado/i.test(message))
           return [
-            preparedPoolCards.find((card) => card.type === sterilizerMode).r,
+            visiblePreparedCards().find((card) => card.type === sterilizerMode)
+              .r,
           ];
       }
       if (station === "shop") {
         const customer = chooseCustomer();
         if (customer) {
-          const card = shopInventoryCards.find(
+          const card = visibleShopCards().find(
             (card) =>
               card.product === (customer.product || "mushroom") &&
               card.species === (customer.species || "Pleurotus"),
@@ -8222,13 +8267,13 @@
     }
     // === ECONOMIA Y CONTROLES ===
     function supplyPrice(id) {
-      return pleuroBalance.supplies[id] ?? 1;
+      return progressionPreview ? 0 : (pleuroBalance.supplies[id] ?? 1);
     }
     function coinsText(n) {
       return Number(n.toFixed(2)).toString();
     }
     function payCoins(cost) {
-      if (testMode) return true;
+      if (progressionPreview || testMode) return true;
       if (saleCoins + 1e-9 < cost) {
         moneyFlashUntil = feedbackTime + 1.2;
         signalMissing("Faltan monedas.");
@@ -8280,19 +8325,62 @@
               blocked: false,
             };
       }
+      if (!progressionPreview) return null;
+      if (sterileAvailable() && auxView === "woodPrep")
+        return woodPrepLevel === 2 && woodFastWater
+          ? null
+          : {
+              cost: 0,
+              label:
+                woodPrepLevel === 0
+                  ? "Llave automática"
+                  : woodPrepLevel === 1
+                    ? "Llenadora de sustrato"
+                    : "Agua rápida",
+              blocked: !!woodPrepExit,
+            };
+      if (sterileAvailable() && auxView === "woodSterilizer")
+        return woodCapacity === 6 && woodAutoWater
+          ? null
+          : {
+              cost: 0,
+              label:
+                woodCapacity < 6
+                  ? "Olla de " + (woodCapacity + 2) + " espacios"
+                  : "Agua automática",
+              blocked:
+                !!woodTank.left || woodTank.n > 0 || (woodTank.lid || 0) > 0.1,
+            };
+      if (sterileAvailable() && auxView === "glovebox")
+        return gloveLevel === 3
+          ? null
+          : {
+              cost: 0,
+              label: ["Mechero", "Cabina ampliada", "Flujo laminar"][
+                gloveLevel
+              ],
+              blocked: !!woodBagJob || !!liquidHoodJob,
+            };
+      if (liquidUnlocked && auxView === "liquidStir")
+        return agitationCapacity === 6
+          ? null
+          : { cost: 0, label: "Agitación de 6 espacios", blocked: false };
       return null;
     }
     function buyStationUpgrade(kind = "module") {
+      if (!progressionBypass && kind === "tank" && auxView !== "pasteur")
+        return false;
       const action = kind === "tank" ? prototypeTankUpgrade : upgradeModule;
-      if (testMode) {
+      if (testMode && progressionBypass) {
         action();
         return true;
       }
       const offer = upgradeOffer(kind);
       if (!offer || offer.blocked || !hasFirstSale()) return false;
       if (!payCoins(offer.cost)) return false;
-      balanceStats.upgrades += offer.cost;
+      if (!progressionPreview) balanceStats.upgrades += offer.cost;
       action();
+      refreshProgression();
       updateEconomyControls();
       return true;
     }
@@ -8314,12 +8402,13 @@
       if (testMode) fillTestChamber();
     };
     document.querySelector("#test-lab-unlock").onclick = () => {
-      if (testMode) unlockLabTest();
+      if (testMode && progressionBypass) unlockLabTest();
     };
     const prototypeOrderClick = document.querySelector("#order-items").onclick;
     document.querySelector("#order-items").onclick = (e) =>
       playerAction(() => prototypeOrderClick(e));
     document.querySelector("#test-mode").onclick = () => {
+      if (progressionPreview) return;
       testMode = !testMode;
       updateEconomyControls();
       renderOrders();
@@ -8379,6 +8468,7 @@
             capacity.blocked || !hasFirstSale() || saleCoins < capacity.cost;
         }
       }
+      if (progressionPreview) updateProgressionControls();
       const ids = [
           "more",
           "shop-species",
@@ -8401,6 +8491,181 @@
       if (main.style)
         main.style.setProperty("--game-controls", rows * 44 + 46 + "px");
     }
+
+    // === PROGRESION: condiciones únicas para interfaz, pedidos y accesos ===
+    function sterileAvailable() {
+      return progressionBypass || progression.sterile;
+    }
+    function chemistryAvailable() {
+      return progressionBypass || progression.chemistry;
+    }
+    function speciesAvailable(name) {
+      if (!speciesCatalog.some((s) => s.name === name)) return false;
+      return (
+        progressionBypass ||
+        name === "Pleurotus" ||
+        (name === "Melena de leon" && progression.sterile) ||
+        (name === "Reishi" && progression.reishi) ||
+        (name === "Cordyceps" && liquidUnlocked)
+      );
+    }
+    function availableSpecies() {
+      return speciesCatalog.filter((s) => speciesAvailable(s.name));
+    }
+    function availableSubstrates() {
+      return [
+        "paja",
+        ...(sterileAvailable() ? ["madera"] : []),
+        ...(liquidUnlocked ? ["cordy"] : []),
+      ];
+    }
+    function visiblePreparedCards() {
+      return preparedPoolCards.filter(
+        (card) => card.type === "wood" || liquidUnlocked,
+      );
+    }
+    function visibleShopCards() {
+      if (progressionBypass) return shopInventoryCards;
+      return shopInventoryCards
+        .filter((card) =>
+          card.product === "mushroom"
+            ? speciesAvailable(card.species)
+            : chemistryAvailable(),
+        )
+        .map((card, i) => ({
+          ...card,
+          r: [22 + (i % 3) * 62, 78 + Math.floor(i / 3) * 38, 58, 34],
+        }));
+    }
+    function orderAvailable(id) {
+      if (id === "nutrientes") return sterileAvailable();
+      if (id === "frascos") return liquidUnlocked;
+      if (id === "micelio") return speciesAvailable(selectedSpecies);
+      if (id === "paja")
+        return availableSubstrates().includes(selectedSubstrate);
+      return true;
+    }
+    function sterileTreeComplete() {
+      return (
+        woodPrepLevel === 2 &&
+        woodFastWater &&
+        woodCapacity === 6 &&
+        woodAutoWater &&
+        gloveLevel === 3
+      );
+    }
+    function queueUnlock(message) {
+      progression.notices.push(message);
+      renderUnlockNotice();
+    }
+    function renderUnlockNotice() {
+      const panel = document.querySelector("#unlock-notice");
+      panel.hidden = !progression.notices.length;
+      document.querySelector("#unlock-message").textContent =
+        progression.notices[0] || "";
+    }
+    function refreshProgression() {
+      if (progressionBypass) return;
+      let changed = false;
+      if (hasFirstSale() && !progression.upgradesAnnounced) {
+        progression.upgradesAnnounced = true;
+        queueUnlock(
+          "Ahora están disponibles las mejoras de las estaciones. En este recorrido todas son gratis.",
+        );
+      }
+      if (!shopUnlocked && progression.harvested.has("Pleurotus")) {
+        shopUnlocked = true;
+        changed = true;
+        queueUnlock(
+          "Desbloqueaste la tienda. Ahora puedes vender tu cosecha por la puerta superior.",
+        );
+      }
+      if (!progression.sterile && helperUnlocked()) {
+        progression.sterile = true;
+        changed = true;
+        queueUnlock(
+          "Desbloqueaste el cuarto estéril y Melena de León. Asistente de preparación disponible para contratar.",
+        );
+      }
+      if (
+        !progression.reishi &&
+        progression.sterile &&
+        progression.harvested.has("Melena de leon")
+      ) {
+        progression.reishi = true;
+        changed = true;
+        queueUnlock("Ahora está disponible Reishi.");
+      }
+      if (
+        progression.sterile &&
+        sterileTreeComplete() &&
+        !progression.labAnnounced
+      ) {
+        progression.labAnnounced = true;
+        queueUnlock("Asistente de laboratorio disponible para contratar.");
+      }
+      if (!liquidUnlocked && progression.reishi && sterileTreeComplete()) {
+        liquidUnlocked = true;
+        changed = true;
+        queueUnlock(
+          "Ahora están disponibles Cordyceps y la mesa de agitación: Petri, frascos y sus medios de cultivo.",
+        );
+      }
+      if (
+        !progression.chemistry &&
+        liquidUnlocked &&
+        progression.harvested.has("Cordyceps")
+      ) {
+        progression.chemistry = true;
+        changed = true;
+        queueUnlock(
+          "¡Completaste Lab BeeFungi! Desbloqueaste química. Gracias por jugar; puedes seguir explorando y haciendo crecer tu laboratorio.",
+        );
+      }
+      if (changed) renderOrders();
+    }
+    function updateProgressionControls() {
+      document.querySelector("#test-mode").hidden = true;
+      for (const id of [
+        "test-straw",
+        "test-chamber",
+        "test-coins",
+        "test-lab-unlock",
+      ])
+        document.querySelector("#" + id).hidden = true;
+      const u = document.querySelector("#module-upgrade"),
+        offer = upgradeOffer();
+      u.hidden = !offer || !hasFirstSale();
+      if (offer) {
+        u.textContent = offer.label + " · gratis";
+        u.disabled = offer.blocked;
+      }
+      const t = document.querySelector("#tank-upgrade"),
+        capacity = upgradeOffer("tank");
+      t.hidden = auxView !== "pasteur" || !capacity || !hasFirstSale();
+      if (capacity) {
+        t.textContent = capacity.label + " · gratis";
+        t.disabled = capacity.blocked;
+      }
+      const h = document.querySelector("#assistant-buy"),
+        l = document.querySelector("#lab-hire");
+      h.hidden =
+        !helperUnlocked() ||
+        helper.hired ||
+        !(!auxView || auxView === "pasteur");
+      h.disabled = false;
+      h.textContent = "Contratar asistente · gratis";
+      l.hidden =
+        !labUnlocked() ||
+        labHelper.hired ||
+        ![null, "sterileRoom", "cultivation"].includes(auxView);
+      l.disabled = false;
+      l.textContent = "Contratar asistente de laboratorio · gratis";
+    }
+    document.querySelector("#unlock-next").onclick = () => {
+      progression.notices.shift();
+      renderUnlockNotice();
+    };
 
     // INTERACCION COMUN: captura y umbral únicos; cada estación valida el destino.
     const DRAG_THRESHOLD = 5;
@@ -8527,6 +8792,7 @@
           );
         }
       }
+      refreshProgression();
       updateUpgradeControls();
       updateShopControls();
       const testChamber = document.querySelector("#test-chamber");
