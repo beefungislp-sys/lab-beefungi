@@ -39,6 +39,10 @@ Química A–D: acceso por la puerta inferior de la sala principal. Extracción 
 
 [Primera pasada de balance](outputs/BALANCE-PLEUROTUS.md): partida normal con 6 monedas y kit inicial, compras reales, mejoras graduales tras la primera venta y margen comprobado para reponer una tanda. Las herramientas gratuitas se activan sólo desde Modo prueba en Ayuda; los demás árboles siguen provisionales.
 
+## Progresión en diseño
+
+[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): decisiones confirmadas, secuencia recomendada, revisión de dependencias y puntos pendientes. Es una propuesta para revisar; los bloqueos y logros descritos todavía no están aplicados al juego.
+
 ## Enlaces
 
 Juego: https://beefungislp-sys.github.io/lab-beefungi/
