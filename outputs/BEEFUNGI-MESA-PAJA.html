@@ -501,15 +501,16 @@ function playGameCue(kind){if(!soundEnabled||!audioContext||audioContext.state!=
 function readyNotice(station){readySignals.add(station)}
 function flushReadySignals(){for(const station of readySignals){const key='ready:'+station;if(feedbackTime-(soundCooldown.get(key)??-10)>.25){playGameCue('ready');soundCooldown.set(key,feedbackTime)}}readySignals.clear()}
 function feedbackStation(){return auxView||(close?(mixView?'mix':'crusher'):'main')}
-function signalMissing(message){if(!manualFeedback)return;const station=feedbackStation(),key='missing:'+station;feedbackFlash={station,message,origin:feedbackOrigin,until:feedbackTime+1.4,solution:station==='spirulina'&&!spirulinaNutrients&&/soluci|nutriente/i.test(message)};if(feedbackTime-(soundCooldown.get(key)??-10)>.4){playGameCue('missing');soundCooldown.set(key,feedbackTime)}}
-function observePlayerMessage(message){if(/^Falta [1-9]\d* porción de /.test(message))return;if(/falt|no queda|no hay|necesitas|primero|prepara solución|pide (micelio|sustrato)|coloca .*primero|aún no está listo|espera.*mezcl/i.test(message))signalMissing(message)}
+function signalMissing(message){if(!manualFeedback)return;const station=feedbackStation(),key='missing:'+station;feedbackFlash={station,message,origin:feedbackOrigin,rects:missingItemRects(station,message),until:feedbackTime+1.4,solution:station==='spirulina'&&!spirulinaNutrients&&/soluci|nutriente/i.test(message)};if(feedbackTime-(soundCooldown.get(key)??-10)>.4){playGameCue('missing');soundCooldown.set(key,feedbackTime)}}
+function observePlayerMessage(message){if(/^Falta [1-9]\d* porción de /.test(message))return;if(/falt|no queda|no hay|vitrina está vacía|llena la olla|necesitas|primero|prepara solución|pide (micelio|sustrato)|coloca .*primero|aún no está listo|espera.*mezcl/i.test(message))signalMissing(message)}
 function playerAction(action,e){const previous=manualFeedback,origin=feedbackOrigin;manualFeedback=true;feedbackOrigin=drag?.start||(e?.clientX!=null?point(e):null);unlockGameAudio();try{return action(e)}finally{manualFeedback=previous;feedbackOrigin=origin}}
-function drawSignalFeedback(){const f=feedbackFlash;if(!f||f.until<=feedbackTime||f.station!==feedbackStation())return;const red=Math.floor(feedbackTime*8)%2?'#c54442':'#f17860';if(f.solution){box(238,106,72,15,'#f1d8bf');smallText('SOLUCION '+spirulinaNutrients,239,117,red)}else if(f.origin){const x=Math.max(4,Math.min(269,f.origin.x-23)),y=Math.max(31,Math.min(166,f.origin.y-19));box(x,y,47,2,red);box(x,y+37,47,2,red);box(x,y,2,39,red);box(x+45,y,2,39,red)}box(8,211,304,27,'#573d43');const words=f.message.split(' '),lines=[''];for(const word of words){let i=lines.length-1;if((lines[i]+' '+word).trim().length>59&&i===0){lines.push(word)}else lines[i]+=(lines[i]?' ':'')+word}smallText(lines[0].slice(0,59),13,222,'#ffe3c6');if(lines[1])smallText(lines[1].slice(0,59),13,233,'#ffe3c6')}
+function drawSignalFeedback(){const f=feedbackFlash;if(!f||f.until<=feedbackTime||f.station!==feedbackStation())return;const red=Math.floor(feedbackTime*8)%2?'#c54442':'#f17860',card=f.cardKey?shopInventoryCards.find(card=>card.key===f.cardKey):null;for(const rect of card?[card.r]:f.rects||[])drawMissingOutline(rect,red);if(f.solution)smallText('SOLUCION '+spirulinaNutrients,239,117,red)}
+
 function updateSoundButton(){const button=document.querySelector('#sound-toggle');button.textContent=soundEnabled?'Sonido: activado':'Sonido: apagado';button.setAttribute?.('aria-pressed',String(soundEnabled));button.setAttribute?.('aria-label',button.textContent)}
 document.querySelector('#sound-toggle').onclick=()=>{soundEnabled=!soundEnabled;try{localStorage.setItem('lab-beefungi-sonido',soundEnabled?'1':'0')}catch{}if(soundEnabled)unlockGameAudio();else{for(const node of activeSoundNodes){try{node.stop()}catch{}}activeSoundNodes.clear();if(audioContext)audioContext._beeNext=0}updateSoundButton()};updateSoundButton();
 function warnSilentShortage(fn,check){return function(...args){if(manualFeedback){const message=check(...args);if(message)signalMissing(message)}return fn(...args)}}
-addWoodSawdust=warnSilentShortage(addWoodSawdust,()=>{if(prepMode==='liquid'||woodPrepLevel<2&&!woodPrepState.bag)return null;const hopper=activePrepHopper();if(woodPrepLevel===2&&hopper.sawdust>=4)return null;return !(prepMode==='wood'?woodStock:cordySubStock)?'Falta sustrato en inventario.':null});
-addWoodNutrients=warnSilentShortage(addWoodNutrients,()=>!nutrientStock&&(woodPrepLevel===2?activePrepHopper().nutrients<4:woodPrepState.bag&&!woodPrepState.nutrients)?'Faltan nutrientes en inventario.':null);
+addWoodSawdust=warnSilentShortage(addWoodSawdust,()=>{if(prepMode==='liquid')return null;if(woodPrepLevel<2&&!woodPrepState.bag)return 'Coloca un recipiente vacío primero.';const hopper=activePrepHopper();if(woodPrepLevel===2&&hopper.sawdust>=4)return null;return !(prepMode==='wood'?woodStock:cordySubStock)?'Falta sustrato en inventario.':null});
+addWoodNutrients=warnSilentShortage(addWoodNutrients,()=>woodPrepLevel<2&&!woodPrepState.bag?'Coloca un recipiente vacío primero.':!nutrientStock&&(woodPrepLevel===2?activePrepHopper().nutrients<4:woodPrepState.bag&&!woodPrepState.nutrients)?'Faltan nutrientes en inventario.':null);
 startBottling=warnSilentShortage(startBottling,()=>!bottlingJob&&!extractInventory.length?'Faltan matraces de extracto.':null);
 const soundDown=cv.onpointerdown;cv.onpointerdown=e=>playerAction(soundDown,e);
 const soundUp=cv.onpointerup;cv.onpointerup=e=>playerAction(soundUp,e);
@@ -552,6 +553,42 @@ const unifiedShopDown=cv.onpointerdown;cv.onpointerdown=e=>{if(auxView!=='shop')
 const unifiedShopUp=cv.onpointerup;cv.onpointerup=e=>{if(auxView!=='shop')return unifiedShopUp(e);return playerAction(ev=>{if(!drag)return;const d=drag;drag=null;const customer=shopCustomerAt(point(ev));if(d.kind==='shopInventory'&&d.moved&&customer)serveShopCustomer(customerId(customer),d.card.product==='spirulina'?null:d.card.species,d.card.product);else if(d.kind==='shopcustomer'&&!d.moved&&customer&&customerId(customer)===d.customerId)serveShopCustomer(d.customerId)},e)};
 const unifiedShopDouble=cv.ondblclick;cv.ondblclick=e=>{if(auxView!=='shop')unifiedShopDouble(e)};
 document.querySelector('#shop-serve').onclick=()=>playerAction(()=>{serveShopCustomer();updateShopControls()});
+
+// El marco señala el requisito pendiente, no el punto del gesto.
+function missingItemRects(station,message){
+if(station==='mix'){
+ if(/limpieza/i.test(message))return [[257,50,56,56]];
+ if(/faltan bolsas/i.test(message))return [[245,132,59,83]];
+ if(/necesitas una carga/i.test(message)){const result=[];if(mixedStraw<1)result.push([9,138,79,78]);if(mixedJars<1)result.push([11,31,154,68]);return result}
+ if(/vitrina|micelio/i.test(message))return [[11,31,154,68]];
+ if(/paja/i.test(message))return [[9,138,79,78]];
+}
+if(station==='woodPrep'){
+ if(woodPrepLevel<2&&!woodPrepState.bag||/bolsa vacía|recipiente|frascos vacíos|faltan bolsas/i.test(message))return [[250,80,56,78]];
+ if(/nutriente/i.test(message))return [[16,147,63,61]];
+ if(/aserrín|sustrato/i.test(message))return [[16,70,72,60]];
+}
+if(station==='bottling')return [[16,67,77,65]];
+if(station==='spirulina'){
+ if(/soluci|nutriente/i.test(message))return [[237,63,74,58]];
+ if(/primero/i.test(message)){if(spirulina.water<1)return [[164,33,32,47]];if(!spirulina.fed)return [[237,63,74,58]];return [spirulinaRects.reactor]}
+ if(/matraz|inóculo|verde oscuro/i.test(message))return [spirulinaRects.inoculum];
+}
+if(station==='pasteur'){
+ if(/cal/i.test(message))return [[73,45,37,57]];
+ if(/paja|espacio/i.test(message))return [!loads?[10,161,91,60]:pasteurTankRect()];
+ if(/agua|llave/i.test(message))return [[173,26,48,38]];
+}
+if(station==='crusher')return [/pacas/i.test(message)?pile:loads+2>basketCapacity()?basket:machine];
+if(station==='woodSterilizer'){
+ if(/agua|llave|llena la olla/i.test(message))return [[268,56,42,51]];
+ if(/material preparado/i.test(message))return [preparedPoolCards.find(card=>card.type===sterilizerMode).r];
+}
+if(station==='shop'){const customer=chooseCustomer();if(customer){const card=shopInventoryCards.find(card=>card.product===(customer.product||'mushroom')&&card.species===(customer.species||'Pleurotus'));if(card)return [card.r]}}
+return feedbackOrigin?[[Math.max(3,Math.min(270,feedbackOrigin.x-24)),Math.max(31,Math.min(198,feedbackOrigin.y-20)),47,39]]:[]
+}
+function drawMissingOutline(rect,color){const x=Math.max(2,rect[0]-2),y=Math.max(31,rect[1]-2),w=Math.min(318-x,rect[2]+4),h=Math.min(238-y,rect[3]+4);box(x,y,w,2,color);box(x,y+h-2,w,2,color);box(x,y,2,h,color);box(x+w-2,y,2,h,color)}
+const minimalBottlingDown=cv.onpointerdown;cv.onpointerdown=e=>{if(auxView==='bottling'&&!bottlingJob&&!extractInventory.length&&inside(point(e),[16,67,77,65])){playerAction(()=>signalMissing('Faltan matraces de extracto.'),e);return}minimalBottlingDown(e)};
 
 function frame(now){cv.setAttribute?.('aria-label',auxView==='chemistry'?'Laboratorio de química. Extracción, envasado, nutrientes y cultivo de espirulina.':chemistryStation()?({extraction:'Mesa de extracción de hongos',bottling:'Mesa de envasado de extractos',nutrients:'Mesa de química para nutrientes',spirulina:'Reactor de cultivo de espirulina'}[auxView]):'Lab BeeFungi. Área de juego.');const dt=document.hidden?0:Math.min(.15,(now-last)/1000);last=now;feedbackTime+=dt;advanceChemistry(dt);advanceLiquid(dt);advanceLabHelper(dt);advanceAutomation(dt);advanceWood(dt);advanceShop(dt);for(const b of fruitShelves)advanceFruiting(b,dt);for(const b of incubation)advanceIncubation(b,dt);advanceWalk(dt);movePlayer(dt);limePour=Math.max(0,limePour-dt);if(autoWater||helperWaterPermit)waterRunning=((autoWater&&auxView==='pasteur')||helperWaterPermit)&&!tank.left&&!tank.water;if(waterRunning&&!tank.left){waterLevel=Math.min(1,waterLevel+dt/4);if(waterLevel>=1){waterRunning=false;helperWaterPermit=false;tank.water=true;if(tank.n&&tank.lime)startTank();}}if(tank.left){tank.left=Math.max(0,tank.left-dt);if(!tank.left){treatedLoads+=tank.n;readyNotice('pasteur');waterLevel=0;waterRunning=false;tank={water:false,lime:false,n:0,left:0};say('Paja pasteurizada lista para llevar a mezcla.')}}if(bagJob){bagJob.t+=dt;if(bagJob.t>=2.5){sentBags++;readyNotice('mix');waitingIncubation++;waitingBagData.push({species:bagJob.species,contaminationRisk:bagJob.contaminationRisk,contaminationRoll:bagJob.contaminationRoll});bagsSinceClean++;dirt=Math.min(3,Math.floor(bagsSinceClean/cleanInterval()));if(dirt&&!cleaningGuideDone)cleaningGuideActive=true;bagJob=null;say('Bolsa recibida en cultivo. Total: '+sentBags+'.')}}if(job){job.t+=dt;if(job.t>=3){loads+=2;readyNotice('crusher');job=null;startCrusher();say('Paca triturada: +2 cargas. Cesto '+loads+' de '+basketCapacity()+'.')}}updateUpgradeControls();updateShopControls();const testChamber=document.querySelector('#test-chamber');testChamber.hidden=auxView!=='incubation'&&auxView!=='fruiting';testChamber.textContent=auxView==='fruiting'?'Prueba: llenar fructificación':'Prueba: llenar incubación';const testStraw=document.querySelector('#test-straw');testStraw.hidden=auxView!=='pasteur'&&!(close&&mixView&&!auxView);testStraw.textContent=auxView==='pasteur'?'Prueba: reponer paja triturada':'Prueba: reponer paja pasteurizada';const upgrade=document.querySelector('#tank-upgrade');upgrade.hidden=auxView!=='pasteur';upgrade.disabled=tankCapacity>=6||!!tank.left||tank.n>0;upgrade.textContent=tankCapacity>=6?'Tanque máximo: 6 cargas':'Mejora de prueba: tanque de '+(tankCapacity+2)+' cargas';updateK0Controls();flushReadySignals();scene(dt);requestAnimationFrame(frame)}document.addEventListener('visibilitychange',()=>{last=performance.now();waterRunning=false;woodPrepState.running=false;woodTank.running=false;keys.clear()});requestAnimationFrame(frame);
 </script></html>
