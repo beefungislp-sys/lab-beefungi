@@ -3996,8 +3996,43 @@
             : "Coloca bolsa y micelio en cualquier orden. Limpia si lo deseas y vierte el bote interior en la bolsa.",
       );
     }
+    // === ACABADO VISUAL: CUARTO ESTERIL ===
+    function drawSterileBackdrop(title) {
+      drawChamberRoom(title, "sterile");
+      // Luz fija más neutra sobre el acero, sin mover el mapa ni simular horas.
+      softLight(84, 74, 76, 36, "232,247,225", 0.1);
+      softLight(244, 74, 64, 36, "232,247,225", 0.1);
+      box(293, 9, 11, 11, "#a8bdaa");
+      artRect(294, 10, 9, 0.5, "#e3e9cd");
+      box(298, 11, 2, 7, "#e6ecd3");
+      box(295, 14, 8, 2, "#e6ecd3");
+    }
+    function drawSterileHousingDetail(x, y, w, h, laminar = false) {
+      artRect(x + 1, y + 1, w - 2, 1, "#e9ead2");
+      artRect(x + 2, y + 3, 1, h - 5, "#c8dbcb");
+      artRect(x + w - 3, y + 3, 2, h - 5, "#4b727a");
+      artRect(x + 4, y + h - 3, w - 8, 1, "#496d75");
+      for (const xx of [x + 4, x + w - 6])
+        for (const yy of [y + 5, y + h - 8]) {
+          artRect(xx, yy, 2, 2, "#e4e8ce");
+          artRect(xx + 0.5, yy + 0.5, 1, 0.5, "#72928f");
+        }
+      if (laminar) {
+        artRect(x + 7, y + 39, w - 14, 1, "#fbf4d6");
+        box(x + w - 17, y + 9, 8, 4, "#497975");
+        artRect(x + w - 16, y + 10, 5, 1, "#add2ab");
+      } else {
+        // Reflejo del cristal en el costado; conserva libres los materiales.
+        for (
+          let j = 0;
+          j < Math.min(5, Math.max(0, Math.floor((h - 15) / 3)));
+          j++
+        )
+          artRect(x + 9 + j * 2, y + 11 + j * 3, 2, 4, "#d9e5d0");
+      }
+    }
     function drawSterileRoom() {
-      roomBase("CUARTO ESTERIL");
+      drawSterileBackdrop("CUARTO ESTERIL");
       woodStations.forEach((st) => {
         const [x, y, w, h] = st.r;
         drawStainlessTable(x, y, w, h - 9);
@@ -4035,6 +4070,7 @@
             box(x + 29, y + 22, 7, 9, "#d5cbb1");
             box(x + gw, y + 22, 7, 9, "#d5cbb1");
           }
+          drawSterileHousingDetail(x + 15, y + 8, gw, 26, false);
           if (woodBagJob)
             drawProcessClock(x + 103, y + 15, 9, woodBagJob.t / 2.5);
           smallText("EN ESPERA " + waitingIncubation, x + 4, y + h + 20);
@@ -4251,6 +4287,11 @@
       smallText("ASERRIN " + woodStock, 19, 126);
       box(25, 155, 28, 31, "#ede1b8");
       box(23, 151, 32, 6, "#859e95");
+      artRect(24, 152, 30, 0.5, "#e0e5c8");
+      artRect(27, 159, 1, 23, "#faf0cf");
+      artRect(50, 159, 1, 23, "#c0b78f");
+      box(33, 164, 12, 11, "#cbd4b3");
+      smallText("N", 36, 173, "#5a7d7d");
       smallText("NUTRIENTES " + nutrientStock, 16, 205);
       for (let i = 0; i < Math.min(3, bags); i++)
         drawEmptySubstrateBag(265 + i * 3, 91 - i * 2, 0.95);
@@ -4291,6 +4332,9 @@
       box(165, 45, 32, 6, "#a9c6c2");
       box(190, 49, 7, 24, "#83a5aa");
       box(173, 39, 16, 4, prep.running ? "#83c6ad" : "#e3514e");
+      artRect(167, 46, 27, 1, "#e0e9d1");
+      artRect(191, 51, 1, 18, "#e2e8cc");
+      artRect(174, 39, 14, 0.5, "#f9c5a5");
       if (prep.running)
         for (let yy = 76; yy < 140; yy += 7) box(192, yy, 3, 4, "#a4e2e4");
       smallText("PREPARADAS " + preparedWood, 110, 89);
@@ -4312,6 +4356,7 @@
       drawWoodGuide();
     }
     function drawStainlessTable(x, y, w, h, legHeight = 8) {
+      softShadow(x + w / 2, y + h + legHeight - 1, w * 0.56, 4, 0.24);
       box(x + 3, y + 3, w, h, "#6f858e");
       box(x, y, w, h, "#bac7c9");
       box(x + 2, y + 2, w - 4, h - 7, "#9fB1b6");
@@ -4322,6 +4367,23 @@
         box(lx, y + h, 2, legHeight, "#d1dfda");
       }
       box(x + 10, y + h + legHeight - 3, w - 20, 2, "#708b96");
+      artRect(x + 1, y + 1, w - 2, 0.5, "#f5f0d7");
+      artRect(x + 1, y + 2, 1, h - 3, "#d7e1cf");
+      artRect(x + w - 2, y + 3, 1, h - 4, "#607f87");
+      artRect(x + 4, y + h - 2, w - 8, 0.5, "#4f707b");
+      // Cepillado y pequeñas marcas fijas, más suaves que ingredientes e iconos.
+      for (let i = 0; i < Math.max(2, Math.floor(w / 19)); i++) {
+        const xx = x + 7 + Math.floor(texHash(i, x, 94) * (w - 24)),
+          yy = y + 9 + Math.floor(texHash(i, y, 95) * Math.max(1, h - 20));
+        artRect(xx, yy, 5 + (i % 5), 0.5, i % 2 ? "#b4c5c0" : "#a2b6b5");
+      }
+      for (const xx of [x + 4, x + w - 6])
+        artRect(xx, y + h - 4, 1, 1, "#dfe6cf");
+      for (const lx of [x + 8, x + w - 12]) {
+        artRect(lx + 5, y + h, 1, legHeight, "#527780");
+        box(lx - 1, y + h + legHeight - 1, 8, 2, "#45616b");
+      }
+      artRect(x + 11, y + h + legHeight - 3, w - 22, 0.5, "#c5d5c9");
     }
     function drawPressurePot(x, y, scale = 1) {
       c.save();
@@ -4329,11 +4391,24 @@
       c.scale(scale, scale);
       const lid = woodTank.lid || 0,
         water = woodTank.water || 0;
+      softShadow(77, 132, 76, 5, 0.26);
       box(16, 60, 119, 68, "#8ea2a7");
       box(10, 65, 131, 54, "#aabcc0");
       box(22, 72, 107, 48, "#c9d6d4");
       box(26, 76, 4, 39, "#e3ebe5");
       box(122, 76, 3, 39, "#7e959e");
+      artRect(14, 68, 2, 47, "#dae4d9");
+      artRect(18, 70, 2, 48, "#b9ceca");
+      artRect(130, 70, 2, 46, "#688b94");
+      artRect(31, 78, 1, 35, "#f7f0d7");
+      artRect(35, 80, 1, 27, "#dee7d9");
+      artRect(25, 120, 101, 1, "#eaf0da");
+      for (let i = 0; i < 5; i++)
+        artRect(45 + i * 14, 114 + (i % 2), 7, 0.5, "#b8cec6");
+      box(85, 84, 18, 15, "#6a8990");
+      box(87, 86, 14, 11, "#eee8cb");
+      artRect(93, 88, 1, 6, "#496b72");
+      artRect(89, 92, 4, 1, "#b79a6a");
       box(22, 125, 107, 6, "#7e939d");
       box(-3, 80, 18, 16, "#415966");
       box(138, 80, 18, 16, "#415966");
@@ -4364,6 +4439,11 @@
       box(63, ly - 8, 28, 8, "#425b68");
       box(68, ly - 10, 18, 3, "#9cb4bb");
       box(105, ly - 8, 5, 8, "#718b96");
+      artRect(16, ly + 1, 118, 1, "#f6f0d9");
+      artRect(10, ly + 7, 130, 0.5, "#d5e2d6");
+      artRect(21, ly + 12, 108, 0.5, "#4a717c");
+      artRect(65, ly - 7, 23, 1, "#749594");
+      for (const xx of [27, 120]) artRect(xx, ly + 4, 3, 2, "#73939a");
       if (woodTank.left && lid >= 0.95) {
         for (let i = 0; i < 4; i++) {
           const phase = (performance.now() / 100 + i * 5) % 17;
@@ -4390,6 +4470,10 @@
       box(253, 79, 28, 7, "#bdcfca");
       box(251, 83, 7, 20, "#8eacb2");
       box(271, 61, 21, 4, woodTank.running ? "#83c6ad" : "#e3514e");
+      artRect(274, 69, 1, 10, "#dde9d2");
+      artRect(254, 80, 25, 1, "#f0ecd0");
+      artRect(252, 87, 1, 12, "#dae6cc");
+      artRect(273, 61, 17, 0.5, "#f7b398");
       if (woodTank.running)
         for (let yy = 105; yy < 153; yy += 6) box(253, yy, 3, 3, "#b1e5e4");
       smallText("CARGAS " + woodTank.n + "/" + woodCapacity, 157, 186);
@@ -4810,6 +4894,13 @@
           for (let f = 0; f < 3; f++) box(xx + 5 + f * 4, 184, 3, 4, "#b9b799");
         }
       }
+      drawSterileHousingDetail(
+        97,
+        gloveLevel >= 3 ? 57 : 72,
+        164,
+        gloveLevel >= 3 ? 133 : 121,
+        gloveLevel >= 3,
+      );
       if (!woodBagJob) {
         const jarLimit = gloveLevel >= 3 ? 2 : 3,
           bagLimit = gloveLevel >= 3 ? 4 : 3;
@@ -4944,7 +5035,7 @@
       }
     }
     function drawWoodStation() {
-      roomBase(
+      drawSterileBackdrop(
         auxView === "woodPrep"
           ? "MESA DE SUSTRATO"
           : auxView === "woodSterilizer"
@@ -5631,6 +5722,10 @@
       box(211, 92, 19, 35, "#8bada9");
       box(151, 99, 44, 6, "#e3e9d8");
       box(238, 145, 4, 5, "#83c6ad");
+      drawSterileHousingDetail(100, 92, 147, 108, true);
+      artRect(117, 95, 1, 28, "#cde1d1");
+      artRect(212, 95, 1, 28, "#cde1d1");
+      for (let i = 0; i < 6; i++) artRect(111, 151 + i * 5, 3, 1, "#678a90");
       if (prepMode === "liquid") smallText("SIN SOLIDOS", 108, 72);
       else
         drawHopperBar(
@@ -6446,11 +6541,14 @@
         box(8 + ((i * 5) % 12), 16 + ((i * 7) % 14), 2, 1, "#f1e9cb");
       box(3, 34, 22, 2, "#7ca6ae");
       box(14, 0, 4, 2, "#eff2df");
+      artRect(5, 1, 7, 0.5, "#c4d9cd");
+      artRect(24, 7, 0.5, 25, "#6b9999");
+      artRect(7, 31, 14, 0.5, "#e5e7c8");
       c.restore();
     }
 
     function drawAgitationStation() {
-      roomBase("MESA DE AGITACION");
+      drawSterileBackdrop("MESA DE AGITACION");
       drawStainlessTable(14, 137, 292, 55, 27);
       liquidSlotRects().forEach((r, i) => {
         const [x, y, w, h] = r,
@@ -6458,6 +6556,8 @@
         if (agitationCapacity === 4) {
           box(x, 101, w, 58, "#648691");
           box(x + 4, 105, w - 8, 46, "#b3cbc8");
+          drawSterileHousingDetail(x, 101, w, 58);
+          artRect(x + 9, 150, w - 18, 1, "#e3e8cc");
           if (b) drawLiquidJar(x + 15, 72, 1, b.progress);
           if (b) {
             const a = b.progress >= 1 ? 0 : performance.now() / 150;
@@ -6475,6 +6575,7 @@
         } else {
           box(x, y + 27, w, 24, "#648691");
           box(x + 3, y + 30, w - 6, 16, "#b3cbc8");
+          drawSterileHousingDetail(x, y + 27, w, 24);
           if (b) {
             drawLiquidJar(x + 30, y + 1, 0.8, b.progress);
             const a = b.progress >= 1 ? 0 : performance.now() / 150;
@@ -6493,6 +6594,10 @@
       });
       for (let i = 0; i < Math.min(4, liquidPending.length); i++)
         drawLiquidJar(25 + i * 20, 200, 0.6);
+      box(14, 184, 95, 13, "#d2dfca");
+      box(123, 184, 183, 13, "#d2dfca");
+      artRect(15, 184, 93, 0.5, "#f0ecd0");
+      artRect(124, 184, 181, 0.5, "#f0ecd0");
       smallText("ENTRADA " + liquidPending.length, 17, 194);
       smallText("LISTOS " + matureLiquidCount(), 210, 225);
       smallText("100%: DISPONIBLE EN CAMPANA", 126, 194);
@@ -6503,6 +6608,7 @@
       for (let i = 0; i < 13; i++) box(108 + i * 11, 67, 5, 23, "#6d919c");
       box(103, 99, 152, 77, "#d3dfd3");
       box(101, 94, 156, 5, "#edf0de");
+      drawSterileHousingDetail(97, 57, 164, 133, true);
       box(15, 37, 182, 23, speciesColor("Cordyceps"));
       smallText("CORDYCEPS / PETRI >", 21, 53);
       for (
@@ -6945,6 +7051,11 @@
       }
       box(25, 155, 28, 31, "#ede1b8");
       box(23, 151, 32, 6, "#859e95");
+      artRect(24, 152, 30, 0.5, "#e0e5c8");
+      artRect(27, 159, 1, 23, "#faf0cf");
+      artRect(50, 159, 1, 23, "#c0b78f");
+      box(33, 164, 12, 11, "#cbd4b3");
+      smallText("N", 36, 173, "#5a7d7d");
       smallText("NUTRIENTES " + nutrientStock, 16, 205);
       for (let i = 0; i < Math.min(3, liquidEmpty); i++)
         drawEmptyJar(265 + i * 3, 91 - i * 2, 0.95);
@@ -7040,6 +7151,7 @@
       box(102, 62, 154, 34, "#b7cbd0");
       for (let i = 0; i < 13; i++) box(108 + i * 11, 67, 5, 23, "#6d919c");
       box(103, 99, 152, 77, "#d3dfd3");
+      drawSterileHousingDetail(97, 57, 164, 133, true);
       box(15, 37, 182, 23, speciesColor("Cordyceps"));
       smallText("SUSTRATO CORDYCEPS >", 21, 53);
       for (

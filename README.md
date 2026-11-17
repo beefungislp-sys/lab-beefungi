@@ -80,3 +80,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Truco de revisión
 
 [HERICIUM](outputs/TANDA-TRUCO-HERICIUM.md): escribir `hericium` con el juego enfocado abre todas las áreas y añade 1 000 000 de monedas, una vez por partida. Conserva los procesos y recursos existentes; no simula cosechas ni compra mejoras.
+
+## Cuarto estéril con el acabado cálido
+
+[Pulido del cuarto estéril](outputs/TANDA-PULIDO-CUARTO-ESTERIL.md): sala, mesas inoxidables, llenadora, olla, cabina/campana y agitadores con textura, reflejos y sombras suaves. Conserva las recetas, las animaciones y la aparición de agitación por desbloqueo.
