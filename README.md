@@ -76,3 +76,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Aparición de muebles y tienda
 
 [Muebles progresivos y tienda](outputs/TANDA-MUEBLES-PROGRESIVOS-TIENDA.md): los puestos de cámaras aparecen al comprarlos; las filas ocultas dejan suelo transitable. Agitación, química y espirulina aparecen únicamente cuando corresponde. La tienda usa el acabado cálido, bandejas por producto y un mostrador que crece con las filas de inventario disponibles.
+
+## Truco de revisión
+
+[HERICIUM](outputs/TANDA-TRUCO-HERICIUM.md): escribir `hericium` con el juego enfocado abre todas las áreas y añade 1 000 000 de monedas, una vez por partida. Conserva los procesos y recursos existentes; no simula cosechas ni compra mejoras.

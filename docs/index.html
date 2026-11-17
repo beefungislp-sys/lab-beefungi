@@ -3645,6 +3645,7 @@
       }
     }
     document.addEventListener("keydown", (e) => {
+      if (handleHericiumKey(e)) return;
       if (closeMenuWithE(e) || upgradeMenuOpen) return;
       if (
         document.querySelector("#mycelium-inventory").open ||
@@ -9553,6 +9554,66 @@
         queueUnlock("Desbloqueaste mesa de química y cultivo de espirulina.");
       }
       if (changed) renderOrders();
+    }
+    // Truco local por partida; no modifica las recetas ni completa cosechas.
+    let hericiumUsed = false,
+      hericiumBuffer = "",
+      hericiumLastKey = 0;
+    function activateHericium() {
+      if (hericiumUsed) return false;
+      hericiumUsed = true;
+      shopUnlocked = true;
+      progression.sterile = true;
+      progression.reishi = true;
+      progression.chemistry = true;
+      progression.bioChemistry = true;
+      if (!liquidUnlocked) grantSpeciesStock("Cordyceps", 1);
+      liquidUnlocked = true;
+      saleCoins += 1000000;
+      keys.clear();
+      walkPath = [];
+      renderOrders();
+      updateWallet();
+      queueUnlock(
+        "HERICIUM · Todas las áreas disponibles · +1 000 000 monedas",
+      );
+      return true;
+    }
+    function handleHericiumKey(e) {
+      if (
+        e.isComposing ||
+        e.ctrlKey ||
+        e.altKey ||
+        e.metaKey ||
+        e.target?.matches?.("input,textarea,select,[contenteditable]")
+      ) {
+        hericiumBuffer = "";
+        return false;
+      }
+      if (e.repeat || ["Shift", "Control", "Alt", "Meta"].includes(e.key))
+        return false;
+      const now = performance.now(),
+        key = e.key.toLowerCase();
+      if (now - hericiumLastKey > 4000) hericiumBuffer = "";
+      hericiumLastKey = now;
+      if (key.length !== 1) {
+        hericiumBuffer = "";
+        return false;
+      }
+      const next = hericiumBuffer + key;
+      hericiumBuffer = "hericium".startsWith(next)
+        ? next
+        : key === "h"
+          ? "h"
+          : "";
+      if (!hericiumBuffer) return false;
+      e.preventDefault();
+      // La E del truco no debe entrar o salir de una estación al escribirlo.
+      if (hericiumBuffer === "hericium") {
+        hericiumBuffer = "";
+        activateHericium();
+      }
+      return true;
     }
     function updateProgressionControls() {
       document.querySelector("#test-mode").hidden = true;
