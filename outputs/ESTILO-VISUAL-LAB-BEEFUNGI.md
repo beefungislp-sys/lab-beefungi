@@ -27,3 +27,7 @@ Sala principal, triturador, pasteurizado, mezcla, sala de cultivo cenital, cáma
 ## Aparición y proporciones
 
 Los muebles bloqueados no se dibujan: aparecen al desbloquearlos, sin candados ni siluetas. Su dibujo, colisión e interacción deben compartir la geometría visible. La tienda conserva productos y clientes a la escala del personaje; el mostrador crece en profundidad al aparecer nuevas filas de inventario.
+
+## Proporciones de estaciones estériles
+
+Los aparatos deben caber sobre su cubierta; las reservas descansan en mesas o repisas, sin flotar. Separar rótulos, patas y travesaños. Centrar la caída del agua sobre el recipiente y mantener los frascos dibujados dentro de sus zonas táctiles. Las miniaturas cenitales deben corresponder al medio seleccionado y dejar espacio entre aparato, reservas y etiquetas.

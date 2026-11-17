@@ -84,3 +84,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Cuarto estéril con el acabado cálido
 
 [Pulido del cuarto estéril](outputs/TANDA-PULIDO-CUARTO-ESTERIL.md): sala, mesas inoxidables, llenadora, olla, cabina/campana y agitadores con textura, reflejos y sombras suaves. Conserva las recetas, las animaciones y la aparición de agitación por desbloqueo.
+
+## Proporciones de mesas estériles
+
+[Acomodo y proporciones](outputs/TANDA-PROPORCIONES-MESAS-ESTERILES.md): cubiertas ajustadas a sus aparatos, reservas apoyadas, llave centrada y agitadores proporcionados en uno o dos niveles. Incluye revisión en tamaños de celular y conserva las zonas de interacción.
