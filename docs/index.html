@@ -963,6 +963,8 @@
       artRect(x + w - 9, y + depth, 1, leg, "#d1a56f");
       box(x, y, w, depth, p.wood);
       box(x, y, w, 2, "#f2d49a");
+      artRect(x, y + 2, 1, depth - 3, "#e3ba81");
+      artRect(x + w - 1, y + 2, 1, depth - 3, "#986b47");
       box(x, y + depth - 5, w, 5, "#a6764c");
       artRect(x + 1, y + depth - 4, w - 2, 0.5, "#e3b77c");
       for (let yy = y + 8; yy < y + depth - 5; yy += 8) {
@@ -989,24 +991,42 @@
       }
       box(x + w / 2 - 1, y + 2, 2, h - 4, "#ead7aa");
       box(x + 2, y + h / 2 - 1, w - 4, 2, "#ead7aa");
+      artRect(x + w - 2, y + 2, 1, h - 4, "#6e775b");
+      artRect(x + 4, y + 4, 1, Math.max(2, h / 2 - 7), "#e4edda");
+      artRect(x + w / 2 + 2, y + 4, 1, Math.max(2, h / 2 - 7), "#d6e8d3");
       artRect(x + 3, y + 3, w / 2 - 5, 1, "#edf1d5");
       box(x - 2, y + h - 1, w + 4, 3, "#dbc18d");
+    }
+    function drawStrawFibers(x, y, w, h, count, pale = false) {
+      // Semilla local: textura irregular estable, sin consumir el azar del juego.
+      let seed = 137;
+      const noise = () => {
+        seed = (seed * 16807) % 2147483647;
+        return seed / 2147483647;
+      };
+      const colors = pale
+        ? ["#ecd08b", "#d4b977", "#efe0ae"]
+        : ["#e9cd85", "#bf9954", "#f3dca0"];
+      for (let i = 0; i < count; i++) {
+        const xx = Math.floor((x + noise() * Math.max(1, w - 6)) * 2) / 2,
+          yy = Math.floor((y + noise() * Math.max(1, h - 2)) * 2) / 2,
+          len = 2 + Math.floor(noise() * 4);
+        artRect(xx, yy, len, 0.5, colors[i % 3]);
+        if (i % 3 === 0)
+          artRect(xx + len - 0.5, yy + 0.5, 0.5, 1, colors[i % 3]);
+      }
     }
     function drawWarmBasket(x, y, w, h, count, capacity) {
       box(x + 1, y + 3, w - 2, h - 2, "#8d6947");
       box(x + 3, y + 3, w - 6, h - 7, "#5e5840");
       const rise = Math.min(1, count / capacity) * (h - 6);
-      for (let i = 0; i < count * 12; i++) {
-        const xx = x + 4 + ((i * 13) % (w - 10)),
-          yy = y + h - 6 - ((i * 7) % Math.max(2, rise));
-        artRect(
-          xx,
-          yy,
-          2 + (i % 3),
-          0.5,
-          ["#eed28c", "#c8a15b", "#f8dfa1"][i % 3],
-        );
-      }
+      drawStrawFibers(
+        x + 4,
+        y + h - 6 - rise,
+        w - 8,
+        Math.max(2, rise),
+        count * 12,
+      );
       for (let yy = y + h - 6; yy < y + h; yy += 2) {
         box(x + 1, yy, w - 2, 1, "#d6b278");
         for (let xx = x + 3; xx < x + w - 2; xx += 5)
@@ -1018,6 +1038,8 @@
     }
     function drawWarmPlant(x, y) {
       box(x + 3, y + 8, 8, 8, "#b18460");
+      artRect(x + 4, y + 9, 1, 6, "#dbb17e");
+      artRect(x + 9, y + 10, 1, 5, "#8f6e51");
       box(x + 2, y + 7, 10, 2, "#dcaf7c");
       for (let i = 0; i < 5; i++) {
         box(
@@ -1030,7 +1052,7 @@
         artRect(x + 2 + ((i * 3) % 9), y + ((i * 5) % 7), 2, 0.5, "#afc396");
       }
     }
-    function drawWarmStationBackdrop() {
+    function drawWarmStationBackdrop(station = "crusher") {
       box(0, 0, 320, 240, warmPalette.wall);
       box(0, 0, 320, 30, "#d7dfc7");
       for (let x = 0; x < 320; x += 32) artRect(x, 0, 0.5, 30, "#bdcdb7");
@@ -1041,14 +1063,19 @@
           box(x + 1, y + 1, 15, 15, (x + y) % 32 ? "#bec3a8" : "#c9caae");
           artRect(x + 2, y + 2, 13, 0.5, "#d8d8b8");
         }
-      drawWarmWindow(133, 43, 39, 49);
-      box(136, 97, 35, 8, "#f5e4b5");
-      box(141, 105, 36, 8, "#f5e4b5");
+      if (station === "crusher") {
+        drawWarmWindow(133, 43, 39, 49);
+        box(136, 97, 35, 8, "#f5e4b5");
+        box(141, 105, 36, 8, "#f5e4b5");
+        box(20, 48, 104, 2, "#c6a477");
+        artRect(23, 50, 2, 4, "#a3805c");
+        artRect(116, 50, 2, 4, "#a3805c");
+      } else if (station === "pasteur") {
+        drawWarmWindow(15, 45, 39, 52);
+        box(21, 101, 36, 7, "#f4e4b8");
+        drawWarmPlant(27, 89);
+      }
       box(0, 108, 320, 3, "#b8976e");
-      // Estante mural de repuestos; fuera de las zonas activas de material.
-      box(20, 48, 104, 2, "#c6a477");
-      artRect(23, 50, 2, 4, "#a3805c");
-      artRect(116, 50, 2, 4, "#a3805c");
       smallText("LAB BEEFUNGI", 12, 20, "#577567");
     }
     function drawMainRoom() {
@@ -1057,7 +1084,13 @@
       box(7, 33, 306, 204, "#95a98f");
       for (let y = 34; y < 236; y += 16)
         for (let x = 8; x < 312; x += 16) {
-          box(x + 1, y, 15, 15, (x + y) % 32 ? "#bac6a9" : "#adbea2");
+          box(
+            x + 1,
+            y,
+            15,
+            15,
+            ((x - 8) / 16 + (y - 34) / 16) % 2 ? "#bac6a9" : "#b3c1a3",
+          );
           artRect(x + 2, y + 0.5, 13, 0.5, "#ccd2b2");
           artRect(x + 14, y + 2, 0.5, 12, "#9aac94");
         }
@@ -1082,8 +1115,8 @@
         smallText("TIENDA", 145, 66, p.ink);
       }
       drawWarmTable(38, 79, 104);
-      bale(43, 86, 0.7);
-      bale(71, 84, 0.7);
+      if (bales > 0) bale(43, 86, 0.7);
+      if (bales > 1) bale(71, 84, 0.7);
       box(107, 84, 27, 25, "#416970");
       box(109, 88, 22, 15, "#739d96");
       box(104, 80, 33, 5, "#b1c9b8");
@@ -1126,6 +1159,9 @@
         box(191, 170, 48, 18, "#708f8e");
         box(193, 172, 44, 13, "#bdcbb7");
         artRect(191, 169, 48, 1, "#e7e6cb");
+        drawStrawFibers(195, 177, 40, 6, mixedStraw * 5);
+        for (let i = 0; i < mixedJars * 3; i++)
+          artRect(197 + ((i * 13) % 34), 178 + ((i * 3) % 5), 1, 1, "#f8efd4");
         for (let i = 0; i < 3; i++) {
           box(244 + i * 9, 171, 6, 12, "#b8d3bf");
           box(244 + i * 9, 169, 6, 2, "#738f89");
@@ -1405,10 +1441,15 @@
           );
       }
       box(x + 2, y + 3, 2, 10, "#deece2");
+      artRect(x + 3, y - 2, 10, 0.5, "#d5dfca");
+      artRect(x + 12, y + 4, 0.5, 13, "#6e9c95");
+      artRect(x + 3, y + 18, 9, 0.5, "#e2e7ca");
     }
     // === RENDER: PREPARACION Y MEZCLA ===
     function drawMix() {
+      drawWarmStationBackdrop("mix");
       text("MESA DE MEZCLA", 108, 22);
+      box(268, 89, 46, 3, "#b58c60");
       drawCleaningKit(274, 62);
       text("LIMPIEZA", 258, 101);
       if (cleaningGuideActive) {
@@ -1419,50 +1460,50 @@
         text("LIMPIAR", 259, 31, "#ffe16a");
       }
       // Vitrina al fondo, una mesa continua y tres puestos claros sobre ella.
-      box(13, 33, 150, 64, "#496874");
-      box(17, 37, 142, 55, "#a2c2bc");
-      box(19, 64, 138, 3, "#658b8d");
+      box(13, 33, 150, 64, "#4d6f70");
+      box(16, 36, 144, 57, "#a3bfb1");
+      box(19, 39, 138, 51, "#c1d4bd");
+      artRect(18, 37, 1, 55, "#e1e5c9");
+      box(19, 64, 138, 3, "#759994");
+      artRect(19, 64, 138, 1, "#e1e3c9");
+      box(13, 94, 150, 3, "#35585e");
+      // Marco de vitrina, cristal y bisagras; los seis botes conservan su zona.
+      for (const xx of [15, 158])
+        for (const yy of [42, 80]) artRect(xx, yy, 2, 3, "#e6e5cb");
       const visiblePleuro = Math.min(6, pleuroStock());
       for (let j = 0; j < 6; j++)
         jar(28 + (j % 3) * 45, 43 + Math.floor(j / 3) * 27, j < visiblePleuro);
       text("MICELIO " + visiblePleuro + "/6", 184, 61);
       smallText("PLEUROTUS", 184, 74);
-      box(5, 122, 310, 85, "#dfbd8d");
-      box(5, 122, 310, 6, "#f4d8a5");
-      box(10, 207, 300, 13, "#ab7957");
-      box(16, 220, 13, 20, "#77543e");
-      box(291, 220, 13, 20, "#77543e");
-      box(12, 145, 73, 56, "#987145");
-      box(16, 150, 65, 44, "#6b5438");
-      for (let j = 0; j < treatedLoads * 24; j++)
-        box(
-          19 + ((j * 17) % 57),
-          191 - ((j * 7) % Math.max(3, treatedLoads * 6)),
-          5,
-          1,
-          j % 2 ? "#efcc78" : "#b58a43",
-        );
-      box(10, 141, 77, 6, "#d7b57d");
+      drawWarmTable(5, 122, 310, 98, 20);
+      drawWarmBasket(12, 143, 73, 57, treatedLoads, tankCapacity);
       text("PAST. " + treatedLoads + "/" + tankCapacity, 16, 211);
       // Bordes en perspectiva: la bandeja descansa sobre la misma mesa.
       if (autoMixer) {
         drawAutoMixer();
       } else {
-        box(96, 139, 135, 57, "#668a8b");
-        box(101, 144, 125, 46, "#c6cdb1");
-        box(96, 132, 135, 7, "#e1e6ce");
-        box(96, 137, 5, 57, "#91b1aa");
-        box(226, 137, 5, 57, "#729994");
+        box(97, 139, 135, 60, "#8c977f");
+        box(96, 136, 135, 61, "#759592");
+        box(101, 142, 125, 48, "#b8c9b8");
+        box(106, 146, 115, 40, "#cbd3bc");
+        artRect(108, 148, 108, 1, "#e1e3c7");
+        artRect(108, 150, 1, 33, "#dbe0c7");
+        box(96, 132, 135, 6, "#e1e6ce");
+        artRect(98, 133, 131, 1, "#fbefd0");
+        box(96, 138, 5, 53, "#a4bfb1");
+        box(226, 138, 5, 53, "#658a88");
         box(96, 190, 135, 7, "#b9cfbe");
+        artRect(102, 191, 123, 1, "#edf0d4");
+        for (const xx of [98, 228])
+          for (const yy of [140, 188]) artRect(xx, yy, 1, 2, "#4c7476");
       }
-      for (let j = 0; j < mixedStraw * 30; j++)
-        box(
-          105 + ((j * 19) % 117),
-          183 - ((j * 7) % Math.max(5, mixedStraw * 6)),
-          6,
-          1,
-          "#b38a49",
-        );
+      drawStrawFibers(
+        105,
+        183 - Math.max(5, mixedStraw * 6),
+        117,
+        Math.max(5, mixedStraw * 6),
+        mixedStraw * 30,
+      );
       for (let j = 0; j < mixedJars * 16; j++)
         box(
           107 + ((j * 13) % 112),
@@ -1473,9 +1514,11 @@
         );
       for (let j = 0; j < dirt * 5; j++)
         drawBacteria(110 + ((j * 29) % 101), 151 + ((j * 13) % 29), j);
-      text("PAJA " + mixedStraw + "  MICELIO " + mixedJars, 101, 211);
+      smallText("PAJA " + mixedStraw + "  MICELIO " + mixedJars, 101, 211);
       // Solo una bolsa en el puesto; al terminar sale directamente a cultivo.
-      box(250, 190, 45, 5, "#8d755b");
+      box(250, 190, 45, 5, "#688784");
+      artRect(251, 190, 43, 1, "#d7dfc8");
+      artRect(254, 194, 35, 1, "#4d6d70");
       if (bags || bagJob) {
         let xx = 258,
           yy = 146;
@@ -1487,6 +1530,10 @@
         box(xx, yy, 26, 43, "#e7ead4");
         box(xx + 3, yy + 4, 20, 34, "#c6d9c8");
         box(xx - 1, yy - 3, 28, 5, "#a0bab4");
+        artRect(xx + 2, yy + 3, 1, 30, "#f6f0d5");
+        artRect(xx + 23, yy + 5, 1, 29, "#91b3a9");
+        artRect(xx + 5, yy + 36, 16, 1, "#e3e8cc");
+        artRect(xx + 4, yy - 2, 18, 1, "#e6ecd4");
         if (bagJob) {
           const fill = Math.floor(31 * Math.min(1, bagJob.t / 1.5));
           box(xx + 4, yy + 36 - fill, 18, fill, "#c19c5c");
@@ -1501,7 +1548,7 @@
               );
         }
       }
-      text("BOLSAS " + bags, 246, 211);
+      smallText("BOLSAS " + bags, 246, 211);
       text("A CULTIVO: " + sentBags, 182, 83);
       smallText(
         bagJob
@@ -1528,6 +1575,11 @@
       box(x + 8, y + 15, 26, 16, "#f1e4bd");
       box(x + 12, y + 19, 17, 2, "#bdad83");
       box(x + 12, y + 23, 12, 2, "#d3c79e");
+      artRect(x + 2, y + 3, 2, 13, "#cce7d9");
+      artRect(x + 5, y + 9, 8, 5, "#eef0d2");
+      artRect(x + 7, y + 10, 4, 2, "#7ba59b");
+      artRect(x + 10, y + 16, 22, 1, "#fff1cb");
+      artRect(x + 30, y + 18, 1, 11, "#ad9d78");
     }
     function cleanMix() {
       if (!dirt && !bagsSinceClean) {
@@ -1658,18 +1710,22 @@
     }
     // === RENDER: PASTEURIZADO ===
     function drawPasteur() {
+      drawWarmStationBackdrop("pasteur");
+      box(6, 4, 171, 23, warmPalette.wall);
       text("PASTEURIZADO DE PAJA", 14, 22);
       if (autoWater) smallText("AUTO", 224, 40);
-      box(10, 118, 300, 13, "#efc991");
-      box(15, 131, 290, 14, "#ad7a51");
+      drawWarmTable(10, 118, 300, 24, 60);
       const [x, y, w, h] = pasteurTankRect(),
         innerX = x + 7,
         innerY = y + 10,
         innerW = w - 14,
         innerH = h - 23,
         bottom = y + h - 12;
-      box(x, y, w, h, "#577e87");
-      box(innerX, innerY, innerW, innerH, "#728d8c");
+      box(x + 3, y + 6, w, h, "#849680");
+      box(x, y, w, h, "#557b80");
+      box(x + 3, y + 4, w - 6, h - 8, "#8ba8a2");
+      box(innerX, innerY, innerW, innerH, "#547576");
+      artRect(innerX + 2, innerY + 2, innerW - 4, 1, "#8fae9f");
       const waterHeight = Math.floor(waterLevel * innerH);
       box(
         innerX,
@@ -1678,18 +1734,51 @@
         waterHeight,
         tank.lime ? "#b9d8cc" : "#78c9d2",
       );
+      if (waterHeight > 2) {
+        const surface = bottom - waterHeight;
+        artRect(
+          innerX + 1,
+          surface,
+          innerW - 2,
+          1,
+          tank.lime ? "#e4e8ce" : "#d5ebe0",
+        );
+        for (let i = 0; i < 5; i++) {
+          const wave = (Math.floor(performance.now() / 500) + i) % 3;
+          artRect(
+            innerX + 4 + ((i * 23) % Math.max(1, innerW - 18)),
+            surface + 3 + wave,
+            6 + (i % 3),
+            0.5,
+            tank.lime ? "#d1e2ce" : "#a4d8d3",
+          );
+        }
+      }
       box(x - 2, y - 3, w + 4, 7, "#d6e2cc");
       box(x - 2, y + h - 6, w + 4, 7, "#c8d4bc");
-      for (let i = 0; i < tank.n * 19; i++)
-        box(
-          innerX + 3 + ((i * 17) % Math.max(1, innerW - 10)),
-          bottom -
-            3 -
-            ((i * 7) % Math.max(5, Math.min(innerH - 7, tank.n * 9))),
-          5,
-          1,
-          "#ddbc6f",
-        );
+      artRect(x, y - 2, w, 1, "#f5edd0");
+      artRect(x + 2, y + 5, 2, h - 13, "#d8dfc7");
+      artRect(x + w - 5, y + 5, 2, h - 13, "#42686f");
+      artRect(x + 1, y + h - 5, w - 2, 1, "#e9e8ca");
+      for (const xx of [x + 3, x + w - 5])
+        for (const yy of [y + 5, y + h - 11]) {
+          artRect(xx, yy, 2, 2, "#e8e5c9");
+          artRect(xx, yy + 0.5, 1, 0.5, "#4f7273");
+        }
+      // Marcas físicas de nivel sobre el borde del tanque.
+      for (let i = 1; i <= 4; i++)
+        artRect(x + w - 11, innerY + i * (innerH / 5), 4, 0.5, "#dbe2cc");
+      box(x + 10, y + h + 1, 7, 5, "#4b6b6c");
+      box(x + w - 17, y + h + 1, 7, 5, "#4b6b6c");
+      const strawHeight = Math.max(5, Math.min(innerH - 7, tank.n * 9));
+      drawStrawFibers(
+        innerX + 3,
+        bottom - 3 - strawHeight,
+        innerW - 6,
+        strawHeight,
+        tank.n * 24,
+        true,
+      );
       if (!faucetGuideDone) {
         const bounce = (Math.floor(performance.now() / 350) % 2) * 2;
         box(187, 5 + bounce, 5, 10, "#ffe16a");
@@ -1699,22 +1788,24 @@
       box(177, 33, 35, 6, "#b7d0cd");
       box(205, 37, 7, 25, "#8bafb3");
       box(183, 28, 19, 4, waterRunning ? "#83c6ad" : "#e3514e");
+      artRect(179, 34, 28, 1, "#e1e8cf");
+      artRect(206, 39, 1, 20, "#d9e4cc");
+      box(190, 27, 4, 7, "#9baea0");
+      artRect(184, 28, 16, 1, waterRunning ? "#b8dec2" : "#f79b7c");
+      box(204, 59, 9, 3, "#517a7e");
       if (waterRunning) {
         for (let yy = 65; yy < bottom - waterHeight; yy += 6)
           box(207, yy, 3, 4, "#b8eef0");
       }
       box(76, 55, 27, 32, "#eee6c7");
       box(73, 50, 33, 7, "#a6bec1");
+      artRect(75, 51, 29, 1, "#e7e8cd");
+      artRect(79, 58, 2, 24, "#fff0cf");
+      artRect(99, 59, 2, 25, "#ccc5a6");
+      box(83, 64, 14, 14, "#d1d5b9");
+      smallText("Ca", 85, 74, "#55777a");
       text("CAL " + lime, 73, 104);
-      box(13, 167, 86, 37, "#9e7b4c");
-      for (let i = 0; i < loads * 12; i++)
-        box(
-          20 + ((i * 11) % 70),
-          197 - ((i * 3) % Math.max(4, loads * 4)),
-          5,
-          1,
-          "#e8c779",
-        );
+      drawWarmBasket(13, 167, 86, 37, loads, basketCapacity());
       text("PAJA " + loads + "/" + basketCapacity(), 18, 218);
       if (tank.left) {
         drawProcessClock(290, 51, 17, 1 - tank.left / 10);
@@ -4800,9 +4891,18 @@
       box(109, 140, 108, 43, "#334f60");
       box(116, 146, 94, 31, "#8da89f");
       box(100, 128, 127, 7, "#e0e8dc");
+      artRect(102, 129, 123, 1, "#f5efd3");
+      artRect(102, 136, 2, 49, "#d8e2cc");
+      artRect(223, 136, 2, 49, "#698e8d");
+      for (let i = 0; i < 6; i++) artRect(105, 141 + i * 5, 3, 1, "#587d80");
+      for (const xx of [99, 226])
+        for (const yy of [138, 185]) artRect(xx, yy, 2, 2, "#e6e7ce");
       box(218, 145, 5, 5, bagJob ? "#f2cd6f" : "#8ecea6");
       box(226, 164, 31, 6, "#7c9ca5");
       box(249, 167, 7, 16, "#c3d6cd");
+      artRect(227, 164, 27, 1, "#edf0d5");
+      artRect(250, 169, 1, 12, "#f2eed2");
+      box(248, 182, 9, 2, "#587d7e");
       for (let i = 0; i < 6; i++)
         box(
           104 + i * 9,

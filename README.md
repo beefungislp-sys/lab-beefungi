@@ -60,3 +60,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Primera muestra de arte cálido
 
 [Muestra visual de sala y triturador](outputs/TANDA-MUESTRA-VISUAL-CALIDA.md): primera aplicación del rumbo de 16 bits, con madera, luz de ventana, acero y cestos con fibras. Mundo lógico de 320 × 240 sobre un lienzo doble para detalles más finos; conserva controles, reglas y geometrías. El resto de estaciones mantiene su arte anterior por ahora.
+
+## Continuación del pulido cálido
+
+[Pasteurizado y mezcla](outputs/TANDA-PULIDO-PASTEURIZADO-MEZCLA.md): tanque con nivel de agua y acero detallado, vitrina, bandeja y llenadora renovadas, madera y cestos unificados. Mantiene reglas y zonas de interacción; añade pruebas de dibujo sin efectos sobre la simulación.
