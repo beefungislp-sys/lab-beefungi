@@ -1,63 +1,57 @@
-# Progresión de Lab BeeFungi — recorrido gratuito de revisión
+# Progresión de Lab BeeFungi — revisión de flujo y mejoras
 
-**Estado: implementado en esta tanda.** Se conserva el balance anterior como referencia; temporalmente no se cobra por insumos, mejoras, contratación ni mantenimiento. La progresión sí se respeta. No se cambia el nombre de las tandas históricas.
+**Estado: implementado, recorrido gratuito de revisión.** Insumos, mejoras, contratación y mantenimiento no cuestan por ahora. Los recursos sí se consumen y se reponen en pedidos. Recargar reinicia; la partida está en memoria.
 
-## Recorrido actual
+## Hitos vigentes
 
-| Etapa | Condición | Lo que aparece |
-|---|---|---|
-| Inicio | Nueva partida | Pleurotus, triturador, pasteurizado, mezcla, oficina/pedidos e incubación/fructificación básicas de 4 espacios |
-| Tienda | Primera cosecha de Pleurotus | Puerta superior, primer cliente listo para comprar una porción de Pleurotus y venta manual de la cosecha |
-| Mejoras | Primera venta válida | Siguiente mejora de cada estación visitada, gratis |
-| Sala estéril | Hito principal completo | Puerta izquierda, Melena de León, sustrato de madera, nutrientes y las tres estaciones estériles; primer asistente disponible para contratar |
-| Reishi | Primera cosecha de Melena de León | Micelio, ficha e inoculación de Reishi |
-| Segundo asistente | Tres estaciones estériles completas | Asistente de laboratorio disponible para contratar |
-| Cordyceps y agitación | Tres estaciones estériles completas y Reishi desbloqueado | Petri, frascos, arroz, medios CL/Cordyceps, modos de campana y mesa de agitación |
-| Victoria principal y química | Primera cosecha de Cordyceps | Mensaje de victoria y puerta inferior, con extracción, envasado, nutrientes y espirulina como bonificación |
+| Condición | Desbloqueo |
+|---|---|
+| Inicio | Pleurotus, triturador, pasteurizado, mezcla principal, oficina y cámaras de cuatro espacios |
+| Primera cosecha de Pleurotus | Tienda con un primer cliente ya esperando una porción de Pleurotus |
+| Primera venta | Botón Mejoras en la barra superior; menú interno con todas las ofertas disponibles |
+| Hito principal completo | Sala estéril, Melena de León y contratación del primer asistente, juntos |
+| Primera cosecha de Melena | Reishi |
+| Árbol estéril completo y Reishi desbloqueado | Cordyceps, una placa Petri en inventario, agitación y contratación del segundo asistente, juntos |
+| Primera cosecha de Cordyceps | Victoria principal y laboratorio con extracción/envasado |
+| Primer gotero producido (primer lote de envasado) | Mesa de química y cultivo de espirulina; aviso específico |
 
-Las áreas se abren automáticamente al cumplir el hito; las mejoras y asistentes se adquieren mediante sus botones gratuitos. No hace falta contratar ningún asistente para abrir un área o especie. No se exige cosechar Reishi para abrir Cordyceps.
+Los asistentes quedan disponibles, no contratados automáticamente. Ninguna contratación es requisito para abrir áreas. Cordyceps no exige cosechar Reishi ni maximizar cámaras a ocho espacios. No se anuncia ni permite contratar al segundo asistente antes de Cordyceps.
 
 ## Hito principal
 
-Se requiere todo lo siguiente:
+Trituradora máxima (tolva cuatro/cesto doce), pasteurizado máximo (seis cargas y agua automática), llenadora de mezcla y primera ampliación de ambas cámaras a seis espacios. Esta condición abre sala estéril y ofrece al primer asistente en el mismo momento, desde cualquier sala mediante Mejoras.
 
-- Trituradora completa: tolva de cuatro pacas y cesto de doce cargas.
-- Pasteurizado completo: tanque de seis cargas y agua automática.
-- Mezcla completa: llenadora automática.
-- Primera ampliación de incubación, a seis espacios.
-- Primera ampliación de fructificación, a seis espacios.
-
-Este conjunto abre la sala estéril y habilita al primer asistente. No requiere ocho espacios ni control climático. Las mejoras se muestran de una en una por módulo; desaparecen al completarse.
+La mesa principal muestra y consume exclusivamente Pleurotus. El selector de micelio de pedidos/campana no cambia su especie ni su vitrina. Se conserva cada inventario por separado.
 
 ## Hito estéril
 
-- Sustrato: llave automática, llenadora y agua rápida.
-- Esterilizador: capacidad de seis y agua automática.
-- Cabina: mechero, ampliación y flujo laminar.
+Sustrato con llenadora/agua rápida; esterilizador de seis con agua automática; cabina mejorada hasta flujo laminar. Si este árbol se termina antes de desbloquear Reishi, espera la cosecha de Melena. Al cumplirse ambos requisitos abre Cordyceps y habilita al segundo asistente. Se entrega una sola placa Petri por partida, sin reemplazar inventarios ni duplicarla al visitar la sala.
 
-Este conjunto habilita contratar al segundo asistente. Para abrir Cordyceps/agitación también debe haberse desbloqueado Reishi mediante la cosecha de Melena. Si se completan las mejoras primero, se conservan y esperan ese hito. No se incluyen mejoras de agitación ni cámaras máximas como requisitos.
+## Ruta guiada de Cordyceps
 
-Cordyceps abre su ruta entera: Petri + frasco de CL preparado/esterilizado → campana → agitación → CL maduro + sustrato Cordyceps esterilizado → campana → incubación → fructificación → cosecha. Ningún paso necesita química.
+1. Preparar un frasco de medio líquido en sustrato: modo CL, nutrientes y agua.
+2. Esterilizar el medio líquido, en tanda separada.
+3. Seleccionar CL Cordyceps en campana e inocular con el Petri inicial.
+4. Llevar el frasco a agitación y esperar CL maduro.
+5. Volver a sustrato en modo Cordyceps: frasco, arroz, nutrientes y agua.
+6. Esterilizar el sustrato de Cordyceps.
+7. Volver a campana en modo Sustrato Cordyceps e inocular con CL maduro.
+8. Incubar, pasar a fructificación y cosechar Cordyceps.
 
-## Presentación y acceso
+Las etapas de guía son distintas aunque reutilicen una mesa ya visitada. Se verifica la finalización del producto/medio correcto. La flecha señala el selector superior cuando hace falta cambiar de medio o modo. Incubación/fructificación buscan Cordyceps, no otra bolsa lista. No se salta directamente a agitación.
 
-- Puertas futuras ocultas. Tampoco se muestran especies, materiales, tarjetas de inventario, modos o botones de contratación futuros.
-- Los accesos se comprueban por clic, caminar y tecla E; pedidos valida también las especies/materiales disponibles.
-- Cada nuevo hito genera un aviso único; si coinciden varios, se leen con “Continuar”. No se repiten al visitar una sala ni al cosechar otra vez.
-- La tienda abre con la primera cosecha para evitar el círculo “necesito vender para abrir dónde vender”.
-- La oficina conserva la ficha de las especies disponibles y los pedidos compactos.
-- Las reposiciones y el desbloqueo total del prototipo permanecen ocultos en este recorrido; gratuito no significa saltar el árbol.
+## Química como bonificación
 
-## Economía temporal y límites
+Cosechar Cordyceps abre únicamente extracción y envasado. La mesa de química y el reactor de espirulina siguen ocultos e inaccesibles por clic o E, sin obstáculos invisibles. Al producir el primer lote de goteros aparece: “Desbloqueaste mesa de química y cultivo de espirulina.”
 
-Compras y mejoras gratis; contratación y mantenimiento sin coste. Las ventas conservan sus ingresos para ver el flujo, pero el saldo no limita el recorrido. Los insumos sí se consumen: si faltan, hay que pedirlos gratis. Se conservan tiempos, contaminación, capacidades, cosecha y entregas manuales.
+La receta inicial de química pasa a solución de espirulina. Si se eligen nutrientes de hongos, la flecha indica cambiar receta; preparar nutrientes de hongos no completa el tutorial de solución. Si ya había una mezcla en marcha, permite terminarla y luego cambiar. La guía sigue sales A → B → mezcla terminada → garrafón de espirulina.
 
-La primera venta sigue siendo el hito que habilita las mejoras. Recargar reinicia la partida; el progreso está en memoria y no se sincroniza entre dispositivos. El modo económico anterior permanece cubierto por regresiones, pero no es el arranque público de esta revisión.
+## Menú de mejoras
 
-## Pendientes posteriores
+Botón integrado en la barra superior. Un contador rojo muestra cuántas compras/contrataciones se pueden realizar ahora. El panel se abre dentro del juego, agrupa todas las estaciones y enseña sólo la siguiente mejora de cada rama disponible. No aparecen árboles futuros.
 
-- Reactivar costes y balancear todo el recorrido después de revisar el orden.
-- Logros adicionales de primera venta de extracto y primera venta/cosecha de espirulina; no se añadieron en esta tanda de desbloqueos.
-- Pulido visual, guardado y otras expansiones no forman parte de este cambio.
+Una estación ocupada conserva su oferta deshabilitada hasta estar libre; no se cobra ni cambia de sala al comprar. Las mejoras completas y asistentes contratados dejan de ofrecerse. E, Escape, Regresar o × cierran el panel; no se camina ni se usan estaciones por debajo. Los avisos de desbloqueo cierran el panel para poder leerse.
 
-Referencia de balance previo: [Pleurotus](BALANCE-PLEUROTUS.md). Fuente de reglas: funciones de la sección `PROGRESION` en `BEEFUNGI-MESA-PAJA.html`.
+Las ventas conservan sus ingresos, pero el saldo no limita esta revisión. Los logros secundarios y el balance final quedan para otra tanda.
+
+[Nota de la revisión](TANDA-REVISION-FLUJO-Y-MEJORAS.md) · [Huecos adicionales anotados](PENDIENTES-REVISION-FLUJO.md)
