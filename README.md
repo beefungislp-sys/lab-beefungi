@@ -41,7 +41,7 @@ Química A–D: acceso por la puerta inferior de la sala principal. Extracción 
 
 ## Progresión activa — prueba gratuita
 
-[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): condiciones actuales de cada desbloqueo. Pleurotus → primera cosecha/tienda → primera venta/mejoras → hito principal/sala estéril y Melena → cosecha Melena/Reishi → árbol estéril completo/Cordyceps y agitación → cosecha Cordyceps/victoria y química. Sólo aparecen las opciones disponibles. [Nota de la tanda](outputs/TANDA-DESBLOQUEOS-GRATUITOS.md).
+[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): condiciones actuales de cada desbloqueo. Pleurotus → primera cosecha/tienda → primera venta/mejoras → hito principal/sala estéril y Melena → cosecha Melena/Reishi → árbol estéril completo/Cordyceps y agitación → cosecha Cordyceps/victoria y química. Sólo aparecen las opciones disponibles. [Guía del recorrido](outputs/TANDA-GUIA-RECORRIDO.md): una flecha encadena los módulos por primera vez y espera sus desbloqueos. [Nota de la tanda](outputs/TANDA-DESBLOQUEOS-GRATUITOS.md).
 
 ## Organización y catálogo gráfico
 

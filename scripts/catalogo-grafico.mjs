@@ -69,7 +69,7 @@ Los estilos están en el bloque \`<style>\`: marco de juego, barra superior, bot
 
 ## Interfaz generada desde JavaScript
 
-Pedidos y sus botones de compra/especie: ${locate('renderOrders')}. Inventario de micelios: ${locate('openMyceliumInventory')}. Botones de mejoras: ${locate('updateUpgradeControls')}. Economía/saldo y modo prueba: ${locate('updateEconomyControls')} y ${locate('updateWallet')}. Controles del cuarto estéril: ${locate('updateK0Controls')}. Entregas de tienda: ${locate('updateShopControls')}. Preferencia de sonido: ${locate('updateSoundButton')}. Avisos de desbloqueo: ${locate('renderUnlockNotice')}. Visibilidad del recorrido: ${locate('updateProgressionControls')} y ${locate('refreshProgression')}.
+Pedidos y sus botones de compra/especie: ${locate('renderOrders')}. Inventario de micelios: ${locate('openMyceliumInventory')}. Botones de mejoras: ${locate('updateUpgradeControls')}. Economía/saldo y modo prueba: ${locate('updateEconomyControls')} y ${locate('updateWallet')}. Controles del cuarto estéril: ${locate('updateK0Controls')}. Entregas de tienda: ${locate('updateShopControls')}. Preferencia de sonido: ${locate('updateSoundButton')}. Avisos de desbloqueo: ${locate('renderUnlockNotice')}. Visibilidad del recorrido: ${locate('updateProgressionControls')} y ${locate('refreshProgression')}. Flecha encadenada: ${locate('drawRouteGuide')}, ${locate('routeGuideTarget')} y ${locate('currentRouteStep')}.
 
 ## Contrato de interacción
 

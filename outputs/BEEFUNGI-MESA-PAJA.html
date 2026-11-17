@@ -900,12 +900,6 @@
         box(114, 88, 13, 8, "#233e4b");
         smallText("TRITURADOR", 40, 137);
         if (job) drawProcessClock(126, 84, 10, job.t / 3);
-        if (!guideDone) {
-          const bounce = (Math.floor(performance.now() / 350) % 2) * 3;
-          box(77, 54 + bounce, 6, 10, "#ffe48c");
-          box(73, 61 + bounce, 14, 3, "#ffe48c");
-          box(76, 64 + bounce, 8, 3, "#ffe48c");
-        }
         bench(186, 79, 92, "#678b87");
         const aerialWidth = 18 + tankCapacity * 6,
           aerialHeight = 14 + tankCapacity * 2;
@@ -1814,6 +1808,7 @@
         return;
       }
       fruitingCart.push(b);
+      completeRouteStep("incubation");
       incubation[i] = null;
       say(
         "Bolsa lista en el carrito para fructificación. Espacio de incubación libre.",
@@ -1969,6 +1964,7 @@
       const grams = Math.round(flushYields[flush] * (b.fruitQuality ?? 1));
       const firstHarvest = !shopUnlocked;
       if (grams > 0) {
+        completeRouteStep("fruiting");
         progression.harvested.add(b.species || "Pleurotus");
         if (progressionBypass) shopUnlocked = true;
         refreshProgression();
@@ -3552,6 +3548,7 @@
       else if (prep.type === "cordy") preparedCordy++;
       else preparedWood++;
       woodPrepExit = null;
+      completeRouteStep("woodPrep");
       woodGuideDone = true;
       try {
         localStorage.setItem("lab-beefungi-guia-aserrin", "1");
@@ -4104,6 +4101,7 @@
             else if (type === "cordy") sterileCordy++;
             else sterileWood++;
           }
+          completeRouteStep("woodSterilizer");
           woodTank.items = [];
           woodTank.type = null;
           woodTank.n = 0;
@@ -4129,6 +4127,7 @@
             localStorage.setItem("lab-beefungi-guia-cabina", "1");
           } catch {}
           woodBagJob = null;
+          completeRouteStep("glovebox");
           say("Bolsa identificada por especie en espera de incubación.");
         }
       }
@@ -5538,8 +5537,11 @@
           liquidHoodJob = null;
         }
       }
-      for (const jar of liquidStirrers)
-        if (jar) jar.progress = Math.min(1, jar.progress + dt / 20);
+      for (const jar of liquidStirrers) {
+        if (!jar) continue;
+        jar.progress = Math.min(1, jar.progress + dt / 20);
+        if (jar.progress >= 1) completeRouteStep("liquidStir");
+      }
     }
     function drawPetri(x, y, scale = 1) {
       c.save();
@@ -6468,6 +6470,7 @@
         extraction.t += dt;
         if (extraction.t >= 12) {
           extractInventory.push({ species: extraction.species });
+          completeRouteStep("extraction");
           extraction = { phase: "empty", species: null, t: 0 };
           say("Matraz de extracto listo para envasar.");
         }
@@ -6729,6 +6732,7 @@
         dropperStock[bottlingJob.species] =
           dropperCount(bottlingJob.species) + 4;
         bottlingJob = null;
+        completeRouteStep("bottling");
         say("Cuatro goteros en inventario de tienda.");
       }
     }
@@ -6961,6 +6965,7 @@
           spirulinaNutrients++;
           say("Solución para espirulina lista.");
         }
+        completeRouteStep("nutrients");
         nutrientMix = { a: false, b: false, t: 0, running: false };
       }
     }
@@ -7200,6 +7205,7 @@
     function harvestSpirulina() {
       if (!spirulina.inoculated || spirulina.progress < 1) return false;
       spirulinaHarvest++;
+      completeRouteStep("spirulina");
       spirulina = emptySpirulinaCarboy();
       spirulina.filling = auxView === "spirulina";
       say(
@@ -8567,6 +8573,7 @@
     function refreshProgression() {
       if (progressionBypass) return;
       let changed = false;
+      if (hasFirstSale()) completeRouteStep("shop");
       if (hasFirstSale() && !progression.upgradesAnnounced) {
         progression.upgradesAnnounced = true;
         queueUnlock(
@@ -8684,6 +8691,183 @@
           DRAG_THRESHOLD;
     }
 
+    // === GUIA DEL RECORRIDO: una etapa por módulo y por partida ===
+    const routeGuide = { completed: new Set() };
+    const routeModules = [
+      { id: "crusher" },
+      { id: "pasteur" },
+      { id: "mix" },
+      { id: "incubation" },
+      { id: "fruiting" },
+      { id: "shop" },
+      { id: "woodPrep", available: sterileAvailable },
+      { id: "woodSterilizer", available: sterileAvailable },
+      { id: "glovebox", available: sterileAvailable },
+      { id: "liquidStir", available: () => liquidUnlocked },
+      { id: "extraction", available: chemistryAvailable },
+      { id: "bottling", available: chemistryAvailable },
+      { id: "nutrients", available: chemistryAvailable },
+      { id: "spirulina", available: chemistryAvailable },
+    ];
+    function completeRouteStep(id) {
+      if (routeModules.some((step) => step.id === id))
+        routeGuide.completed.add(id);
+    }
+    function currentRouteStep() {
+      const next = routeModules.find(
+        (step) => !routeGuide.completed.has(step.id),
+      );
+      return next && (!next.available || next.available()) ? next.id : null;
+    }
+    function routeGuideTarget() {
+      const id = currentRouteStep();
+      if (!id || progressionBypass || drag || progression.notices.length)
+        return null;
+      const up = { x: 294, y: 8, up: true };
+      if (!auxView && !close) {
+        const targets = {
+          crusher: [80, 54],
+          pasteur: [230, 54],
+          mix: [230, 138],
+          shop: [160, 12],
+        };
+        const p =
+          targets[id] ||
+          (["incubation", "fruiting"].includes(id)
+            ? [305, 112]
+            : ["woodPrep", "woodSterilizer", "glovebox", "liquidStir"].includes(
+                  id,
+                )
+              ? [12, 112]
+              : [160, 198]);
+        return { x: p[0], y: p[1] };
+      }
+      if (auxView === "cultivation") {
+        const p =
+          id === "incubation"
+            ? [81, 48]
+            : id === "fruiting"
+              ? [235, 48]
+              : [12, 110];
+        return { x: p[0], y: p[1] };
+      }
+      if (auxView === "sterileRoom") {
+        const p = {
+          woodPrep: [80, 42],
+          woodSterilizer: [238, 42],
+          glovebox: [80, 136],
+          liquidStir: [238, 136],
+        }[id] || [306, 112];
+        return { x: p[0], y: p[1] };
+      }
+      if (auxView === "chemistry") {
+        const p = {
+          extraction: [80, 65],
+          bottling: [80, 142],
+          nutrients: [238, 65],
+          spirulina: [238, 142],
+        }[id] || [160, 13];
+        return { x: p[0], y: p[1] };
+      }
+      const view = !auxView && close ? (mixView ? "mix" : "crusher") : auxView;
+      if (view !== id) return up;
+      let p;
+      if (id === "crusher") p = job ? null : [51, 62];
+      else if (id === "pasteur") {
+        if (tank.left || (!tank.water && !faucetGuideDone)) return null;
+        p = !tank.water ? [188, 12] : !tank.lime ? [90, 43] : [46, 147];
+      } else if (id === "mix")
+        p = bagJob
+          ? null
+          : !mixedStraw
+            ? [46, 126]
+            : !mixedJars
+              ? [39, 24]
+              : [270, 119];
+      else if (id === "incubation" || id === "fruiting") {
+        const list = id === "incubation" ? incubation : fruitShelves;
+        const index = list.findIndex(
+          (b) =>
+            b &&
+            !b.contaminated &&
+            !b.exhausted &&
+            (id === "incubation" ? b.progress >= 1 : b.fruitProgress >= 1),
+        );
+        if (index >= 0) p = [incSlots[index][0] + 31, incSlots[index][1] - 18];
+        else if (id === "incubation" ? waitingIncubation : fruitingCart.length)
+          p = [43, 181];
+      } else if (id === "shop") {
+        const card = visibleShopCards().find((card) => shopUnits(card) >= 1);
+        if (card && shopQueue.some(customerReady))
+          p = [card.r[0] + 29, card.r[1] - 19];
+      } else if (id === "woodPrep") {
+        if (woodPrepGuideStep()) return null; // Conserva la guía detallada existente.
+        p = woodPrepExit
+          ? null
+          : !woodPrepState.bag
+            ? [279, 70]
+            : !woodPrepState.sawdust
+              ? [50, 61]
+              : !woodPrepState.nutrients
+                ? [39, 130]
+                : woodPrepState.water < 1
+                  ? [180, 20]
+                  : null;
+      } else if (id === "woodSterilizer")
+        p = woodTank.left
+          ? null
+          : !woodTank.n
+            ? [50, 37]
+            : (woodTank.water || 0) < 1
+              ? [285, 34]
+              : [198, 180];
+      else if (id === "glovebox") {
+        if (gloveGuideStep()) return null;
+        p =
+          woodBagJob || liquidHoodJob
+            ? null
+            : !gloveAvailableBags()
+              ? [49, 114]
+              : !gloveAvailableJars()
+                ? [48, 47]
+                : [160, 80];
+      } else if (id === "liquidStir")
+        p = liquidPending.length ? [58, 173] : null;
+      else if (id === "extraction")
+        p = { empty: [40, 46], ground: [125, 113], loaded: [207, 167] }[
+          extraction.phase
+        ];
+      else if (id === "bottling")
+        p = !bottlingJob && extractInventory.length ? [51, 44] : null;
+      else if (id === "nutrients")
+        p = nutrientMix.running ? null : !nutrientMix.a ? [45, 58] : [271, 58];
+      else if (id === "spirulina") {
+        if (spirulina.progress >= 1) p = [164, 43];
+        else if (!spirulina.fed) p = [273, 35];
+        else if (spirulina.mediumReady && !spirulina.inoculated) {
+          if (spirulinaInoculum.volume < 0.5) p = [48, 25];
+          else if (spirulinaInoculum.maturity >= 1) p = [48, 113];
+        }
+      }
+      return p ? { x: p[0], y: p[1] } : null;
+    }
+    function drawRouteGuide() {
+      const target = routeGuideTarget();
+      if (!target) return;
+      const x = target.x,
+        y = target.y + (Math.floor(performance.now() / 350) % 2) * 2;
+      c.save();
+      if (target.up) {
+        c.translate(x, y + 15);
+        c.rotate(Math.PI);
+      } else c.translate(x, y);
+      box(-2, 0, 5, 10, "#ffe16a");
+      box(-6, 7, 13, 3, "#ffe16a");
+      box(-3, 10, 7, 3, "#ffe16a");
+      box(-1, 13, 3, 2, "#ffe16a");
+      c.restore();
+    }
+
     // DESPACHO GRAFICO: una entrada por vista y una sola capa de avisos.
     function scene(dt) {
       const stationRenderers = {
@@ -8703,6 +8887,7 @@
         if (spirulina.progress > 0)
           drawProcessClock(284, 177, 9, spirulina.progress);
       }
+      drawRouteGuide();
       drawSignalFeedback();
     }
     function frame(now) {
@@ -8751,6 +8936,7 @@
         tank.left = Math.max(0, tank.left - dt);
         if (!tank.left) {
           treatedLoads += tank.n;
+          completeRouteStep("pasteur");
           readyNotice("pasteur");
           waterLevel = 0;
           waterRunning = false;
@@ -8762,6 +8948,7 @@
         bagJob.t += dt;
         if (bagJob.t >= 2.5) {
           sentBags++;
+          completeRouteStep("mix");
           readyNotice("mix");
           waitingIncubation++;
           waitingBagData.push({
@@ -8780,6 +8967,7 @@
         job.t += dt;
         if (job.t >= 3) {
           loads += 2;
+          completeRouteStep("crusher");
           readyNotice("crusher");
           job = null;
           startCrusher();

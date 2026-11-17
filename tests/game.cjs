@@ -221,4 +221,30 @@ if(!matureLiquidCount()||progression.chemistry)throw Error('CL maduro');
 openWoodStation('glovebox');hoodMode='cordy';startCordyBlock();advanceLiquid(2.5);placeIncubation(1);incubation[1].climateRoll=1;incubation[1].contaminationRoll=1;climate=1;advanceIncubation(incubation[1],40);moveToFruiting(1);placeFruiting(1);fruitClimate=1;advanceFruiting(fruitShelves[1],45);harvestBag(1);
 if(!progression.chemistry||!harvestCart.some(h=>h.species==='Cordyceps')||matureLiquidCount()||sterileCordy||liquidSterile)throw Error('Fin ruta');
 `);
-console.log('132 grupos de verificacion aprobados.');
+
+checkProgression('guia comienza en triturador aunque existan guias antiguas',`
+guideDone=true;faucetGuideDone=true;woodGuideDone=true;gloveGuideDone=true;
+if(currentRouteStep()!=='crusher'||routeGuideTarget().x!==80)throw Error('Inicio');
+enterMix();fillBag();if(currentRouteStep()!=='crusher'||routeGuideTarget().up!==true)throw Error('Intento o regreso');
+auxView=null;mixView=false;close=true;grind();if(routeGuideTarget()!==null)throw Error('Guia durante molienda');for(let i=0;i<21;i++)frame(last+150);
+if(currentRouteStep()!=='pasteur'||routeGuideTarget().up!==true)throw Error('No sigue');auxView=null;close=false;if(routeGuideTarget().x!==230)throw Error('Destino');
+`);
+checkProgression('guia sigue la produccion real, espera desbloqueos y no repite modulos',mainProgressionRun+`
+if(currentRouteStep()!=='woodPrep')throw Error('Secuencia basica');
+for(const id of ['crusher','pasteur','mix','incubation','fruiting','shop'])if(!routeGuide.completed.has(id))throw Error('No completo '+id);
+const count=routeGuide.completed.size;completeRouteStep('crusher');completeRouteStep('pasteur');completeRouteStep('mix');if(routeGuide.completed.size!==count||currentRouteStep()!=='woodPrep')throw Error('Repite');
+completeRouteStep('woodPrep');completeRouteStep('woodSterilizer');completeRouteStep('glovebox');if(currentRouteStep()!==null)throw Error('Agitacion antes de desbloquear');
+`);
+checkProgression('guia respeta sala, reloj, arrastre y avisos',`
+completeRouteStep('crusher');auxView='pasteur';faucetGuideDone=true;tank.left=5;if(routeGuideTarget()!==null)throw Error('Durante remojo');tank.left=0;const before=routeGuide.completed.size;drag={};if(routeGuideTarget()!==null)throw Error('Sobre drag');drag=null;
+progression.notices.push('Aviso');if(routeGuideTarget()!==null)throw Error('Sobre aviso');progression.notices=[];if(!routeGuideTarget()||routeGuide.completed.size!==before)throw Error('Render muta');
+completeRouteStep('pasteur');completeRouteStep('mix');auxView='cultivation';if(routeGuideTarget().x!==81)throw Error('Incubacion');completeRouteStep('incubation');if(routeGuideTarget().x!==235)throw Error('Fructificacion');
+`);
+checkProgression('guia de quimica y espirulina usa estados reales y termina una vez',`
+for(const step of routeModules)if(!['extraction','bottling','nutrients','spirulina'].includes(step.id))completeRouteStep(step.id);
+if(currentRouteStep()!==null)throw Error('Quimica bloqueada');progression.chemistry=true;auxView='chemistry';if(routeGuideTarget().x!==80||routeGuideTarget().y!==65)throw Error('Mesa extraccion');
+extraction={phase:'running',t:0,species:'Pleurotus'};advanceChemistry(12);if(currentRouteStep()!=='bottling')throw Error('Extracto');startBottling();advanceBottling(2);if(currentRouteStep()!=='nutrients')throw Error('Goteros');
+nutrientMix={a:true,b:true,running:true,t:0};advanceNutrients(8);if(currentRouteStep()!=='spirulina')throw Error('Nutrientes');auxView='spirulina';if(routeGuideTarget().x!==273)throw Error('Solucion');
+spirulina.fed=true;spirulina.mediumReady=true;if(routeGuideTarget().x!==48||routeGuideTarget().y!==113)throw Error('Inoculo');spirulina.inoculated=true;spirulina.progress=1;if(routeGuideTarget().x!==164)throw Error('Cosecha');harvestSpirulina();if(currentRouteStep()!==null||routeGuideTarget()!==null)throw Error('Termina');
+`);
+console.log('136 grupos de verificacion aprobados.');
