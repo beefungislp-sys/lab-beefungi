@@ -7375,10 +7375,31 @@
       player = { x: 160, y: 207 };
       say("De vuelta a la sala principal.");
     }
+    function drawChemistryBackdrop(title) {
+      drawChamberRoom(title, "chemistry");
+      softLight(87, 76, 77, 40, "255,238,196", 0.1);
+      softLight(249, 83, 65, 43, "222,246,224", 0.09);
+      box(293, 8, 13, 15, "#89a69a");
+      artRect(294, 8, 11, 0.5, "#e6e9cb");
+      box(298, 10, 3, 5, "#dde7cf");
+      box(296, 15, 7, 5, "#d5dfb8");
+      box(297, 17, 5, 2, "#8eb8a2");
+    }
+    function drawChemistryTray(x, y, w, h) {
+      softShadow(x + w / 2, y + h + 1, w * 0.5, 3, 0.16);
+      box(x, y, w, h, "#8ba9a1");
+      box(x + 2, y + 2, w - 4, h - 4, "#c1d0b9");
+      artRect(x + 1, y + 1, w - 2, 1, "#e5e9cb");
+      artRect(x + w - 2, y + 2, 1, h - 3, "#648789");
+      artRect(x + 2, y + h - 2, w - 4, 1, "#71908b");
+    }
     function drawChemistry() {
-      roomBase("LABORATORIO DE QUIMICA");
-      box(145, 30, 31, 28, "#314654");
-      box(149, 32, 23, 23, "#e8cb92");
+      drawChemistryBackdrop("LABORATORIO DE QUIMICA");
+      box(144, 30, 33, 30, "#897858");
+      box(147, 31, 27, 27, "#4b6f70");
+      box(150, 33, 21, 22, "#c9d7b8");
+      artRect(150, 33, 1, 22, "#eff0cc");
+      box(167, 45, 2, 3, "#a77f46");
       text("^", 157, 48);
       chemistryBenches.forEach(([x, y, w, h], i) => {
         if (!chemistryStationAvailable(chemistryViewAt(i))) return;
@@ -7392,6 +7413,9 @@
           drawDistiller(x + 14, y - 1, 0.35);
           box(x + 74, y + 7, 16, 20, "#688995");
           box(x + 77, y + 9, 10, 7, "#c2d6c9");
+          box(x + 78, y + 17, 8, 8, "#3d626c");
+          artRect(x + 75, y + 7, 14, 0.5, "#e7e9c9");
+          box(x + 72, y + 27, 20, 2, "#7faaa2");
         } else if (i === 1) {
           drawSalt(x + 10, y + 3, "A", "#d4c28a", 0.55);
           drawSalt(x + 83, y + 3, "B", "#93babd", 0.55);
@@ -7408,16 +7432,22 @@
           for (let k = 0; k < 4; k++)
             drawDropper(x + 45 + k * 14, y + 2, speciesCatalog[k].name, 0.6);
         } else {
-          box(x + 15, y + 1, 72, 29, "#729b9f");
+          drawSpirulinaFlask(x + 7, y + 8, spirulinaMother, 0.46);
+          drawSpirulinaFlask(x + 89, y + 8, spirulinaInoculum, 0.46);
+          box(x + 50, y + 1, 12, 7, "#85ada9");
+          box(x + 35, y + 8, 43, 21, "#6d9698");
           box(
-            x + 19,
-            y + 4,
-            64,
-            22,
-            spirulina.progress >= 0.7 ? "#518e68" : "#b2cd9f",
+            x + 38,
+            y + 10,
+            37,
+            16,
+            spirulina.inoculated
+              ? spirulinaGreen(0.2 + 0.8 * spirulina.progress)
+              : "#c4d8b9",
           );
-          box(x + 24, y + 5, 2, 16, "#e0ecd0");
-          box(x + 22, y - 2, 59, 3, spirulina.light ? "#fff1ab" : "#b9c8b9");
+          artRect(x + 39, y + 11, 1, 13, "#e5edce");
+          box(x + 33, y + 1, 47, 2, spirulina.light ? "#fff1ab" : "#a8bbae");
+          box(x + 33, y + 28, 47, 2, "#527d80");
         }
       });
       drawWalkTarget();
@@ -7581,16 +7611,27 @@
         box(4, 25 - h, 16, h, color);
         box(7, 25 - h, 10, 1, "#e6e9c8");
       }
+      artRect(10, 1, 1, 12, "#f0f3da");
       box(9, 16, 2, 6, "#e7f6e9");
+      artRect(3, 25, 18, 1, "#698d91");
+      artRect(17, 19, 2, 4, "#92b9b4");
       c.restore();
     }
     function drawDistiller(x, y, scale = 1) {
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(8, 0, 2, 77, "#5b7887");
-      box(0, 76, 65, 4, "#3e5865");
+      softShadow(38, 82, 43, 4, 0.2);
+      box(7, 0, 4, 77, "#587b81");
+      artRect(7, 1, 1, 74, "#c9dccc");
+      box(0, 76, 65, 4, "#567b7e");
+      artRect(1, 76, 63, 1, "#b9cdc1");
       box(10, 13, 34, 3, "#8fa9af");
+      box(6, 10, 7, 9, "#779694");
+      artRect(7, 11, 5, 1, "#e5e8cb");
+      box(49, 51, 2, 25, "#6c8d8c");
+      box(43, 74, 16, 3, "#779a94");
+      box(46, 47, 8, 6, "#a7c5ba");
       drawExtractFlask(
         13,
         25,
@@ -7603,7 +7644,9 @@
         box(40 + k, 30 + k / 2, 2, 5, "#7fb7be");
         if (k % 5 === 0) box(40 + k, 29 + k / 2, 2, 8, "#c2e3dc");
       }
+      artRect(42, 29, 27, 1, "#e4efda");
       box(67, 44, 2, 23, "#b3d9d7");
+      artRect(68, 46, 0.5, 19, "#e7f1db");
       drawExtractFlask(
         59,
         64,
@@ -7630,21 +7673,32 @@
       c.restore();
     }
     function drawExtraction() {
-      roomBase("EXTRACCION");
-      drawStainlessTable(9, 116, 302, 91, 15);
+      drawChemistryBackdrop("EXTRACCION");
+      drawStainlessTable(9, 117, 302, 90, 13);
       drawCanvasButton(
         speciesShort(extractSpecies) + " ↻",
         [9, 33, 113, 23],
         speciesColor(extractSpecies),
       );
       smallText("250 g POR MATRAZ", 136, 48);
-      box(...extractionRects.stock, "#b6cbc2");
+      drawChemistryTray(...extractionRects.stock);
       drawSpeciesFruit(extractSpecies, 29, 74, 1, 1.2, 3);
       smallText(shopInventoryGrams(extractSpecies) + " g", 22, 119);
       box(96, 117, 57, 58, "#638591");
       box(103, 123, 43, 19, "#c1d6cb");
       box(116, 143, 17, 29, "#3c5b69");
       box(108, 170, 34, 5, "#adc6bd");
+      drawSterileHousingDetail(96, 117, 57, 58);
+      artRect(105, 125, 39, 1, "#edf0d2");
+      box(
+        100,
+        158,
+        5,
+        4,
+        extraction.phase === "grinding" ? "#b8d69d" : "#769991",
+      );
+      drawSterileShelf(18, 129, 70);
+      drawSterileShelf(254, 168, 43);
       if (extraction.phase === "ground" || extraction.phase === "grinding") {
         for (let i = 0; i < 18; i++)
           box(
@@ -7824,11 +7878,12 @@
       c.restore();
     }
     function drawBottling() {
-      roomBase("ENVASADO");
-      drawStainlessTable(10, 123, 300, 83, 15);
+      drawChemistryBackdrop("ENVASADO");
+      drawStainlessTable(10, 130, 300, 76, 14);
       smallText("MATRACES " + extractInventory.length, 15, 48);
       const item = extractInventory[0];
-      box(16, 67, 77, 65, "#b6ccc5");
+      drawChemistryTray(16, 67, 77, 65);
+      drawSterileShelf(15, 133, 79);
       drawExtractFlask(
         40,
         81,
@@ -7841,6 +7896,16 @@
       box(124, 94, 73, 20, "#c5d9d0");
       box(153, 114, 12, 45, "#a5c4bc");
       box(149, 155, 20, 5, "#405f6b");
+      drawSterileHousingDetail(115, 89, 91, 67);
+      artRect(126, 97, 69, 1, "#edf0d2");
+      box(180, 119, 8, 4, bottlingJob ? "#b5d39f" : "#71948a");
+      box(114, 161, 94, 3, "#86aba6");
+      artRect(115, 161, 92, 0.5, "#e4e9ca");
+      for (let i = 0; i < 4; i++) {
+        box(113 + i * 30, 164, 4, 5, "#8fb6b0");
+        artRect(114 + i * 30, 164, 1, 4, "#d8e4cc");
+      }
+      drawChemistryTray(105, 169, 116, 36);
       for (let i = 0; i < 4; i++)
         drawDropper(
           108 + i * 30,
@@ -7851,7 +7916,7 @@
         );
       if (bottlingJob) {
         drawProcessClock(248, 91, 16, bottlingJob.t / 2);
-        box(157, 157, 3, 15, "#d3bb77");
+        for (let i = 0; i < 4; i++) box(114 + i * 30, 169, 2, 10, "#d3bb77");
       }
       smallText(
         "GOTEROS " + Object.values(dropperStock).reduce((n, v) => n + v, 0),
@@ -8037,11 +8102,17 @@
       box(2, 0, 27, 7, "#6d8794");
       box(6, 19, 19, 16, color);
       box(6, 10, 19, 11, "#f0e9ce");
+      artRect(4, 1, 23, 1, "#d7dfca");
+      artRect(4, 8, 1, 25, "#eff1d8");
+      artRect(26, 8, 1, 27, "#749b99");
+      artRect(4, 37, 23, 1, "#638b8b");
+      for (let i = 0; i < 9; i++)
+        artRect(8 + ((i * 7) % 15), 23 + ((i * 5) % 10), 1, 1, "#ece6c1");
       smallText(label, 15, 18);
       c.restore();
     }
     function drawNutrients() {
-      roomBase("MESA DE QUIMICA");
+      drawChemistryBackdrop("MESA DE QUIMICA");
       drawCanvasButton(
         nutrientRecipe === "fungi"
           ? "NUTRIENTES HONGOS >"
@@ -8050,14 +8121,20 @@
         nutrientRecipe === "fungi" ? "#d7bd8a" : "#96c69c",
       );
       smallText("SALES GRATIS", 199, 48);
-      drawStainlessTable(10, 125, 300, 79, 15);
+      drawStainlessTable(10, 128, 300, 76, 14);
+      drawSterileShelf(24, 131, 54);
+      drawSterileShelf(239, 131, 54);
       drawSalt(34, 84, "A", "#d4c28a", 1.2);
       drawSalt(249, 84, "B", "#93babd", 1.2);
       smallText("SAL A", 33, 159);
       smallText("SAL B", 248, 159);
       box(113, 88, 95, 98, "#76959c");
       box(120, 95, 81, 79, "#cee2d7");
+      drawSterileHousingDetail(113, 88, 95, 98);
+      artRect(122, 97, 2, 73, "#f0f2d8");
       box(124, 132, 73, 38, nutrientRecipe === "fungi" ? "#c4ae75" : "#6aab87");
+      artRect(125, 132, 71, 1, "#e1e6bd");
+      for (let yy = 141; yy < 168; yy += 9) artRect(189, yy, 6, 1, "#8aaf9e");
       if (nutrientMix.a) box(130, 140, 20, 5, "#eadbb0");
       if (nutrientMix.b) box(168, 151, 20, 5, "#b9d5d4");
       if (nutrientMix.running) {
@@ -8330,7 +8407,10 @@
         }
       }
       box(9, 20, 2, 10, "#e4efda");
+      artRect(12, 2, 1, 12, "#f0f1d6");
+      artRect(24, 28, 2, 6, "#80aaa0");
       box(2, 38, 26, 2, "#618a94");
+      artRect(3, 38, 24, 0.5, "#c8ddc3");
       c.restore();
     }
     function spirulinaFlaskLabel(flask) {
@@ -8341,9 +8421,9 @@
           : "LISTO";
     }
     function drawSpirulina() {
-      roomBase("CULTIVO DE ESPIRULINA");
-      drawStainlessTable(12, 109, 72, 10, 8);
-      drawStainlessTable(12, 200, 72, 10, 8);
+      drawChemistryBackdrop("CULTIVO DE ESPIRULINA");
+      drawStainlessTable(12, 114, 72, 9, 4);
+      drawStainlessTable(12, 202, 72, 9, 4);
       drawStainlessTable(101, 196, 127, 13, 13);
       smallText("MADRE", 27, 53);
       smallText("INOCULO", 22, 141);
@@ -8356,16 +8436,10 @@
         box(51, 106, 3, 43, "#438458");
       } else drawSpirulinaFlask(27, 61, spirulinaMother, 1.35);
       drawSpirulinaFlask(27, 149, spirulinaInoculum, 1.35);
-      smallText(
-        spirulinaFlaskLabel(spirulinaMother),
-        spirulinaFlaskCycle ? 15 : 27,
-        129,
-      );
-      smallText(
-        spirulinaFlaskLabel(spirulinaInoculum),
-        spirulinaFlaskCycle ? 15 : 27,
-        220,
-      );
+      box(17, 115, 62, 8, "#d3ddc4");
+      smallText(spirulinaFlaskLabel(spirulinaMother), 19, 122);
+      box(17, 203, 62, 8, "#d3ddc4");
+      smallText(spirulinaFlaskLabel(spirulinaInoculum), 19, 210);
       if (
         spirulinaFlaskCycle &&
         spirulinaFlaskCycle.t >= 0.7 &&
@@ -8399,7 +8473,18 @@
       }
       box(121, 99, 2, 67, "#e7f1df");
       box(203, 100, 2, 67, "#c2dfd7");
+      softShadow(164, 196, 59, 4, 0.2);
+      box(111, 190, 103, 6, "#618b8c");
+      artRect(113, 190, 99, 1, "#c8d8c1");
+      artRect(111, 94, 1, 93, "#d1e4d0");
+      artRect(212, 94, 1, 93, "#527e86");
+      for (const yy of [108, 172]) {
+        artRect(116, yy, 93, 1, "#a1c3b6");
+        artRect(118, yy + 1, 89, 0.5, "#d3e6c9");
+      }
+      for (let yy = 122; yy < 166; yy += 10) artRect(194, yy, 8, 1, "#87b3a6");
       box(147, 62, 29, 5, "#689199");
+      artRect(149, 62, 25, 1, "#c1d7c4");
       box(186, 39, 5, 40, "#7298a6");
       box(169, 39, 22, 5, "#7298a6");
       box(169, 42, 5, 19, "#7298a6");
@@ -8443,13 +8528,15 @@
         }
         drawProcessClock(274, 143, 14, spirulina.progress);
       }
+      drawStainlessTable(238, 108, 67, 15, 9);
       drawSalt(262, 68, "N", "#dfcb8d", 1);
       smallText("NUTRIENTES", 240, 58);
       smallText("SOLUCION " + spirulinaNutrients, 239, 117);
-      box(...spirulinaRects.harvest, "#8caaa0");
+      drawStainlessTable(238, 223, 67, 5, 3);
+      drawChemistryTray(...spirulinaRects.harvest);
       drawSpirulinaJar(263, 177, 1);
       smallText("COSECHA", 246, 217);
-      smallText("INVENTARIO " + spirulinaHarvest, 240, 232);
+      smallText("INVENTARIO " + spirulinaHarvest, 240, 239);
       const status =
         spirulina.progress >= 1
           ? "COSECHAR"

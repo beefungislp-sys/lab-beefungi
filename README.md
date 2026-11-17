@@ -88,3 +88,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Proporciones de mesas estériles
 
 [Acomodo y proporciones](outputs/TANDA-PROPORCIONES-MESAS-ESTERILES.md): cubiertas ajustadas a sus aparatos, reservas apoyadas, llave centrada y agitadores proporcionados en uno o dos niveles. Incluye revisión en tamaños de celular y conserva las zonas de interacción.
+
+## Cuarto de química con el acabado cálido
+
+[Pulido de química](outputs/TANDA-PULIDO-CUARTO-QUIMICA.md): sala, destilador, envasadora, reactivos y reactor de espirulina integrados al estilo del laboratorio. Proporciones, soportes, reflejos y etiquetas ajustados, conservando procesos y controles.
