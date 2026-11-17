@@ -45,7 +45,7 @@ Química A–D: acceso por la puerta inferior de la sala principal. Extracción 
 
 ## Organización y catálogo gráfico
 
-[Catálogo gráfico](outputs/CATALOGO-GRAFICO.md): inventario de estaciones, sprites, interfaz, colores y referencias a líneas de código. `npm run format` ordena la fuente; `npm run catalog` regenera las referencias después de mover código. El archivo HTML continúa como fuente única; no se edita `docs/` a mano.
+[Catálogo gráfico](outputs/CATALOGO-GRAFICO.md): inventario de estaciones, sprites, interfaz, colores y referencias a líneas de código. `npm run format` ordena la fuente; `npm run catalog` regenera las referencias después de mover código. El archivo HTML continúa como fuente única; no se edita `docs/` a mano. [Iconos de arrastre](outputs/TANDA-ICONOS-ARRASTRE.md): 32 tipos en un catálogo compartido, con tamaño ampliado y desplazamiento para que el dedo no los tape.
 
 ## Enlaces
 

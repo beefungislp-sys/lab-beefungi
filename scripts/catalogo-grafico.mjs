@@ -34,6 +34,8 @@ const scenes = [
 const functions = [...source.matchAll(/\bfunction\s+(draw\w+|box|text|smallText|bale|bench|jar|roomBase|scene)\s*\(/g)];
 const native = [...source.slice(0, source.indexOf('<script>')).matchAll(/<([a-z][\w-]*)\b[^>]*\bid="([^"]+)"/g)];
 const colors = [...new Set(source.match(/#[\da-fA-F]{6}\b/g))].sort();
+const dragIcons = [...source.matchAll(/^\s+(\w+): dragIcon\(\s*"([^"\n]+)"/gm)];
+if (!dragIcons.length) throw new Error('Catálogo de arrastres ausente');
 const doc = `# Catálogo gráfico y mapa del código
 
 Generado con \`npm run catalog\` desde la fuente única. Los enlaces apuntan a las líneas actuales del código en GitHub; regenerar después de formatear o mover funciones. No editar \`docs/\` ni \`dist/\` a mano.
@@ -85,6 +87,16 @@ Pedidos y sus botones de compra/especie: ${locate('renderOrders')}. Inventario d
 Puntos comunes: ${locate('beginDrag')}, ${locate('updateDrag')}, ${locate('point')}, ${locate('drawCanvasButton')}, ${locate('playerAction')}. Captura de puntero y umbral de cinco píxeles se comparten. Soltar fuera del destino no consume el material. Cancelar no deja un arrastre activo. No se convierte una entrega táctil en un doble clic duplicado.
 
 Geometrías a revisar junto al dibujo: \`mixBasket\`, \`jarCase\`, \`mixTray\`, \`bagSlot\`, \`pasteurTankRect\`, \`incSlots\`, \`woodStations\`, \`preparedPoolCards\`, \`gloveRect\`, \`chemistryBenches\`, \`extractionRects\`, \`nutrientRects\`, \`spirulinaRects\`, \`shopInventoryCards\` y \`missingItemRects\`.
+
+## Iconos de cada tipo de arrastre
+
+${dragIcons.length} tipos explícitos en un único catálogo. Render común: ${locate('drawDragPreview')}; tamaño, desplazamiento para dedo y límites: ${locate('dragPreviewLayout')}. Los módulos ya no dibujan vistas previas por separado.
+
+| Tipo de arrastre | Icono | Código |
+|---|---|---|
+${dragIcons.map(match => `| \`${match[1]}\` | ${match[2]} | ${link(match[1], match.index)} |`).join('\n')}
+
+En celular/lápiz la tarjeta intenta medir 76 píxeles CSS y queda separada 52 píxeles del dedo; si falta espacio arriba, pasa al lado y se mantiene dentro del canvas. Se conserva un mínimo de escala para que los sprites aumenten respecto al dibujo anterior. El marcador amarillo pequeño sigue la posición real de entrega. La bolsa vacía sigue vacía, y la cosecha mueve hongos; al llevar a composta se ve el bloque.
 
 ## Paleta actual
 

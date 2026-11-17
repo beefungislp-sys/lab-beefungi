@@ -247,4 +247,23 @@ extraction={phase:'running',t:0,species:'Pleurotus'};advanceChemistry(12);if(cur
 nutrientMix={a:true,b:true,running:true,t:0};advanceNutrients(8);if(currentRouteStep()!=='spirulina')throw Error('Nutrientes');auxView='spirulina';if(routeGuideTarget().x!==273)throw Error('Solucion');
 spirulina.fed=true;spirulina.mediumReady=true;if(routeGuideTarget().x!==48||routeGuideTarget().y!==113)throw Error('Inoculo');spirulina.inoculated=true;spirulina.progress=1;if(routeGuideTarget().x!==164)throw Error('Cosecha');harvestSpirulina();if(currentRouteStep()!==null||routeGuideTarget()!==null)throw Error('Termina');
 `);
-console.log('136 grupos de verificacion aprobados.');
+
+check('Iconos drag: catalogo cubre 32 tipos y dibuja todos sin consumir recursos',`
+const kinds=['bale','raw','straw','mixture','lime','jar','cleaning','incbag','readybag','fruitbag','harvestbag','woodRaw','woodBag','woodNutrients','woodPrepared','gloveInoculum','gloveWood','gloveJar','gloveClean','cordyInoculum','liquidPetri','liquidJar','chemRaw','chemGround','chemFlask','chemSalt','spirulinaFeed','spirulinaCrop','spirulinaMother','spirulinaInoculum','shopInventory','shopcustomer'];
+if(Object.keys(dragIconCatalog).length!==kinds.length)throw Error('Catalogo incompleto');incubation[0]={species:'Cordyceps',progress:.5};fruitShelves[0]={species:'Pleurotus',fruitProgress:1};waitingBagData=[{species:'Reishi'}];fruitingCart=[{species:'Melena de leon'}];shopQueue=[{id:1,color:'#83b9df'}];extractInventory=[{species:'Reishi'}];
+const snapshot=()=>JSON.stringify([bales,loads,treatedLoads,micelio,bags,nutrientStock,liquidEmpty,harvestCart,waitingBagData,fruitShelves,shopQueue,spirulinaMother,spirulinaInoculum]);const before=snapshot();
+for(const kind of kinds){if(!dragIconCatalog[kind]?.label||typeof dragIconCatalog[kind].draw!=='function')throw Error(kind);drag={kind,moved:true,now:{x:150,y:210},pointerType:'touch',slot:0,salt:'a',type:'wood',card:shopInventoryCards[0],customerId:1};drawDragPreview()}
+for(const mode of ['wood','cordy','liquid']){prepMode=mode;for(const kind of ['woodRaw','woodBag','woodPrepared']){drag={kind,moved:true,now:{x:150,y:210},type:mode};drawDragPreview()}}
+if(snapshot()!==before)throw Error('Dibujar consume');
+`);
+check('Iconos drag: en touch son grandes y se separan del dedo sin mover el destino',`
+cv.getBoundingClientRect=()=>({left:0,top:0,width:320,height:240});beginDrag({clientX:50,clientY:180,pointerId:1,pointerType:'touch'},{kind:'raw'});updateDrag({clientX:150,clientY:220});const before={...drag.now},l=dragPreviewLayout();if(!l.touch||l.half*2<75||l.y+l.half>drag.now.y-51)throw Error('No visible sobre dedo');drawDragPreview();if(drag.now.x!==before.x||drag.now.y!==before.y)throw Error('Destino desplazado');
+for(const p of [{x:3,y:3},{x:317,y:3},{x:317,y:237},{x:3,y:237}]){drag.now=p;const b=dragPreviewLayout();if(b.x-b.half<0||b.x+b.half>320||b.y-b.half<0||b.y+b.half>240)throw Error('Recorte')}
+`);
+check('Iconos drag: paja pasteurizado aparece y soltar usa el dedo real',`
+auxView='pasteur';loads=1;tank.water=true;tank.lime=true;cv.onpointerdown({clientX:45,clientY:180,pointerId:1,pointerType:'touch'});cv.onpointermove({clientX:190,clientY:150});if(drag.kind!=='raw'||drag.pointerType!=='touch'||!dragPreviewLayout())throw Error('Sin paja');let draws=0;const old=drawLooseStraw;drawLooseStraw=()=>draws++;scene(0);drawLooseStraw=old;if(draws!==1)throw Error('Icono ausente o duplicado');cv.onpointerup({clientX:190,clientY:150});if(tank.n!==1||loads!==0||drag)throw Error('No entrega');
+`);
+check('Iconos drag: bolsa vacia conserva silueta y cosecha solo mueve hongos',`
+let empty=0,bagsDrawn=0,fruit=0;drawEmptySubstrateBag=()=>empty++;drawIncubationContainer=()=>bagsDrawn++;drawSpeciesFruit=()=>fruit++;prepMode='wood';drag={kind:'woodBag',moved:true,now:{x:150,y:200}};drawDragPreview();if(empty!==1||bagsDrawn)throw Error('Bolsa llena');fruitShelves[0]={species:'Reishi',fruitProgress:1,flush:0};drag={kind:'harvestbag',slot:0,moved:true,now:{x:150,y:200}};drawDragPreview();if(fruit!==1||bagsDrawn)throw Error('Arrastra bloque');drag.now={x:250,y:220};drawDragPreview();if(bagsDrawn!==1)throw Error('Composta no bloque');cv.onpointercancel();if(dragPreviewLayout()!==null)throw Error('Cancelacion');
+`);
+console.log('140 grupos de verificacion aprobados.');

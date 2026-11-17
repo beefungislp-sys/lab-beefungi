@@ -820,7 +820,6 @@
       }
       if (auxView === "liquidStir") {
         drawAgitationStation();
-        drawLiquidDrag();
         return;
       }
       box(0, 0, 320, 240, "#e7d5b4");
@@ -1103,7 +1102,6 @@
         c.lineWidth = 2;
         c.strokeRect(...pile);
       }
-      if (drag?.moved) bale(drag.now.x - 19, drag.now.y - 12, 0.85);
     }
     const mixBasket = [11, 131, 75, 80],
       jarCase = [18, 37, 141, 65],
@@ -1229,20 +1227,6 @@
         95,
         112,
       );
-      if (drag?.moved) {
-        if (drag.kind === "cleaning")
-          drawCleaningKit(drag.now.x - 14, drag.now.y - 16);
-        else if (drag.kind === "jar") jar(drag.now.x - 7, drag.now.y - 10);
-        else
-          for (let j = 0; j < 14; j++)
-            box(
-              drag.now.x - 12 + ((j * 7) % 24),
-              drag.now.y - 7 + ((j * 3) % 14),
-              5,
-              1,
-              "#e3bb69",
-            );
-      }
     }
     function drawBacteria(x, y, seed = 0) {
       const pulse = Math.floor(performance.now() / 250 + seed) % 2;
@@ -1479,10 +1463,6 @@
         );
       smallText("TANQUE " + tank.n + "/" + tankCapacity, 157, 201);
       smallText("PASTEURIZADA " + treatedLoads + "/" + tankCapacity, 132, 220);
-      if (drag?.moved && drag.kind === "lime") {
-        box(drag.now.x - 12, drag.now.y - 15, 25, 30, "#eee6c7");
-        box(drag.now.x - 14, drag.now.y - 19, 29, 5, "#a6bec1");
-      }
     }
     function tankAdd(kind) {
       if (tank.left && kind !== "raw") {
@@ -1904,18 +1884,6 @@
       drawFruitCart(10, waitingIncubation, "SIN INCUBAR", "input", 0);
       drawFruitCart(115, fruitingCart.length, "A FRUCTIF.", "input");
       drawFruitCart(220, compostCart.length, "COMPOSTA", "compost");
-      if (
-        (drag?.kind === "incbag" || drag?.kind === "readybag") &&
-        drag.moved
-      ) {
-        drawIncubationContainer(
-          drag.kind === "readybag"
-            ? incubation[drag.slot] || { progress: 0 }
-            : { ...waitingBagData[0], progress: 0 },
-          drag.now.x - 15,
-          drag.now.y - 17,
-        );
-      }
     }
 
     function openFruiting() {
@@ -2258,36 +2226,6 @@
       drawFruitCart(10, fruitingCart.length, "ENTRADA", "input");
       drawFruitCart(115, harvestCart.length, "COSECHA", "harvest");
       drawFruitCart(220, compostCart.length, "COMPOSTA", "compost");
-      if (drag?.moved) {
-        if (drag.kind === "harvestbag") {
-          const b = fruitShelves[drag.slot];
-          if (
-            inside(drag.now, [220, 197, 90, 43]) ||
-            !b ||
-            b.fruitProgress < 1 ||
-            b.exhausted
-          )
-            drawIncubationContainer(
-              { ...b, progress: 1 },
-              drag.now.x - 15,
-              drag.now.y - 17,
-            );
-          else
-            drawSpeciesFruit(
-              b.species,
-              drag.now.x - 12,
-              drag.now.y - 12,
-              1,
-              1,
-              Math.max(1, 3 - (b.flush || 0)),
-            );
-        } else if (drag.kind === "fruitbag")
-          drawIncubationContainer(
-            { ...fruitingCart[0], progress: 1 },
-            drag.now.x - 15,
-            drag.now.y - 17,
-          );
-      }
     }
     // === PEDIDOS E INVENTARIO ===
     const orderCatalog = [
@@ -2682,7 +2620,7 @@
       }
       if (inside(p, pile) && bales > 0 && (!job || crusherLevel > 0)) {
         selected = true;
-        beginDrag(e, {});
+        beginDrag(e, { kind: "bale" });
       }
     };
     cv.onpointermove = updateDrag;
@@ -4363,37 +4301,6 @@
       } else {
         drawGloveStation();
       }
-      if (drag?.moved) {
-        if (drag.kind === "cordyInoculum")
-          drawLiquidJar(drag.now.x - 12, drag.now.y - 15, 0.8, 1);
-        else if (drag.kind === "liquidPetri")
-          drawPetri(drag.now.x - 14, drag.now.y - 7);
-        else if (drag.kind === "woodRaw") {
-          if (prepMode === "cordy")
-            drawRicePile(drag.now.x - 14, drag.now.y - 5, 28, 12);
-          else drawSawdustPile(drag.now.x - 14, drag.now.y - 9, 28, 18);
-        } else if (drag.kind === "woodBag" && prepMode !== "wood")
-          drawEmptyJar(drag.now.x - 12, drag.now.y - 14, 0.8);
-        else if (drag.kind === "woodBag")
-          drawEmptySubstrateBag(drag.now.x - 12, drag.now.y - 14, 0.8);
-        else if (drag.kind === "woodNutrients") {
-          box(drag.now.x - 9, drag.now.y - 12, 18, 24, "#ede1b8");
-        } else if (drag.kind === "woodPrepared")
-          drawPreparedContainer(
-            drag.type || sterilizerMode,
-            drag.now.x - 12,
-            drag.now.y - 14,
-            0.8,
-          );
-        else if (drag.kind === "gloveInoculum")
-          jar(drag.now.x - 7, drag.now.y - 10);
-        else if (drag.kind === "gloveWood")
-          drawPreparedSubstrateBag(drag.now.x - 12, drag.now.y - 14, 0.8, true);
-        else if (drag.kind === "gloveJar") jar(drag.now.x - 7, drag.now.y - 10);
-        else if (drag.kind === "gloveClean")
-          drawCleaningKit(drag.now.x - 14, drag.now.y - 16);
-        else box(drag.now.x - 14, drag.now.y - 10, 28, 20, "#c4ac7c");
-      }
     }
     function handleWoodPointerDown(e, p) {
       if (auxView === "sterileRoom") {
@@ -5569,10 +5476,7 @@
       box(14, 0, 4, 2, "#eff2df");
       c.restore();
     }
-    function drawLiquidDrag() {
-      if (drag?.moved && drag.kind === "liquidJar")
-        drawLiquidJar(drag.now.x - 12, drag.now.y - 15, 0.8);
-    }
+
     function drawAgitationStation() {
       roomBase("MESA DE AGITACION");
       drawStainlessTable(14, 137, 292, 55, 27);
@@ -6588,24 +6492,6 @@
       drawExtractFlask(263, 141, "#bd9b58", 1, ready ? 1 : 0);
       smallText("LISTOS " + ready, 251, 188);
       smallText("1 MOLER  >  2 CARGAR  >  3 ENCENDER", 17, 226);
-      if (drag?.kind === "chemRaw" && drag.moved)
-        drawSpeciesFruit(
-          extractSpecies,
-          drag.now.x - 13,
-          drag.now.y - 12,
-          1,
-          0.8,
-          2,
-        );
-      if (drag?.kind === "chemGround" && drag.moved)
-        for (let k = 0; k < 9; k++)
-          box(
-            drag.now.x - 9 + ((k * 7) % 18),
-            drag.now.y - 5 + ((k * 3) % 10),
-            3,
-            2,
-            speciesColor(extraction.species),
-          );
     }
     const chemistryMove = movePlayer;
     movePlayer = function (dt) {
@@ -6792,13 +6678,6 @@
         180,
       );
       smallText("1 MATRAZ  >  4 GOTEROS  >  TIENDA", 17, 227);
-      if (drag?.kind === "chemFlask" && drag.moved)
-        drawExtractFlask(
-          drag.now.x - 12,
-          drag.now.y - 16,
-          speciesColor(item?.species),
-          1,
-        );
     }
     const bottlingAdvance = advanceChemistry;
     advanceChemistry = function (dt) {
@@ -7023,14 +6902,6 @@
         32,
         225,
       );
-      if (drag?.kind === "chemSalt" && drag.moved)
-        drawSalt(
-          drag.now.x - 15,
-          drag.now.y - 18,
-          drag.salt.toUpperCase(),
-          drag.salt === "a" ? "#d4c28a" : "#93babd",
-          0.8,
-        );
     }
     const nutrientsAdvance = advanceChemistry;
     advanceChemistry = function (dt) {
@@ -7406,26 +7277,6 @@
                   ? "MEZCLANDO"
                   : "INOCULA";
       smallText(status, 105, 229);
-      if (drag?.moved) {
-        if (drag.kind === "spirulinaFeed")
-          drawSalt(drag.now.x - 12, drag.now.y - 18, "N", "#dfcb8d", 0.8);
-        else if (drag.kind === "spirulinaCrop")
-          drawSpirulinaJar(drag.now.x - 11, drag.now.y - 14);
-        else if (drag.kind === "spirulinaMother")
-          drawSpirulinaFlask(
-            drag.now.x - 16,
-            drag.now.y - 20,
-            spirulinaMother,
-            1,
-          );
-        else if (drag.kind === "spirulinaInoculum")
-          drawSpirulinaFlask(
-            drag.now.x - 16,
-            drag.now.y - 20,
-            spirulinaInoculum,
-            1,
-          );
-      }
     }
 
     function drawSpirulinaJar(x, y, scale = 1) {
@@ -7995,14 +7846,7 @@
           customer.bought,
           customer.purchaseSpecies,
         );
-      if (drag?.kind === "shopInventory" && drag.moved)
-        drawShopProduct(
-          drag.card.product,
-          drag.card.species,
-          drag.now.x - 10,
-          drag.now.y - 12,
-          0.9,
-        );
+
       for (const pop of salePops) {
         const count = Math.ceil(pop.amount),
           x = Math.max(20, 238 - count * 14),
@@ -8678,7 +8522,13 @@
     const DRAG_THRESHOLD = 5;
     function beginDrag(event, payload = {}) {
       const p = point(event);
-      drag = { start: p, now: p, moved: false, ...payload };
+      drag = {
+        start: p,
+        now: p,
+        moved: false,
+        pointerType: event.pointerType || "mouse",
+        ...payload,
+      };
       cv.setPointerCapture(event.pointerId);
       return drag;
     }
@@ -8689,6 +8539,207 @@
         drag.moved ||
         Math.hypot(drag.now.x - drag.start.x, drag.now.y - drag.start.y) >
           DRAG_THRESHOLD;
+    }
+
+    // === ICONOS DE ARRASTRE: catálogo único para todos los módulos ===
+    const dragIcon = (label, draw) => ({ label, draw });
+    function drawLooseStraw(mixed = false) {
+      // Montón fibroso: no una paca/cubo. Contraste suficiente incluso al reducirlo.
+      for (let i = 0; i < 48; i++) {
+        const row = Math.floor(i / 8),
+          spread = 18 - Math.abs(row - 3) * 2;
+        const x = -spread + ((i * 11) % (spread * 2));
+        box(
+          x,
+          -10 + row * 4,
+          5 + (i % 4),
+          2,
+          ["#e9bf66", "#f6dc91", "#ae7e3d"][i % 3],
+        );
+      }
+      if (mixed)
+        for (let i = 0; i < 12; i++)
+          box(-13 + ((i * 7) % 26), -8 + ((i * 5) % 19), 3, 2, "#f3f0d5");
+    }
+    function drawDragHarvest(d) {
+      const b = fruitShelves[d.slot];
+      if (
+        inside(d.now, [220, 197, 90, 43]) ||
+        !b ||
+        b.fruitProgress < 1 ||
+        b.exhausted
+      )
+        drawIncubationContainer({ ...b, progress: 1 }, -14, -18);
+      else
+        drawSpeciesFruit(
+          b.species,
+          -16,
+          -12,
+          1,
+          0.85,
+          Math.max(1, 3 - (b.flush || 0)),
+        );
+    }
+    const dragIconCatalog = {
+      bale: dragIcon("Paca de paja", () => bale(-19, -13)),
+      raw: dragIcon("Paja triturada", () => drawLooseStraw()),
+      straw: dragIcon("Paja pasteurizada", () => drawLooseStraw()),
+      mixture: dragIcon("Paja con micelio", () => drawLooseStraw(true)),
+      lime: dragIcon("Bote de cal", () => {
+        box(-12, -13, 25, 30, "#eee6c7");
+        box(-14, -18, 29, 6, "#a6bec1");
+      }),
+      jar: dragIcon("Micelio", () => {
+        c.scale(1.45, 1.45);
+        jar(-7, -9);
+      }),
+      cleaning: dragIcon("Spray y trapo", () => drawCleaningKit(-17, -13)),
+      incbag: dragIcon("Bolsa sin incubar", () =>
+        drawIncubationContainer(
+          { ...waitingBagData[0], progress: 0 },
+          -14,
+          -18,
+        ),
+      ),
+      readybag: dragIcon("Bolsa de incubación", (d) =>
+        drawIncubationContainer(
+          incubation[d.slot] || { progress: 0 },
+          -14,
+          -18,
+        ),
+      ),
+      fruitbag: dragIcon("Bloque para fructificar", () =>
+        drawIncubationContainer({ ...fruitingCart[0], progress: 1 }, -14, -18),
+      ),
+      harvestbag: dragIcon("Hongos o bloque para composta", drawDragHarvest),
+      woodRaw: dragIcon("Aserrín o arroz", () =>
+        prepMode === "cordy"
+          ? drawRicePile(-18, -10, 36, 20)
+          : drawSawdustPile(-18, -14, 36, 28),
+      ),
+      woodBag: dragIcon("Bolsa o frasco vacío", () =>
+        prepMode === "wood"
+          ? drawEmptySubstrateBag(-14, -18)
+          : drawEmptyJar(-14, -18),
+      ),
+      woodNutrients: dragIcon("Nutrientes", () =>
+        drawSalt(-14, -18, "N", "#dfcb8d", 0.85),
+      ),
+      woodPrepared: dragIcon("Recipiente preparado", (d) =>
+        drawPreparedContainer(d.type || sterilizerMode, -14, -18),
+      ),
+      gloveInoculum: dragIcon("Micelio interior", () => {
+        c.scale(1.45, 1.45);
+        jar(-7, -9);
+      }),
+      gloveWood: dragIcon("Bolsa esterilizada", () =>
+        drawPreparedSubstrateBag(-14, -18, 1, true),
+      ),
+      gloveJar: dragIcon("Frasco de micelio", () => {
+        c.scale(1.45, 1.45);
+        jar(-7, -9);
+      }),
+      gloveClean: dragIcon("Limpieza de cabina", () =>
+        drawCleaningKit(-17, -13),
+      ),
+      cordyInoculum: dragIcon("Cultivo líquido maduro", () =>
+        drawLiquidJar(-14, -18, 1, 1),
+      ),
+      liquidPetri: dragIcon("Placa Petri", () => drawPetri(-17, -8, 1.15)),
+      liquidJar: dragIcon("Cultivo líquido inoculado", () =>
+        drawLiquidJar(-14, -18),
+      ),
+      chemRaw: dragIcon("Hongos para extracción", () =>
+        drawSpeciesFruit(extractSpecies, -16, -12, 1, 0.85, 2),
+      ),
+      chemGround: dragIcon("Hongos molidos", () => {
+        for (let i = 0; i < 25; i++)
+          box(
+            -16 + ((i * 7) % 30),
+            -9 + ((i * 5) % 20),
+            4,
+            3,
+            speciesColor(extraction.species),
+          );
+      }),
+      chemFlask: dragIcon("Matraz de extracto", () =>
+        drawExtractFlask(-12, -17, speciesColor(extractInventory[0]?.species)),
+      ),
+      chemSalt: dragIcon("Sales A o B", (d) =>
+        drawSalt(
+          -14,
+          -18,
+          (d.salt || "a").toUpperCase(),
+          d.salt === "a" ? "#d4c28a" : "#93babd",
+          0.85,
+        ),
+      ),
+      spirulinaFeed: dragIcon("Solución nutritiva", () =>
+        drawSalt(-14, -18, "N", "#dfcb8d", 0.85),
+      ),
+      spirulinaCrop: dragIcon("Espirulina cosechada", () =>
+        drawSpirulinaJar(-11, -14),
+      ),
+      spirulinaMother: dragIcon("Matraz madre", () =>
+        drawSpirulinaFlask(-16, -20, spirulinaMother),
+      ),
+      spirulinaInoculum: dragIcon("Matraz de inoculación", () =>
+        drawSpirulinaFlask(-16, -20, spirulinaInoculum),
+      ),
+      shopInventory: dragIcon("Producto de tienda", (d) =>
+        drawShopProduct(d.card.product, d.card.species, -14, -15, 0.85),
+      ),
+      shopcustomer: dragIcon("Cliente seleccionado", (d) =>
+        drawShopPerson(
+          0,
+          2,
+          shopQueue.find((customer) => customer.id === d.customerId)?.color ||
+            "#82a9b6",
+        ),
+      ),
+    };
+    function dragPreviewLayout(d = drag) {
+      if (!d?.moved || !dragIconCatalog[d.kind || "bale"]) return null;
+      const r = cv.getBoundingClientRect(),
+        pixelsPerUnit = r.width / 320;
+      const touch = d.pointerType === "touch" || d.pointerType === "pen";
+      const scale = Math.max(
+        1.1,
+        Math.min(3, (touch ? 76 : 60) / (48 * pixelsPerUnit)),
+      );
+      const half = 24 * scale,
+        gap = (touch ? 52 : 10) / pixelsPerUnit;
+      let x = d.now.x,
+        y = d.now.y - gap - half;
+      // Cerca del borde superior se coloca al lado, para no volver bajo el dedo.
+      if (touch && y < half + 2) {
+        x = d.now.x < 160 ? d.now.x + gap + half : d.now.x - gap - half;
+        y = d.now.y;
+      }
+      return {
+        x: Math.max(half + 2, Math.min(318 - half, x)),
+        y: Math.max(half + 2, Math.min(238 - half, y)),
+        scale,
+        half,
+        touch,
+      };
+    }
+    function drawDragPreview() {
+      const layout = dragPreviewLayout();
+      if (!layout) return;
+      const icon = dragIconCatalog[drag.kind || "bale"];
+      c.save();
+      // Marca pequeña en la posición real: el destino no se desplaza con el icono.
+      box(drag.now.x - 3, drag.now.y - 3, 6, 1, "#ffe16a");
+      box(drag.now.x - 3, drag.now.y + 3, 6, 1, "#ffe16a");
+      c.translate(layout.x, layout.y);
+      c.scale(layout.scale, layout.scale);
+      c.globalAlpha = 0.94;
+      box(-24, -24, 48, 48, "#e2e5ce");
+      box(-23, -23, 46, 46, "#3b5968");
+      c.globalAlpha = 1;
+      icon.draw(drag);
+      c.restore();
     }
 
     // === GUIA DEL RECORRIDO: una etapa por módulo y por partida ===
@@ -8889,6 +8940,7 @@
       }
       drawRouteGuide();
       drawSignalFeedback();
+      drawDragPreview();
     }
     function frame(now) {
       cv.setAttribute?.(
