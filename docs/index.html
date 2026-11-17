@@ -2232,14 +2232,14 @@
       artRect(49, 9, 1, 10, "#fff5d6");
       text(title, 62, 20);
     }
-    function drawChamberRack(r, locked = false, overview = false) {
+    function drawChamberRack(r, overview = false) {
       const [x, y, w, h] = r;
       softShadow(x + w / 2, y + h + 2, w * 0.56, 4, 0.24);
       box(x + 2, y + 2, w - 2, h, "#819780");
-      box(x, y, w, h, locked ? "#81938a" : "#698d87");
-      box(x + 4, y + 4, w - 8, h - 8, locked ? "#a1ad98" : "#a9bca3");
+      box(x, y, w, h, "#698d87");
+      box(x + 4, y + 4, w - 8, h - 8, "#a9bca3");
       for (let yy = y + 7; yy < y + h - 14; yy += 7)
-        artRect(x + 5, yy, w - 10, 0.5, locked ? "#94a18e" : "#9aaf98");
+        artRect(x + 5, yy, w - 10, 0.5, "#9aaf98");
       box(x, y, w, 3, "#bdd0bb");
       artRect(x + 1, y, w - 2, 0.5, "#edf0d2");
       box(x, y + 3, 3, h - 3, "#8eafa1");
@@ -2251,8 +2251,7 @@
       artRect(x + 3, y + h - 2, w - 6, 1, "#6e7058");
       for (const xx of [x + 1, x + w - 2])
         for (const yy of [y + 5, y + h - 5]) artRect(xx, yy, 1, 1, "#e9e4c6");
-      if (!locked && !overview)
-        softShadow(x + w / 2, y + h - 15, w * 0.32, 2, 0.14);
+      if (!overview) softShadow(x + w / 2, y + h - 15, w * 0.32, 2, 0.14);
     }
     function drawClimatePanel(view) {
       const label =
@@ -2269,46 +2268,64 @@
       artRect(215, 37, 0.5, 6, "#fff0c6");
       text(label, 223, 46);
     }
+    function visibleCultivationRacks() {
+      const racks = [];
+      for (let side = 0; side < 2; side++)
+        for (let row = 0; row < 2; row++) {
+          const count = Math.min(
+            4,
+            Math.max(
+              0,
+              (side ? fruitingCapacity : incubationCapacity) - row * 4,
+            ),
+          );
+          if (!count) continue;
+          const x = side ? 181 : 25,
+            y = 65 + row * 90,
+            w = count * 27 + 7;
+          racks.push({
+            side,
+            row,
+            x,
+            y,
+            count,
+            r: [x, y, w, 44],
+            hit: [x - 5, y - 5, w + 9, 50],
+          });
+        }
+      return racks;
+    }
     function drawCultivation() {
       drawChamberRoom("INCUBACION / FRUCTIFICACION", "overview");
       box(159, 30, 3, 94, "#5c7780");
       box(159, 175, 3, 45, "#5c7780");
       text("INCUBACION", 33, 48);
       text("FRUCTIFICACION", 183, 48);
-      for (let side = 0; side < 2; side++)
-        for (let row = 0; row < 2; row++) {
-          const x = side ? 181 : 25,
-            y = 65 + row * 90;
-          drawChamberRack([x, y, 115, 44], false, true);
-          for (let j = 0; j < 4; j++) {
-            if (row * 4 + j >= (side ? fruitingCapacity : incubationCapacity)) {
-              box(x + 5 + j * 27, y + 6, 20, 30, "#63766f");
-              smallText("X", x + 11 + j * 27, y + 25);
-              continue;
-            }
-            box(x + 5 + j * 27, y + 6, 20, 30, side ? "#c1cdae" : "#e7e6cb");
-            if (side) {
-              box(x + 5 + j * 27, y + 6, 20, 30, "#889b90");
-              const b = fruitShelves[row * 4 + j];
-              if (b)
-                drawFruitBag(
-                  x + 6 + j * 27,
-                  y + 9,
-                  b.exhausted ? 0 : b.fruitProgress,
-                  0.65,
-                  Math.max(1, 3 - (b.flush || 0)),
-                  b.species,
-                );
-            } else {
-              const bag = incubation[row * 4 + j];
-              box(x + 5 + j * 27, y + 6, 20, 30, "#889b90");
-              if (bag) {
-                drawIncubationContainer(bag, x + 6 + j * 27, y + 9, 0.65);
-                if (bag.contaminated) drawBacteria(x + 10 + j * 27, y + 19, j);
-              }
+      for (const { side, row, x, y, count, r } of visibleCultivationRacks()) {
+        drawChamberRack(r, true);
+        for (let j = 0; j < count; j++) {
+          if (side) {
+            box(x + 5 + j * 27, y + 6, 20, 30, "#889b90");
+            const b = fruitShelves[row * 4 + j];
+            if (b)
+              drawFruitBag(
+                x + 6 + j * 27,
+                y + 9,
+                b.exhausted ? 0 : b.fruitProgress,
+                0.65,
+                Math.max(1, 3 - (b.flush || 0)),
+                b.species,
+              );
+          } else {
+            const bag = incubation[row * 4 + j];
+            box(x + 5 + j * 27, y + 6, 20, 30, "#889b90");
+            if (bag) {
+              drawIncubationContainer(bag, x + 6 + j * 27, y + 9, 0.65);
+              if (bag.contaminated) drawBacteria(x + 10 + j * 27, y + 19, j);
             }
           }
         }
+      }
       box(0, 132, 18, 30, "#e8cb92");
       text("<", 4, 151);
       for (let row = 0; row < 2; row++) {
@@ -2484,10 +2501,7 @@
       incSlots.forEach((r, i) => {
         const [x, y, w, h] = r,
           b = incubation[i];
-        if (i >= incubationCapacity) {
-          drawLockedShelf(r);
-          return;
-        }
+        if (i >= incubationCapacity) return;
         drawChamberRack(r);
         if (b) {
           box(x + 3, y + 4, 6, 6, speciesColor(b.species || "Pleurotus"));
@@ -2830,10 +2844,7 @@
       incSlots.forEach((r, i) => {
         const [x, y, w, h] = r,
           b = fruitShelves[i];
-        if (i >= fruitingCapacity) {
-          drawLockedShelf(r);
-          return;
-        }
+        if (i >= fruitingCapacity) return;
         drawChamberRack(r);
         if (b) {
           box(x + 2, y + 2, w - 4, 10, speciesColor(fruitSpecies(b)));
@@ -3182,12 +3193,12 @@
         return;
       }
       if (auxView === "cultivation") {
-        if (inside(p, [177, 60, 124, 50]) || inside(p, [177, 150, 124, 50])) {
-          openFruiting();
-          return;
-        }
-        if (inside(p, [20, 60, 124, 50]) || inside(p, [20, 150, 124, 50])) {
-          openIncubation();
+        const rack = visibleCultivationRacks().find(({ hit }) =>
+          inside(p, hit),
+        );
+        if (rack) {
+          if (rack.side) openFruiting();
+          else openIncubation();
           return;
         }
         if (inside(p, [0, 128, 24, 39])) {
@@ -3463,8 +3474,8 @@
             Math.min(305, player.x + (dx / norm) * 65 * dt),
           ),
           ny = Math.max(47, Math.min(207, player.y + (dy / norm) * 65 * dt));
-        if (!inside({ x: nx, y: player.y }, [18, 72, 191, 122])) player.x = nx;
-        if (!inside({ x: player.x, y: ny }, [18, 72, 191, 122])) player.y = ny;
+        if (!inside({ x: nx, y: player.y }, shopCounterRect())) player.x = nx;
+        if (!inside({ x: player.x, y: ny }, shopCounterRect())) player.y = ny;
         return;
       }
       if (document.querySelector("#mycelium-inventory").open) return;
@@ -3486,10 +3497,7 @@
       const blocked = (x, y) =>
         (cult
           ? [
-              [21, 61, 123, 49],
-              [21, 151, 123, 49],
-              [177, 61, 123, 49],
-              [177, 151, 123, 49],
+              ...visibleCultivationRacks().map(({ hit }) => hit),
               [156, 30, 9, 94],
               [156, 175, 9, 45],
             ]
@@ -3577,24 +3585,24 @@
         if (Math.hypot(player.x - 14, player.y - 149) < 40) {
           auxView = null;
           player = { x: 290, y: 149 };
-        } else if (
-          player.x > 166 &&
-          Math.min(
-            Math.abs(player.y - 110),
-            Math.abs(player.y - 151),
-            Math.abs(player.y - 200),
-          ) < 40
-        )
-          openFruiting();
-        else if (
-          player.x < 156 &&
-          Math.min(
-            Math.abs(player.y - 110),
-            Math.abs(player.y - 151),
-            Math.abs(player.y - 200),
-          ) < 40
-        )
-          openIncubation();
+        } else {
+          const nearest = visibleCultivationRacks()
+            .map((rack) => {
+              const [x, y, w, h] = rack.hit;
+              return {
+                ...rack,
+                distance: Math.hypot(
+                  Math.max(x - player.x, 0, player.x - x - w),
+                  Math.max(y - player.y, 0, player.y - y - h),
+                ),
+              };
+            })
+            .sort((a, b) => a.distance - b.distance)[0];
+          if (nearest && nearest.distance < 40) {
+            if (nearest.side) openFruiting();
+            else openIncubation();
+          }
+        }
         return;
       }
       if (close || auxView) return;
@@ -3715,14 +3723,6 @@
             ? "Control climático: 10% menos tiempo."
             : "Las bolsas existentes conservan su avance."),
       );
-    }
-    function drawLockedShelf(r) {
-      const [x, y, w, h] = r;
-      drawChamberRack(r, true);
-      box(x + 25, y + 16, 12, 12, "#b5b5a0");
-      box(x + 27, y + 11, 8, 7, "#b5b5a0");
-      box(x + 29, y + 13, 4, 4, "#576d72");
-      smallText("BLOQUEADO", x + 4, y + 51);
     }
     function drawChamberControl(view) {
       const cap = chamberCapacity(view),
@@ -3927,11 +3927,19 @@
     };
 
     function drawShopPerson(x, y, color, bought = 0, species = "Pleurotus") {
+      softShadow(x + 1, y + 12, 10, 3, 0.26);
       box(x - 5, y - 16, 10, 9, "#e7bf97");
       box(x - 6, y - 19, 13, 5, "#485b68");
       box(x - 7, y - 6, 15, 12, color);
       box(x - 5, y + 6, 4, 7, "#344b62");
       box(x + 2, y + 6, 4, 7, "#344b62");
+      artRect(x - 4, y - 14, 1, 4, "#f7d5a7");
+      artRect(x + 3, y - 12, 1, 1, "#3b5354");
+      artRect(x - 5, y - 18, 8, 0.5, "#718178");
+      artRect(x - 6, y - 5, 1, 9, "#d7d4b8");
+      artRect(x + 5, y - 3, 1, 8, "#536d68");
+      artRect(x - 5, y + 12, 4, 1, "#223b46");
+      artRect(x + 2, y + 12, 4, 1, "#223b46");
       if (bought) {
         box(x + 9, y - 2, 12, 15, "#d9c39b");
         drawSpeciesFruit(species, x + 9, y - 5, 1, 0.35);
@@ -5664,13 +5672,10 @@
             ...(liquidUnlocked ? [[182, 158, 115, 42]] : []),
           ]
         : view === "shop"
-          ? [[18, 72, 191, 122]]
+          ? [shopCounterRect()]
           : view === "cultivation"
             ? [
-                [21, 61, 123, 49],
-                [21, 151, 123, 49],
-                [177, 61, 123, 49],
-                [177, 151, 123, 49],
+                ...visibleCultivationRacks().map(({ hit }) => hit),
                 [156, 30, 9, 94],
                 [156, 175, 9, 45],
               ]
@@ -5720,10 +5725,7 @@
       if (
         view === "cultivation" &&
         [
-          [20, 60, 124, 50],
-          [20, 150, 124, 50],
-          [177, 60, 124, 50],
-          [177, 150, 124, 50],
+          ...visibleCultivationRacks().map(({ hit }) => hit),
           [0, 128, 24, 39],
         ].some((r) => inside(p, r))
       )
@@ -6320,15 +6322,11 @@
             (i % (agitationCapacity === 6 ? 3 : 4)) *
               (agitationCapacity === 6 ? 33 : 24),
           y = agitationCapacity === 6 ? 165 + Math.floor(i / 3) * 15 : 177;
-        box(x, y, 19, 6, liquidUnlocked ? "#547c8c" : "#667570");
+        box(x, y, 19, 6, "#547c8c");
         if (liquidStirrers[i])
           drawLiquidJar(x + 2, y - 15, 0.5, liquidStirrers[i].progress);
       }
-      smallText(
-        liquidUnlocked ? "AGITACION " + agitationCapacity : "AGITACION BLOQ.",
-        186,
-        217,
-      );
+      smallText("AGITACION " + agitationCapacity, 186, 217);
     }
     function isCordyHood() {
       return (
@@ -8767,6 +8765,25 @@
           )[0] || null
       );
     }
+    function shopCounterRect() {
+      const cards = visibleShopCards();
+      const bottom = cards.length
+        ? Math.max(...cards.map(({ r }) => r[1] + r[3]))
+        : 112;
+      return [18, 72, 191, Math.max(46, bottom - 72 + 6)];
+    }
+    function drawWarmShopRoom() {
+      drawChamberRoom("TIENDA BEEFUNGI", "shop");
+      box(12, 4, 43, 23, warmPalette.wall);
+      drawWarmWindow(17, 4, 32, 20);
+      drawWarmPlant(294, 55);
+      box(222, 71, 2, 129, "#9caf96");
+      artRect(223, 71, 0.5, 129, "#d6d8b8");
+      // Mostrador y fila usan la escala del personaje y las mismas zonas táctiles.
+      const [x, y, w, h] = shopCounterRect();
+      drawWarmTable(x, y, w, h, 13);
+      artRect(x + 4, y + 3, w - 8, 1, "#f6dca8");
+    }
     function drawShopProduct(product, species, x, y, scale = 1) {
       if (product === "dropper") drawDropper(x, y, species, scale);
       else if (product === "spirulina") drawSpirulinaJar(x, y, scale);
@@ -8796,37 +8813,24 @@
       if (part > 0) drawCoin(x + full * 14, y, part);
     }
     drawShop = function () {
-      roomBase("TIENDA BEEFUNGI");
+      drawWarmShopRoom();
       smallText("INVENTARIO · UNIDADES", 20, 52);
       drawCoin(241, 38);
       smallText(Number(saleCoins.toFixed(2)).toString(), 258, 48);
       drawPlayer();
-      drawStainlessTable(18, 72, 191, 122, 13);
-      box(18, 72, 191, 6, "#d7b582");
-      box(18, 78, 3, 116, "#a37e5a");
-      box(206, 78, 3, 116, "#a37e5a");
       for (const card of visibleShopCards()) {
         const [x, y, w, h] = card.r,
           selected =
             drag?.kind === "shopInventory" && drag.card.key === card.key;
-        box(
-          x,
-          y,
-          w,
-          h,
-          selected
-            ? "#ffe098"
-            : card.product === "spirulina"
-              ? "#a6c59f"
-              : speciesColor(card.species),
-        );
-        box(
-          x + 2,
-          y + 2,
-          w - 4,
-          h - 4,
-          card.product === "dropper" ? "#e9d8b5" : "#e5dfc6",
-        );
+        const accent =
+          card.product === "spirulina" ? "#98ba92" : speciesColor(card.species);
+        box(x + 1, y + 2, w, h, "#a18058");
+        box(x, y, w, h, selected ? "#ffe098" : "#8a9b87");
+        box(x + 1, y + 1, w - 2, h - 2, "#e5dfc6");
+        box(x + 1, y + 1, w - 2, 9, accent);
+        artRect(x + 2, y + 1, w - 4, 0.5, "#f3ebcc");
+        artRect(x + 2, y + h - 2, w - 4, 0.5, "#f9efd0");
+        artRect(x + w - 2, y + 11, 0.5, h - 13, "#c0baa0");
         smallText(
           card.product === "spirulina"
             ? "ESPIRU"
@@ -8879,7 +8883,9 @@
         smallText("+", x - 8, y + 9, "#ffe7a0");
         drawCoinAmount(pop.amount, x, y);
       }
-      box(136, 216, 48, 24, "#e8cb92");
+      box(134, 214, 52, 26, "#8d724e");
+      box(136, 216, 48, 24, "#d8bc85");
+      artRect(138, 217, 44, 1, "#f5dfac");
       text("SALIR", 144, 232);
     };
     drawCustomerOrder = function (customer) {

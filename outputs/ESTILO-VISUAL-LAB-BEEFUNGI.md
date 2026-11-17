@@ -22,4 +22,8 @@ No se incorporan el segundo canvas, capas móviles, ciclo ambiental ni suavizado
 
 ## Aplicación actual
 
-Sala principal, triturador, pasteurizado, mezcla, sala de cultivo cenital y cámaras de incubación y fructificación. Los dibujantes compartidos transmiten el acabado a pacas, mesas, cestos, estantes y carritos. La extensión completa a cuarto estéril, tienda y química se hará en pasadas posteriores.
+Sala principal, triturador, pasteurizado, mezcla, sala de cultivo cenital, cámaras de incubación/fructificación y tienda. Los dibujantes compartidos transmiten el acabado a pacas, mesas, cestos, estantes, carritos y mostrador. La extensión completa al cuarto estéril y química se hará en pasadas posteriores.
+
+## Aparición y proporciones
+
+Los muebles bloqueados no se dibujan: aparecen al desbloquearlos, sin candados ni siluetas. Su dibujo, colisión e interacción deben compartir la geometría visible. La tienda conserva productos y clientes a la escala del personaje; el mostrador crece en profundidad al aparecer nuevas filas de inventario.

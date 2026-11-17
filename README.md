@@ -72,3 +72,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Cámaras con el acabado cálido
 
 [Incubación y fructificación](outputs/TANDA-PULIDO-CAMARAS-CULTIVO.md): vista aérea, estantes de acero, carritos, panel de ambiente y bolsas integrados al estilo de texturas estables y sombras suaves. Conserva colonización, especies y reglas de cultivo.
+
+## Aparición de muebles y tienda
+
+[Muebles progresivos y tienda](outputs/TANDA-MUEBLES-PROGRESIVOS-TIENDA.md): los puestos de cámaras aparecen al comprarlos; las filas ocultas dejan suelo transitable. Agitación, química y espirulina aparecen únicamente cuando corresponde. La tienda usa el acabado cálido, bandejas por producto y un mostrador que crece con las filas de inventario disponibles.
