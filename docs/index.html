@@ -479,8 +479,8 @@
         ><button id="back">← Regresar</button>
       </div>
       <canvas
-        width="320"
-        height="240"
+        width="640"
+        height="480"
         tabindex="0"
         aria-label="Mesa de preparación. Selecciona la mesa para acercarte."
       ></canvas>
@@ -591,6 +591,9 @@
     const cv = document.querySelector("canvas"),
       c = cv.getContext("2d"),
       msg = document.querySelector("#status");
+    // El mundo sigue en 320 × 240; el lienzo doble permite detalles de medio píxel.
+    c.setTransform(2, 0, 0, 2, 0, 0);
+    c.imageSmoothingEnabled = false;
     let gloveGuideDone = false,
       gloveCleanedForLoad = false;
     try {
@@ -889,6 +892,16 @@
       box(0, 4, 38, 23, "#a8793f");
       box(0, 0, 38, 22, "#e9bf66");
       box(3, 3, 32, 2, "#f8dc90");
+      for (let i = 0; i < 30; i++) {
+        artRect(
+          2 + ((i * 11) % 32),
+          2 + ((i * 7) % 20),
+          2 + (i % 5),
+          0.5,
+          ["#ffe6a1", "#d7a34d", "#f4cd79"][i % 3],
+        );
+      }
+      artRect(1, 22, 35, 1, "#be8942");
       for (let i = 0; i < 13; i++)
         box(3 + ((i * 7) % 31), 7 + ((i * 3) % 13), 5, 1, "#bc8a43");
       box(8, 0, 3, 25, "#75674f");
@@ -922,6 +935,258 @@
       }
       say("Paca cargada. El triturador procesa la cola una por una.");
     }
+
+    // === MUESTRA VISUAL: SALA PRINCIPAL Y TRITURADOR ===
+    // Dibujantes puros: no cambian inventarios, colisiones ni zonas de toque.
+    const warmPalette = Object.freeze({
+      ink: "#304b50",
+      wall: "#ece2bd",
+      wood: "#c99b63",
+      woodDark: "#855b40",
+      sage: "#abbba3",
+      steel: "#638b8d",
+      light: "#fff0c1",
+      shadow: "#839781",
+    });
+    function artRect(x, y, w, h, color) {
+      c.fillStyle = color;
+      c.fillRect(x, y, w, h);
+    }
+    function drawWarmTable(x, y, w, depth = 29, leg = 8) {
+      const p = warmPalette;
+      box(x + 3, y + 6, w, depth + 3, p.shadow);
+      box(x + 6, y + depth + leg, 7, 2, p.shadow);
+      box(x + w - 9, y + depth + leg, 7, 2, p.shadow);
+      box(x + 5, y + depth, 5, leg, p.woodDark);
+      box(x + w - 10, y + depth, 5, leg, p.woodDark);
+      artRect(x + 6, y + depth, 1, leg, "#d1a56f");
+      artRect(x + w - 9, y + depth, 1, leg, "#d1a56f");
+      box(x, y, w, depth, p.wood);
+      box(x, y, w, 2, "#f2d49a");
+      box(x, y + depth - 5, w, 5, "#a6764c");
+      artRect(x + 1, y + depth - 4, w - 2, 0.5, "#e3b77c");
+      for (let yy = y + 8; yy < y + depth - 5; yy += 8) {
+        artRect(x + 1, yy, w - 2, 0.5, "#b38253");
+        for (let i = 0; i < w / 14; i++)
+          artRect(
+            x + 4 + ((i * 23) % (w - 12)),
+            yy - 3,
+            5 + (i % 4),
+            0.5,
+            "#dcb580",
+          );
+      }
+      for (const xx of [x + 3, x + w - 4])
+        artRect(xx, y + depth - 3, 1, 1, "#6b5745");
+    }
+    function drawWarmWindow(x, y, w, h) {
+      box(x, y, w, h, "#967451");
+      box(x + 2, y + 2, w - 4, h - 4, "#b9d9cc");
+      box(x + 3, y + h / 2, w - 6, h / 2 - 3, "#92b29a");
+      for (let i = 0; i < 8; i++) {
+        const xx = x + 3 + ((i * 13) % (w - 8));
+        box(xx, y + h / 2 - (i % 4), 4, 4, i % 2 ? "#749c7e" : "#a7c39a");
+      }
+      box(x + w / 2 - 1, y + 2, 2, h - 4, "#ead7aa");
+      box(x + 2, y + h / 2 - 1, w - 4, 2, "#ead7aa");
+      artRect(x + 3, y + 3, w / 2 - 5, 1, "#edf1d5");
+      box(x - 2, y + h - 1, w + 4, 3, "#dbc18d");
+    }
+    function drawWarmBasket(x, y, w, h, count, capacity) {
+      box(x + 1, y + 3, w - 2, h - 2, "#8d6947");
+      box(x + 3, y + 3, w - 6, h - 7, "#5e5840");
+      const rise = Math.min(1, count / capacity) * (h - 6);
+      for (let i = 0; i < count * 12; i++) {
+        const xx = x + 4 + ((i * 13) % (w - 10)),
+          yy = y + h - 6 - ((i * 7) % Math.max(2, rise));
+        artRect(
+          xx,
+          yy,
+          2 + (i % 3),
+          0.5,
+          ["#eed28c", "#c8a15b", "#f8dfa1"][i % 3],
+        );
+      }
+      for (let yy = y + h - 6; yy < y + h; yy += 2) {
+        box(x + 1, yy, w - 2, 1, "#d6b278");
+        for (let xx = x + 3; xx < x + w - 2; xx += 5)
+          artRect(xx, yy, 1, 1, "#9a734e");
+      }
+      box(x, y, w, 2, "#e3c590");
+      artRect(x + 2, y + 2, 1, h - 3, "#d9b781");
+      artRect(x + w - 3, y + 2, 1, h - 3, "#b38b59");
+    }
+    function drawWarmPlant(x, y) {
+      box(x + 3, y + 8, 8, 8, "#b18460");
+      box(x + 2, y + 7, 10, 2, "#dcaf7c");
+      for (let i = 0; i < 5; i++) {
+        box(
+          x + ((i * 3) % 9),
+          y + ((i * 5) % 7),
+          5,
+          4,
+          i % 2 ? "#6f9473" : "#416e61",
+        );
+        artRect(x + 2 + ((i * 3) % 9), y + ((i * 5) % 7), 2, 0.5, "#afc396");
+      }
+    }
+    function drawWarmStationBackdrop() {
+      box(0, 0, 320, 240, warmPalette.wall);
+      box(0, 0, 320, 30, "#d7dfc7");
+      for (let x = 0; x < 320; x += 32) artRect(x, 0, 0.5, 30, "#bdcdb7");
+      box(0, 30, 320, 4, "#b28a60");
+      box(0, 144, 320, 96, "#b6b9a0");
+      for (let y = 144; y < 240; y += 16)
+        for (let x = 0; x < 320; x += 16) {
+          box(x + 1, y + 1, 15, 15, (x + y) % 32 ? "#bec3a8" : "#c9caae");
+          artRect(x + 2, y + 2, 13, 0.5, "#d8d8b8");
+        }
+      drawWarmWindow(133, 43, 39, 49);
+      box(136, 97, 35, 8, "#f5e4b5");
+      box(141, 105, 36, 8, "#f5e4b5");
+      box(0, 108, 320, 3, "#b8976e");
+      // Estante mural de repuestos; fuera de las zonas activas de material.
+      box(20, 48, 104, 2, "#c6a477");
+      artRect(23, 50, 2, 4, "#a3805c");
+      artRect(116, 50, 2, 4, "#a3805c");
+      smallText("LAB BEEFUNGI", 12, 20, "#577567");
+    }
+    function drawMainRoom() {
+      const p = warmPalette;
+      box(0, 0, 320, 240, p.woodDark);
+      box(7, 33, 306, 204, "#95a98f");
+      for (let y = 34; y < 236; y += 16)
+        for (let x = 8; x < 312; x += 16) {
+          box(x + 1, y, 15, 15, (x + y) % 32 ? "#bac6a9" : "#adbea2");
+          artRect(x + 2, y + 0.5, 13, 0.5, "#ccd2b2");
+          artRect(x + 14, y + 2, 0.5, 12, "#9aac94");
+        }
+      // Parches escalonados de luz; se pintan antes de muebles y personajes.
+      for (let i = 0; i < 4; i++) {
+        box(39 + i * 5, 37 + i * 8, 62, 8, "#d7d9b4");
+        box(218 + i * 5, 37 + i * 8, 50, 8, "#d7d9b4");
+      }
+      box(0, 0, 320, 31, p.wall);
+      box(0, 29, 320, 5, "#a2815c");
+      box(2, 32, 5, 205, "#c3a77a");
+      box(313, 32, 5, 205, "#c3a77a");
+      drawWarmWindow(36, 3, 76, 23);
+      drawWarmWindow(207, 3, 76, 23);
+      smallText("LAB BEEFUNGI", 12, 47, "#466557");
+      if (shopUnlocked) {
+        box(144, 28, 33, 31, "#6c644c");
+        box(148, 30, 25, 28, "#b78c5b");
+        box(151, 33, 19, 17, "#cbd7b8");
+        box(152, 34, 17, 1, "#e6e7c7");
+        box(167, 52, 2, 2, "#f1d694");
+        smallText("TIENDA", 145, 66, p.ink);
+      }
+      drawWarmTable(38, 79, 104);
+      bale(43, 86, 0.7);
+      bale(71, 84, 0.7);
+      box(107, 84, 27, 25, "#416970");
+      box(109, 88, 22, 15, "#739d96");
+      box(104, 80, 33, 5, "#b1c9b8");
+      box(108, 81, 25, 2, "#30484a");
+      box(115, 88, 13, 7, "#2c4a51");
+      for (let i = 0; i < 4; i++) artRect(110, 95 + i * 2, 4, 0.5, "#a3b9aa");
+      box(119, 104, 8, 10, "#6c9291");
+      box(120, 106, 1, 7, "#c5d6bd");
+      artRect(129, 89, 2, 2, job ? "#f0c676" : "#acc896");
+      smallText("TRITURADOR", 40, 137);
+      drawWarmBasket(104, 111, 34, 22, loads, basketCapacity());
+      smallText(loads + "/" + basketCapacity(), 112, 141);
+      if (job) drawProcessClock(126, 84, 10, job.t / 3);
+      drawWarmTable(186, 79, 92);
+      const tw = 18 + tankCapacity * 6,
+        th = 14 + tankCapacity * 2;
+      box(192, 108 - th, tw, th, "#557c80");
+      box(194, 109 - th, tw - 4, th - 3, "#92b3ad");
+      box(196, 110 - th, tw - 8, th - 7, "#508a91");
+      artRect(198, 111 - th, tw - 13, 1, "#b8dbca");
+      box(190, 106 - th, tw + 4, 3, "#d9dfc7");
+      artRect(193, 110 - th, 1, th - 5, "#e4e5cb");
+      box(198, 100 - th, 2, 6, "#7b9d98");
+      box(198, 100 - th, 8, 2, "#c8d7c4");
+      box(200, 98 - th, 6, 2, "#bd6051");
+      box(257, 87, 9, 15, "#ece3c0");
+      box(259, 84, 5, 3, "#a4b6a4");
+      artRect(259, 92, 5, 4, "#b1bd9d");
+      smallText("PASTEURIZADO", 185, 137);
+      drawWarmBasket(244, 111, 34, 23, treatedLoads, tankCapacity);
+      smallText(treatedLoads + "/" + tankCapacity, 249, 144);
+      if (tank.left) drawProcessClock(265, 87, 10, 1 - tank.left / 10);
+      drawWarmTable(186, 163, 92);
+      if (autoMixer) {
+        box(191, 161, 80, 32, "#a9bdc3");
+        box(194, 163, 74, 2, "#e4e8cf");
+        box(198, 167, 55, 19, "#416674");
+        box(257, 173, 5, 5, bagJob ? "#eec767" : "#9ed3aa");
+      } else {
+        box(191, 170, 48, 18, "#708f8e");
+        box(193, 172, 44, 13, "#bdcbb7");
+        artRect(191, 169, 48, 1, "#e7e6cb");
+        for (let i = 0; i < 3; i++) {
+          box(244 + i * 9, 171, 6, 12, "#b8d3bf");
+          box(244 + i * 9, 169, 6, 2, "#738f89");
+          box(245 + i * 9, 177, 4, 5, "#f1e5bf");
+          artRect(245 + i * 9, 173, 0.5, 4, "#eef1d8");
+        }
+      }
+      smallText(autoMixer ? "LLENADORA" : "MEZCLA", 198, 210);
+      if (bagJob) drawProcessClock(265, 171, 10, bagJob.t / 2.5);
+      drawWarmTable(38, 163, 104);
+      box(50, 168, 29, 19, "#3c5b63");
+      box(52, 170, 25, 13, "#aac8b2");
+      artRect(54, 172, 17, 1, "#dfdfb8");
+      for (let i = 0; i < 3; i++)
+        artRect(55, 175 + i * 2, 12 - i * 2, 0.5, "#6a9383");
+      box(62, 187, 6, 3, "#577273");
+      box(57, 190, 17, 2, "#3b5960");
+      box(95, 171, 29, 18, "#976f4c");
+      box(96, 170, 27, 17, "#f3e4bb");
+      box(109, 170, 1, 17, "#c3ad80");
+      for (let i = 0; i < 4; i++) {
+        artRect(99, 173 + i * 3, 7, 0.5, "#a6ae8b");
+        artRect(112, 173 + i * 3, 8, 0.5, "#a6ae8b");
+      }
+      smallText("OFICINA", 67, 210);
+      drawChemistryDoor();
+      drawWarmPlant(10, 53);
+      drawWarmPlant(296, 53);
+      if (sterileAvailable()) {
+        box(0, 132, 17, 30, "#536b64");
+        box(0, 135, 13, 24, "#d6dfc6");
+        box(1, 137, 10, 11, "#9bbfb2");
+        text("<", 2, 154);
+        smallText("ESTERIL", 12, 154);
+      }
+      box(303, 132, 17, 30, "#6d624a");
+      box(307, 135, 13, 24, "#d8bd85");
+      box(309, 137, 10, 11, "#b0c6a4");
+      text(">", 308, 154);
+      drawGrowBag(292, 110, 1, 0.5);
+      drawOysterCluster(294, 114, 1, 0.45, 2);
+      drawHelper();
+      drawLabHelper();
+      drawWalkTarget();
+      const x = Math.round(player.x),
+        y = Math.round(player.y);
+      box(x - 6, y + 7, 13, 4, "#85987d");
+      box(x - 4, y - 15, 9, 9, "#eac59a");
+      box(x - 6, y - 17, 13, 4, "#4f625e");
+      artRect(x - 5, y - 17, 9, 1, "#73816c");
+      artRect(x - 4, y - 13, 1, 4, "#f8dcaf");
+      artRect(x + 2, y - 12, 1, 1, "#405652");
+      drawCoat(x, y);
+      const walk =
+        keys.size || walkPath.length
+          ? Math.floor(performance.now() / 130) % 2
+          : 0;
+      box(x - 4, y + 4, 4, 6 + walk, "#344b57");
+      box(x + 2, y + 4, 4, 7 - walk, "#344b57");
+    }
+
     function drawBaseScene(dt) {
       if (auxView === "chemistry") {
         drawChemistry();
@@ -969,126 +1234,7 @@
         return;
       }
       if (!close) {
-        // Sala cenital de RPG de 16 bits: suelo en baldosas, paredes y estaciones distintas.
-        box(0, 0, 320, 240, "#7e938a");
-        box(8, 33, 304, 199, "#b5aa8a");
-        for (let yy = 34; yy < 232; yy += 16)
-          for (let xx = 9; xx < 311; xx += 16) {
-            box(xx, yy, 15, 15, (xx + yy) % 32 ? "#b7b294" : "#c7bc9c");
-            box(xx + 2, yy + 2, 2, 1, "#d6ccad");
-          }
-        box(0, 0, 320, 32, "#3c5969");
-        box(0, 29, 320, 5, "#243f50");
-        box(0, 32, 8, 208, "#425d67");
-        box(312, 32, 8, 208, "#425d67");
-        for (let xx = 10; xx < 310; xx += 32) {
-          box(xx, 5, 28, 19, "#587b87");
-          box(xx + 2, 7, 24, 14, "#97bdbb");
-          box(xx + 13, 7, 2, 14, "#d7e1c8");
-        }
-        text("LAB BEEFUNGI", 13, 46);
-        if (shopUnlocked) {
-          box(145, 29, 31, 29, "#314654");
-          box(149, 33, 23, 24, "#e8cb92");
-          text("^", 157, 46);
-          smallText("TIENDA", 145, 66, "#243f50");
-        }
-        function bench(x, y, w, color) {
-          box(x + 3, y + 4, w, 38, "#72684f");
-          box(x, y, w, 30, color);
-          box(x, y, w, 4, "#e5c18c");
-          box(x + 5, y + 30, 5, 7, "#77563d");
-          box(x + w - 10, y + 30, 5, 7, "#77563d");
-        }
-        bench(38, 79, 104, "#af8056");
-        bale(45, 85, 0.75);
-        bale(73, 85, 0.75);
-        box(107, 83, 27, 22, "#456c73");
-        box(104, 80, 33, 5, "#8db4a5");
-        box(114, 88, 13, 8, "#233e4b");
-        smallText("TRITURADOR", 40, 137);
-        if (job) drawProcessClock(126, 84, 10, job.t / 3);
-        bench(186, 79, 92, "#678b87");
-        const aerialWidth = 18 + tankCapacity * 6,
-          aerialHeight = 14 + tankCapacity * 2;
-        box(192, 108 - aerialHeight, aerialWidth, aerialHeight, "#577e87");
-        box(190, 106 - aerialHeight, aerialWidth + 4, 4, "#c8dace");
-        box(
-          197,
-          111 - aerialHeight,
-          aerialWidth - 10,
-          Math.max(2, aerialHeight - 9),
-          "#8dbbb9",
-        );
-        smallText("PASTEURIZADO", 185, 137);
-        drawTreatedBasket(244, 111, 34, 23);
-        smallText(treatedLoads + "/" + tankCapacity, 249, 144);
-        if (tank.left) drawProcessClock(265, 87, 10, 1 - tank.left / 10);
-        bench(186, 163, 92, "#8f827b");
-        for (let j = 0; j < 3; j++) {
-          box(193 + j * 25, 168, 18, 18, "#536c79");
-          box(196 + j * 25, 171, 12, 3, "#d6c8a0");
-          box(196 + j * 25, 178, 12, 3, "#d6c8a0");
-        }
-        if (autoMixer) {
-          box(191, 161, 80, 32, "#a9bdc3");
-          box(198, 167, 55, 19, "#416674");
-          box(257, 173, 5, 5, bagJob ? "#eec767" : "#9ed3aa");
-        }
-        text(autoMixer ? "LLENADORA" : "MEZCLA", 198, 210);
-        if (bagJob) drawProcessClock(265, 171, 10, bagJob.t / 2.5);
-        box(38, 163, 104, 34, "#96774f");
-        box(42, 166, 96, 27, "#d0b17a");
-        box(51, 170, 28, 18, "#456c79");
-        box(54, 173, 22, 11, "#add2ba");
-        box(58, 190, 19, 3, "#405a65");
-        box(96, 171, 27, 18, "#f1e3bb");
-        for (let j = 0; j < 4; j++) box(100, 174 + j * 3, 17, 1, "#8f9b89");
-        text("OFICINA", 67, 210);
-        // Cesto integrado bajo el triturador; pasillo central despejado.
-        box(104, 112, 34, 22, "#8e714b");
-        box(107, 115, 28, 15, "#66523b");
-        for (let i = 0; i < loads * 7; i++)
-          box(
-            108 + ((i * 7) % 25),
-            128 - ((i * 3) % Math.max(2, loads * 2)),
-            4,
-            1,
-            i % 2 ? "#f0ce7c" : "#b18a4f",
-          );
-        box(103, 111, 36, 3, "#d9b981");
-        smallText(loads + "/" + basketCapacity(), 112, 141);
-        drawChemistryDoor();
-        drawHelper();
-        drawLabHelper();
-        drawWalkTarget();
-        const xx = Math.round(player.x),
-          yy = Math.round(player.y);
-        box(xx - 6, yy + 7, 13, 4, "#72826c");
-        box(xx - 4, yy - 15, 9, 9, "#ecc59c");
-        box(xx - 6, yy - 17, 13, 4, "#5c6e86");
-        drawCoat(xx, yy);
-        const walk =
-          keys.size || walkPath.length
-            ? Math.floor(performance.now() / 130) % 2
-            : 0;
-        box(xx - 4, yy + 4, 4, 6 + walk, "#344b62");
-        box(xx + 2, yy + 4, 4, 7 - walk, "#344b62");
-        box(12, 55, 8, 17, "#927858");
-        box(10, 51, 12, 10, "#548272");
-        box(299, 55, 8, 17, "#927858");
-        box(297, 51, 12, 10, "#548272");
-        if (sterileAvailable()) {
-          box(0, 132, 17, 30, "#314654");
-          box(0, 136, 13, 22, "#b9d5cd");
-          text("<", 2, 151);
-          smallText("ESTERIL", 12, 154);
-        }
-        box(303, 132, 17, 30, "#314654");
-        box(307, 136, 13, 22, "#e8cb92");
-        text(">", 308, 151);
-        drawGrowBag(292, 110, 1, 0.5);
-        drawOysterCluster(294, 114, 1, 0.45, 2);
+        drawMainRoom();
         return;
       }
 
@@ -1096,10 +1242,11 @@
         drawMix();
         return;
       }
-      box(12, 117, 296, 12, "#efc991");
-      box(16, 129, 288, 15, "#ad7a51");
-      box(20, 141, 13, 46, "#79523e");
-      box(287, 141, 13, 46, "#79523e");
+      drawCrusherStation();
+    }
+    function drawCrusherStation() {
+      drawWarmStationBackdrop();
+      drawWarmTable(12, 117, 296, 17, 53);
       for (let i = 0; i < Math.min(bales, 6); i++)
         bale(28 + (i % 3) * 29, 87 - Math.floor(i / 3) * 25);
       text("PACAS: " + bales, 25, 43);
@@ -1114,10 +1261,32 @@
           9,
           "#c2d2bc",
         );
-      box(188, 53, 94, 7, "#8aada3");
-      for (let row = 0; row < 4; row++)
+      for (let i = 0; i < 7; i++) {
+        artRect(199, 79 + i * 5, 4, 2, "#749c98");
+        artRect(265, 86 + i * 3, 5, 1, "#284b55");
+      }
+      artRect(208, 85, 51, 1, "#a7cac0");
+      box(188, 53, 94, 7, "#afcbc0");
+      box(192, 55, 86, 3, "#28434b");
+      for (let row = 0; row < 4; row++) {
         box(191 + row * 6, 60 + row * 5, 88 - row * 12, 5, "#668d87");
+        artRect(
+          196 + row * 6,
+          60 + row * 5,
+          78 - row * 12,
+          2,
+          ["#304f54", "#3d6265", "#527a78", "#7a9d92"][row],
+        );
+        artRect(192 + row * 6, 60 + row * 5, 1, 4, "#a6bfb0");
+      }
+      artRect(210, 78, 51, 1, "#d1e0c8");
+      for (const x of [199, 267]) {
+        artRect(x, 77, 2, 2, "#d5dfcb");
+        artRect(x, 117, 2, 2, "#a9bbb4");
+      }
       box(228, 119, 17, 31, "#355968");
+      artRect(230, 120, 2, 26, "#a2beb1");
+      artRect(234, 122, 7, 24, "#547d7d");
       box(225, 146, 23, 7, "#73988d");
       box(202, 122, 8, 13, "#243e48");
       box(259, 122, 8, 13, "#243e48");
@@ -1169,7 +1338,13 @@
         }
       }
 
-      for (let x = 83; x < 244; x += 14) box(x, 168, 3, 44, "#bd965d");
+      // Tejido solo en el frente; el montón queda visible dentro del cesto.
+      for (let y = 195; y < 211; y += 4) {
+        box(78, y, 164, 2, "#c59b61");
+        for (let x = 80; x < 240; x += 8)
+          artRect(x + (y % 8 ? 4 : 0), y, 1, 2, "#8c613e");
+      }
+      for (let x = 83; x < 244; x += 14) box(x, 195, 2, 17, "#e0bb7d");
       box(72, 161, 176, 7, "#d7b57d");
       box(74, 210, 172, 5, "#d7b57d");
       box(64, 174, 8, 18, "#b38c56");

@@ -9,8 +9,8 @@ const locate = name => {
   return link(name, match.index);
 };
 const scenes = [
-  ['Sala principal', 'drawBaseScene', 'Suelo, paredes, puertas, estaciones, cestos, protagonista, asistentes y relojes'],
-  ['Triturador', 'drawBaseScene', 'Pacas, tolva, motor, cesto de paja desordenada, cola, selección y carga'],
+  ['Sala principal', 'drawMainRoom', 'Suelo, paredes, puertas, estaciones, cestos, protagonista, asistentes y relojes'],
+  ['Triturador', 'drawCrusherStation', 'Pacas, tolva, motor, cesto de paja desordenada, cola, selección y carga'],
   ['Mezcla', 'drawMix', 'Vitrina, micelios, cesto, bandeja/llenadora, bacterias, limpieza, bolsa y salida'],
   ['Pasteurizado', 'drawPasteur', 'Tanque por capacidad, agua, llave, cal, paja, reserva, guía y reloj'],
   ['Oficina', 'drawWarehouse', 'Inventario, ficha de especie, colores y acceso a pedidos'],
@@ -47,7 +47,7 @@ Generado con \`npm run catalog\` desde la fuente única. Los enlaces apuntan a l
 3. Probar estados vacío, parcial, trabajando, listo, falta de material, mejora y arrastre.
 4. Verificar en horizontal/vertical, generar catálogo y ejecutar pruebas/build.
 
-El juego dibuja sus sprites en canvas de 320 × 240 mediante código; no usa una colección externa de imágenes para estos objetos. Las capturas de QA no son recursos de juego.
+El juego conserva un mundo lógico de 320 × 240 y dibuja sus sprites mediante código sobre un canvas de 640 × 480; no usa una colección externa de imágenes para estos objetos. Las capturas de QA no son recursos de juego.
 
 ## Estaciones y elementos
 

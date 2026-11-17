@@ -56,3 +56,7 @@ Química A–D: puerta inferior tras cosechar Cordyceps; primero extracción/env
 Juego: https://beefungislp-sys.github.io/lab-beefungi/
 
 Respaldo: https://github.com/beefungislp-sys/lab-beefungi
+
+## Primera muestra de arte cálido
+
+[Muestra visual de sala y triturador](outputs/TANDA-MUESTRA-VISUAL-CALIDA.md): primera aplicación del rumbo de 16 bits, con madera, luz de ventana, acero y cestos con fibras. Mundo lógico de 320 × 240 sobre un lienzo doble para detalles más finos; conserva controles, reglas y geometrías. El resto de estaciones mantiene su arte anterior por ahora.
