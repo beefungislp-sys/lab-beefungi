@@ -7,7 +7,7 @@
 | Etapa | Condición | Lo que aparece |
 |---|---|---|
 | Inicio | Nueva partida | Pleurotus, triturador, pasteurizado, mezcla, oficina/pedidos e incubación/fructificación básicas de 4 espacios |
-| Tienda | Primera cosecha de Pleurotus | Puerta superior y venta manual de la cosecha |
+| Tienda | Primera cosecha de Pleurotus | Puerta superior, primer cliente listo para comprar una porción de Pleurotus y venta manual de la cosecha |
 | Mejoras | Primera venta válida | Siguiente mejora de cada estación visitada, gratis |
 | Sala estéril | Hito principal completo | Puerta izquierda, Melena de León, sustrato de madera, nutrientes y las tres estaciones estériles; primer asistente disponible para contratar |
 | Reishi | Primera cosecha de Melena de León | Micelio, ficha e inoculación de Reishi |

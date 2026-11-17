@@ -3201,7 +3201,8 @@
       }
       const staying = [];
       for (const customer of shopQueue) {
-        customer.wait += dt;
+        // El cliente de bienvenida espera su primera entrega; los demás conservan su paciencia.
+        if (!customer.firstCustomer) customer.wait += dt;
         if (customer.wait >= 60) {
           customer.x = 228;
           shopDeparting.push(customer);
@@ -8426,6 +8427,18 @@
       }
       if (!shopUnlocked && progression.harvested.has("Pleurotus")) {
         shopUnlocked = true;
+        // Primera venta sin espera: una porción de la especie inicial.
+        shopQueue.unshift({
+          id: ++customerSerial,
+          species: "Pleurotus",
+          y: 143,
+          bought: 0,
+          requested: 1,
+          remaining: 1,
+          wait: 0,
+          firstCustomer: true,
+          color: "#6d9aa5",
+        });
         changed = true;
         queueUnlock(
           "Desbloqueaste la tienda. Ahora puedes vender tu cosecha por la puerta superior.",

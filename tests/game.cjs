@@ -266,4 +266,11 @@ auxView='pasteur';loads=1;tank.water=true;tank.lime=true;cv.onpointerdown({clien
 check('Iconos drag: bolsa vacia conserva silueta y cosecha solo mueve hongos',`
 let empty=0,bagsDrawn=0,fruit=0;drawEmptySubstrateBag=()=>empty++;drawIncubationContainer=()=>bagsDrawn++;drawSpeciesFruit=()=>fruit++;prepMode='wood';drag={kind:'woodBag',moved:true,now:{x:150,y:200}};drawDragPreview();if(empty!==1||bagsDrawn)throw Error('Bolsa llena');fruitShelves[0]={species:'Reishi',fruitProgress:1,flush:0};drag={kind:'harvestbag',slot:0,moved:true,now:{x:150,y:200}};drawDragPreview();if(fruit!==1||bagsDrawn)throw Error('Arrastra bloque');drag.now={x:250,y:220};drawDragPreview();if(bagsDrawn!==1)throw Error('Composta no bloque');cv.onpointercancel();if(dragPreviewLayout()!==null)throw Error('Cancelacion');
 `);
-console.log('140 grupos de verificacion aprobados.');
+
+checkProgression('tienda abre con cliente listo para comprar la primera cosecha',`
+fruitShelves[0]={species:'Pleurotus',fruitProgress:1,fruitQuality:1};harvestBag(0);if(!shopUnlocked||shopQueue.length!==1)throw Error('Sin cliente');const first=shopQueue[0];if(!first.firstCustomer||first.species!=='Pleurotus'||first.remaining!==1||first.requested!==1||!customerReady(first))throw Error('Pedido inicial');enterShop();updateShopControls();if(document.querySelector('#shop-serve').disabled||!serveShopCustomer(first.id)||shopQueue.length||shopInventoryGrams('Pleurotus')!==250||!hasFirstSale())throw Error('Venta inmediata');
+`);
+checkProgression('bienvenida unica espera al jugador y mantiene llegadas y paciencia normales',`
+progression.harvested.add('Pleurotus');refreshProgression();const first=shopQueue[0];for(let i=0;i<5;i++)refreshProgression();if(shopQueue.length!==1)throw Error('Duplicado');shopNextArrival=20;advanceShop(19);if(shopQueue.length!==1)throw Error('Llegada antes');advanceShop(1);if(shopQueue.length!==2||shopNextArrival<20||shopNextArrival>30)throw Error('Llegadas');const next=shopQueue[1];advanceShop(60);if(!shopQueue.includes(first)||first.wait!==0||shopQueue.includes(next))throw Error('Paciencia');fruitShelves[0]={species:'Pleurotus',fruitProgress:1,fruitQuality:1};harvestBag(0);if(shopQueue.filter(c=>c.firstCustomer).length!==1)throw Error('Repite cosecha');
+`);
+console.log('142 grupos de verificacion aprobados.');
