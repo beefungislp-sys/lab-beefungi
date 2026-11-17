@@ -1,0 +1,12 @@
+# Referencias de estaciones estériles
+
+- `CAMPANA-FLUJO-CONCEPTO.png`: referencia aprobada por el usuario y adaptada al canvas del juego.
+- `ESTERILIZADOR-CONCEPTO.png`: nueva propuesta visual, pendiente de adaptación al juego.
+
+Ambas se generaron con la herramienta integrada `image_gen`, sin CLI. Son referencias de arte, no instrucciones técnicas de laboratorio. Se preservan los originales generados.
+
+## Prompt final del esterilizador
+
+```text
+Use case: stylized-concept. Generate ONE new visual inspiration image for the pressure sterilizer station in the game Lab BeeFungi. The attached image is the APPROVED STYLE REFERENCE for the laminar flow hood; design a DIFFERENT station, the sterilizer, coherent with that image. Cozy crisp 16-bit pixel art, cream upper wall, sage tiled room, blue-green stainless steel, warm fixed light, honey trim, restrained texture and contact shadows, no photorealistic 3D. Landscape game-station concept. A large central stainless pressure cooker/autoclave with stepped rounded pixel silhouette sits securely on a sturdy proportional steel laboratory bench with visible legs. Beautiful curved metal highlights, two dark insulated side handles, thick removable lid, readable small round pressure gauge and valve. In the primary large panel show the pot OPEN, lid lifted and visibly resting securely on a dedicated stand to the right, empty visible basket inside ready for two sealed transparent bags of tan fibrous substrate. Small faucet directly above the pot, prominent red handle. On a narrow left steel cart/shelf are two sealed prepared substrate bags and two glass nutrient jars, organized with generous space. Clean worktop, no floating objects. A small bottom strip shows TWO small detail states of the SAME cooker: closed lid with small warm steam puffs and a circular process clock, then open with ready sterilized bags. This is a visual game mockup to later recreate in code; do not introduce extra machines, recipes or controls. One restrained pixel heading exactly 'ESTERILIZADOR'. No other words or numbers, no explanatory callouts, no chemical hazard symbols, no flames, no watermarks. Keep a simple attractive silhouette readable on mobile, same materials and palette as the approved hood.
+```

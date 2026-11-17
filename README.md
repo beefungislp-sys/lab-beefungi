@@ -92,3 +92,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Cuarto de química con el acabado cálido
 
 [Pulido de química](outputs/TANDA-PULIDO-CUARTO-QUIMICA.md): sala, destilador, envasadora, reactivos y reactor de espirulina integrados al estilo del laboratorio. Proporciones, soportes, reflejos y etiquetas ajustados, conservando procesos y controles.
+
+## Campana basada en la referencia
+
+[Campana abierta](outputs/TANDA-CAMPANA-REFERENCIA.md): filtro delgado, luz cálida, mesa con profundidad y patas propias, compartidos por sus tres medios y la miniatura. Las [referencias de arte](outputs/referencias/README.md) incluyen también una propuesta nueva para el esterilizador.

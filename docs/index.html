@@ -4099,17 +4099,22 @@
           );
         } else if (st.view === "glovebox") {
           const gw = gloveLevel < 2 ? 60 : 83;
-          box(x + 15, y + 8, gw, 26, "#accac5");
           if (gloveLevel >= 3) {
-            for (let j = 0; j < 7; j++)
-              box(x + 20 + j * 10, y + 10, 5, 8, "#6a8d91");
+            drawLaminarFlowHood(x + 15, y + 3, gw, 31, true);
+            c.save();
+            c.translate(x + 23, y + 20);
+            c.scale(0.5, 0.5);
+            jar(0, 0);
+            c.restore();
+            drawPreparedSubstrateBag(x + 66, y + 16, 0.45, true);
           } else {
+            box(x + 15, y + 8, gw, 26, "#accac5");
             box(x + 26, y + 17, 11, 10, "#6a8d91");
             box(x + gw - 3, y + 17, 11, 10, "#6a8d91");
             box(x + 29, y + 22, 7, 9, "#d5cbb1");
             box(x + gw, y + 22, 7, 9, "#d5cbb1");
+            drawSterileHousingDetail(x + 15, y + 8, gw, 26);
           }
-          drawSterileHousingDetail(x + 15, y + 8, gw, 26, false);
           if (woodBagJob)
             drawProcessClock(x + 103, y + 15, 9, woodBagJob.t / 2.5);
           smallText("EN ESPERA " + waitingIncubation, x + 4, y + h + 20);
@@ -4897,6 +4902,91 @@
         c.scale(0.78, 0.78);
       }
     }
+    function drawLaminarFlowHood(
+      x = 97,
+      y = 63,
+      w = 164,
+      h = 127,
+      miniature = false,
+    ) {
+      // Frente abierto: filtro poco profundo, respaldo y plano de trabajo separados.
+      const header = miniature ? 7 : 25,
+        lip = miniature ? 3 : 10,
+        side = miniature ? 3 : 6,
+        floorY = y + h * 0.53,
+        frontY = y + h - lip;
+      softShadow(x + w / 2, y + h + 3, w * 0.54, miniature ? 2 : 4, 0.18);
+      box(x + side, y + header, w - side * 2, frontY - y - header, "#d8d9bd");
+      artRect(x + side + 1, y + header + 2, w - side * 2 - 2, 1, "#ede8c7");
+      if (!miniature)
+        softLight(
+          x + w / 2,
+          y + header + 12,
+          w * 0.47,
+          38,
+          "255,238,183",
+          0.22,
+        );
+      box(x + side, floorY, w - side * 2, frontY - floorY, "#acbdb0");
+      artRect(x + side + 1, floorY, w - side * 2 - 2, 1, "#6e9290");
+      for (let i = 0; i < (miniature ? 3 : 11); i++) {
+        const yy = floorY + 3 + i * (miniature ? 2 : 4);
+        if (yy < frontY - 1)
+          artRect(
+            x + side + 4,
+            yy,
+            w - side * 2 - 8,
+            0.5,
+            i % 3 ? "#b6c6b7" : "#c8d1bd",
+          );
+      }
+      for (const sx of [x, x + w - side]) {
+        box(sx, y + header - 1, side, h - header + 1, "#6e9294");
+        artRect(sx + 1, y + header, 1, h - header - 2, "#d3dfc9");
+        artRect(sx + side - 1, y + header, 1, h - header, "#4f777e");
+      }
+      box(x, y, w, header, "#77999a");
+      box(x + 2, y + 2, w - 4, header - 4, "#99b1ab");
+      artRect(x + 1, y, w - 2, 1, "#e8e9cb");
+      artRect(x + 3, y + 3, w - 6, 0.5, "#c9d7c3");
+      const gx = x + side + 1,
+        gy = y + (miniature ? 2 : 8),
+        gh = miniature ? 3 : 11;
+      box(gx, gy, w - side * 2 - 2, gh, "#6d8985");
+      for (let xx = gx + 2; xx < x + w - side - 2; xx += miniature ? 3 : 4)
+        artRect(xx, gy + 1, 1, gh - 2, "#cbd2b7");
+      if (!miniature)
+        for (let yy = gy + 2; yy < gy + gh; yy += 3)
+          artRect(gx + 1, yy, w - side * 2 - 4, 0.5, "#a8bca9");
+      box(
+        x + side + 7,
+        y + header,
+        w - side * 2 - 14,
+        miniature ? 1 : 3,
+        "#f4d999",
+      );
+      artRect(
+        x + side + 9,
+        y + header,
+        w - side * 2 - 18,
+        miniature ? 0.5 : 1,
+        "#fff2c3",
+      );
+      box(x - 1, frontY, w + 2, lip, "#7f9f9c");
+      artRect(x, frontY, w, miniature ? 1 : 2, "#e0e5cb");
+      artRect(x + 1, y + h - 1, w - 2, 1, "#4c7479");
+      if (!miniature) {
+        for (const lx of [x + 5, x + w - 10]) {
+          box(lx, y + h, 5, 21, "#759796");
+          artRect(lx + 1, y + h, 1, 19, "#c9dac6");
+          box(lx - 2, y + h + 19, 9, 3, "#557c7d");
+        }
+        box(x + 9, y + h + 14, w - 18, 3, "#7f9f98");
+        artRect(x + 10, y + h + 14, w - 20, 0.5, "#c4d4be");
+        for (const xx of [x + 4, x + w - 6])
+          artRect(xx, y + 6, 2, 2, "#e6e7c8");
+      }
+    }
     function drawGloveStation() {
       if (isCordyBlockHood()) {
         drawCordyBlockHood();
@@ -4909,16 +4999,7 @@
       c.save();
       gloveTransform();
       if (gloveLevel >= 3) {
-        box(97, 57, 164, 133, "#7495a3");
-        box(102, 62, 154, 34, "#b7cbd0");
-        for (let i = 0; i < 13; i++) box(108 + i * 11, 67, 5, 23, "#6d919c");
-        box(103, 99, 152, 77, "#d3dfd3");
-        box(101, 94, 156, 5, "#edf0de");
-        for (let i = 0; i < 6; i++) {
-          const yy = 102 + ((performance.now() / 90 + i * 12) % 66);
-          box(114 + i * 25, yy, 1, 6, "#a6cfd1");
-        }
-        box(101, 177, 156, 12, "#8aafb3");
+        drawLaminarFlowHood();
       } else {
         box(97, 72, 164, 121, "#789ca2");
         box(104, 79, 150, 99, "#bbd0c6");
@@ -4931,24 +5012,28 @@
           for (let f = 0; f < 3; f++) box(xx + 5 + f * 4, 184, 3, 4, "#b9b799");
         }
       }
-      drawSterileHousingDetail(
-        97,
-        gloveLevel >= 3 ? 57 : 72,
-        164,
-        gloveLevel >= 3 ? 133 : 121,
-        gloveLevel >= 3,
-      );
+      if (gloveLevel < 3) drawSterileHousingDetail(97, 72, 164, 121);
       if (!woodBagJob) {
         const jarLimit = gloveLevel >= 3 ? 2 : 3,
           bagLimit = gloveLevel >= 3 ? 4 : 3;
-        for (let i = 0; i < Math.min(bagLimit, gloveAvailableBags()); i++)
+        for (let i = 0; i < Math.min(bagLimit, gloveAvailableBags()); i++) {
+          if (gloveLevel >= 3)
+            softShadow(
+              195 + (i % 2) * 25,
+              132 + Math.floor(i / 2) * 30,
+              12,
+              2,
+              0.13,
+            );
           drawPreparedSubstrateBag(
             181 + (i % 2) * 25,
             101 + Math.floor(i / 2) * 30,
             gloveLevel >= 2 ? 0.9 : 1.35,
             true,
           );
+        }
         for (let i = 0; i < Math.min(jarLimit, gloveAvailableJars()); i++) {
+          if (gloveLevel >= 3) softShadow(126 + i * 21, 131, 9, 2, 0.13);
           jar(119 + i * 21, 110);
           box(
             121 + i * 21,
@@ -5085,7 +5170,8 @@
       if (auxView === "woodPrep") drawStainlessTable(14, 92, 292, 98, 25);
       else if (auxView === "woodSterilizer")
         drawStainlessTable(110, 126, 196, 60, 34);
-      else drawStainlessTable(14, 98, 292, 96, 17);
+      else if (gloveLevel < 3 && !isCordyHood() && !isCordyBlockHood())
+        drawStainlessTable(14, 98, 292, 96, 17);
       if (auxView === "woodPrep") {
         drawWoodPrepStation();
       } else if (auxView === "woodSterilizer") {
@@ -6651,12 +6737,7 @@
       smallText("100%: DISPONIBLE EN CAMPANA", 126, 194);
     }
     function drawLiquidHood() {
-      box(97, 57, 164, 133, "#7495a3");
-      box(102, 62, 154, 34, "#b7cbd0");
-      for (let i = 0; i < 13; i++) box(108 + i * 11, 67, 5, 23, "#6d919c");
-      box(103, 99, 152, 77, "#d3dfd3");
-      box(101, 94, 156, 5, "#edf0de");
-      drawSterileHousingDetail(97, 57, 164, 133, true);
+      drawLaminarFlowHood();
       box(15, 37, 182, 23, speciesColor("Cordyceps"));
       smallText("CORDYCEPS / PETRI >", 21, 53);
       for (
@@ -6665,6 +6746,7 @@
         i++
       )
         drawPetri(24 + i * 5, 82 - i * 4);
+      drawSterileShelf(19, 100, 44);
       smallText("PETRI " + (micelio + micelioStock), 17, 121);
       smallText("FRASCOS " + liquidSterile, 17, 145);
       for (let i = 0; i < Math.min(liquidHoodJob ? 3 : 4, liquidSterile); i++)
@@ -7195,11 +7277,7 @@
       };
     }
     function drawCordyBlockHood() {
-      box(97, 57, 164, 133, "#7495a3");
-      box(102, 62, 154, 34, "#b7cbd0");
-      for (let i = 0; i < 13; i++) box(108 + i * 11, 67, 5, 23, "#6d919c");
-      box(103, 99, 152, 77, "#d3dfd3");
-      drawSterileHousingDetail(97, 57, 164, 133, true);
+      drawLaminarFlowHood();
       box(15, 37, 182, 23, speciesColor("Cordyceps"));
       smallText("SUSTRATO CORDYCEPS >", 21, 53);
       for (
@@ -7208,6 +7286,7 @@
         i++
       )
         drawLiquidJar(24 + i * 5, 82 - i * 4, 0.8, 1);
+      drawSterileShelf(19, 113, 44);
       smallText("CL MADURO " + matureLiquidCount(), 17, 130);
       smallText("ESTERILES " + sterileCordy, 17, 145);
       for (let i = 0; i < Math.min(liquidHoodJob ? 3 : 4, sterileCordy); i++)
