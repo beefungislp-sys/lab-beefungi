@@ -2200,8 +2200,77 @@
       text("PEDIDOS", 205, 193);
       smallText("Inventario + especie + compras", 61, 228);
     }
+    // === ACABADO CALIDO: CAMARAS Y SALA DE CULTIVO ===
+    // Todas las luces y texturas permanecen fijas; no modifican el cultivo.
+    function drawChamberRoom(title, area = "incubation") {
+      const fruit = area === "fruiting";
+      box(0, 0, 320, 240, "#a5b69e");
+      for (let y = 34; y < 240; y += 16)
+        for (let x = 8; x < 312; x += 16) {
+          const even = ((x - 8) / 16 + (y - 34) / 16) % 2;
+          box(x + 1, y, 15, 15, even ? "#bec9ad" : "#b1c0a5");
+          artRect(x + 2, y + 0.5, 13, 0.5, "#d4d8b9");
+        }
+      drawFloorTexture(8, 34, 312, 240);
+      softLight(80, 57, 66, 33, "255,240,197", 0.13);
+      softLight(244, 57, 58, 33, fruit ? "228,246,219" : "255,240,197", 0.12);
+      box(0, 0, 320, 31, fruit ? "#e5e5c7" : warmPalette.wall);
+      drawWallTexture();
+      box(0, 29, 320, 5, "#a2815c");
+      artRect(0, 29, 320, 0.5, "#e3c795");
+      artRect(0, 33, 320, 0.5, "#765b40");
+      for (const x of [2, 313]) {
+        box(x, 34, 5, 206, "#c3a77a");
+        artRect(x, 34, 1, 206, "#e0c99a");
+        artRect(x + 4, 34, 1, 206, "#987c56");
+      }
+      // Rejilla y luminaria pequeñas: detalles de ambiente sin controles nuevos.
+      box(16, 8, 28, 14, "#73938b");
+      artRect(17, 8, 26, 1, "#d9dfc4");
+      for (let j = 0; j < 4; j++) artRect(20, 11 + j * 2, 20, 0.5, "#c5d3ba");
+      box(49, 8, 3, 13, "#f4e8b8");
+      artRect(49, 9, 1, 10, "#fff5d6");
+      text(title, 62, 20);
+    }
+    function drawChamberRack(r, locked = false, overview = false) {
+      const [x, y, w, h] = r;
+      softShadow(x + w / 2, y + h + 2, w * 0.56, 4, 0.24);
+      box(x + 2, y + 2, w - 2, h, "#819780");
+      box(x, y, w, h, locked ? "#81938a" : "#698d87");
+      box(x + 4, y + 4, w - 8, h - 8, locked ? "#a1ad98" : "#a9bca3");
+      for (let yy = y + 7; yy < y + h - 14; yy += 7)
+        artRect(x + 5, yy, w - 10, 0.5, locked ? "#94a18e" : "#9aaf98");
+      box(x, y, w, 3, "#bdd0bb");
+      artRect(x + 1, y, w - 2, 0.5, "#edf0d2");
+      box(x, y + 3, 3, h - 3, "#8eafa1");
+      box(x + w - 3, y + 3, 3, h - 3, "#426b70");
+      artRect(x + 1, y + 4, 0.5, h - 5, "#d6dfc5");
+      const footer = overview ? 5 : 13;
+      box(x + 3, y + h - footer, w - 6, footer - 2, "#d6c79d");
+      artRect(x + 4, y + h - footer, w - 8, 1, "#f2dfb1");
+      artRect(x + 3, y + h - 2, w - 6, 1, "#6e7058");
+      for (const xx of [x + 1, x + w - 2])
+        for (const yy of [y + 5, y + h - 5]) artRect(xx, yy, 1, 1, "#e9e4c6");
+      if (!locked && !overview)
+        softShadow(x + w / 2, y + h - 15, w * 0.32, 2, 0.14);
+    }
+    function drawClimatePanel(view) {
+      const label =
+        view === "incubation"
+          ? speciesProfile.incubationModes[climate]
+          : speciesProfile.fruitingModes[fruitClimate];
+      smallText("AMBIENTE COMPARTIDO", 14, 47);
+      box(210, 31, 94, 22, "#8b795a");
+      box(211, 32, 92, 19, "#e7c581");
+      artRect(212, 32, 90, 1, "#fff0b9");
+      artRect(302, 34, 1, 16, "#b18d59");
+      box(215, 36, 2, 9, "#a87c56");
+      box(214, 44, 4, 3, "#b66e51");
+      artRect(215, 37, 0.5, 6, "#fff0c6");
+      text(label, 223, 46);
+    }
     function drawCultivation() {
-      roomBase("INCUBACION / FRUCTIFICACION");
+      drawChamberRoom("INCUBACION / FRUCTIFICACION", "overview");
       box(159, 30, 3, 94, "#5c7780");
       box(159, 175, 3, 45, "#5c7780");
       text("INCUBACION", 33, 48);
@@ -2210,8 +2279,7 @@
         for (let row = 0; row < 2; row++) {
           const x = side ? 181 : 25,
             y = 65 + row * 90;
-          box(x, y, 115, 3, "#5a7780");
-          box(x, y + 39, 115, 5, "#71928d");
+          drawChamberRack([x, y, 115, 44], false, true);
           for (let j = 0; j < 4; j++) {
             if (row * 4 + j >= (side ? fruitingCapacity : incubationCapacity)) {
               box(x + 5 + j * 27, y + 6, 20, 30, "#63766f");
@@ -2388,6 +2456,14 @@
       box(5, 12, 2, 16, "#eef0dc");
       box(23, 14, 1, 12, "#e5ead8");
       box(7, 32, 16, 2, "#e0dfc7");
+      artRect(4, 13, 0.5, 15, "#a4b49f");
+      artRect(25, 13, 0.5, 15, "#879f95");
+      artRect(7, 8, 3, 0.5, "#fff2d5");
+      artRect(8, 30, 12, 0.5, "#fff0cf");
+      artRect(6, 28, 2, 0.5, "#b8c8b1");
+      artRect(21, 29, 2, 0.5, "#a8baa9");
+      artRect(11, 3, 7, 0.5, "#f6f1d8");
+      artRect(10, 7, 10, 0.5, "#b8d1bd");
       c.restore();
     }
     function drawBagCart(x, n, label, ready) {
@@ -2403,10 +2479,8 @@
       box(x + 100, 227, 9, 6, "#304554");
     }
     function drawIncubation() {
-      roomBase("CAMARA DE INCUBACION");
-      text("AMBIENTE COMPARTIDO", 14, 47);
-      box(210, 31, 94, 22, "#edbd69");
-      text(speciesProfile.incubationModes[climate], 220, 46);
+      drawChamberRoom("CAMARA DE INCUBACION");
+      drawClimatePanel("incubation");
       incSlots.forEach((r, i) => {
         const [x, y, w, h] = r,
           b = incubation[i];
@@ -2414,8 +2488,7 @@
           drawLockedShelf(r);
           return;
         }
-        box(x, y, w, h, "#607e83");
-        box(x, y + h - 4, w, 4, "#d5b17a");
+        drawChamberRack(r);
         if (b) {
           box(x + 3, y + 4, 6, 6, speciesColor(b.species || "Pleurotus"));
           drawIncubationContainer(b, x + 16, y + 4);
@@ -2523,11 +2596,21 @@
     }
     function drawFruitCart(x, n, label, kind, progress = 1) {
       text(label, x + 2, 198);
-      box(x, 205, 90, 20, "#8aabb0");
+      softShadow(x + 45, 231, 46, 4, 0.25);
+      box(x, 205, 90, 20, "#70938f");
       box(x + 3, 207, 84, 15, kind === "compost" ? "#79664c" : "#4d707c");
-      box(x + 83, 200, 3, 26, "#d2ded0");
-      box(x + 10, 228, 8, 5, "#304554");
-      box(x + 70, 228, 8, 5, "#304554");
+      box(x, 205, 90, 2, "#d3ddc3");
+      artRect(x + 1, 205, 88, 0.5, "#f5ebcf");
+      box(x + 83, 200, 3, 26, "#a9c2b0");
+      box(x + 79, 199, 8, 2, "#dce3c9");
+      artRect(x + 84, 202, 0.5, 20, "#eff0d5");
+      for (const xx of [x + 10, x + 70]) {
+        box(xx, 227, 8, 6, "#304554");
+        artRect(xx + 2, 228, 4, 1, "#77918a");
+        artRect(xx + 3, 230, 2, 1, "#c9d2b8");
+      }
+      box(x + 1, 223, 88, 2, "#426970");
+      artRect(x + 2, 222, 80, 0.5, "#b5cbb7");
       for (let i = 0; i < Math.min(n, 4); i++) {
         if (kind === "input") {
           const source =
@@ -2547,7 +2630,11 @@
           drawSpeciesFruit(name, x + 4 + i * 18, 204, 1, 0.6, 2);
         }
       }
-      if (kind === "compost") smallText("VENDER 1 = 1 m", x + 3, 219);
+      if (kind === "compost") {
+        box(x + 1, 210, 88, 11, "#d2c39b");
+        artRect(x + 2, 210, 86, 0.5, "#f0dfb7");
+        smallText("VENDER 1 = 1 m", x + 3, 219);
+      }
       text(
         kind === "harvest"
           ? harvestCart.reduce((sum, h) => sum + (h.grams || 0), 0) + " g"
@@ -2738,10 +2825,8 @@
       );
     }
     function drawFruiting() {
-      roomBase("CAMARA DE FRUCTIFICACION");
-      text("AMBIENTE COMPARTIDO", 14, 47);
-      box(210, 31, 94, 22, "#edbd69");
-      text(speciesProfile.fruitingModes[fruitClimate], 215, 46);
+      drawChamberRoom("CAMARA DE FRUCTIFICACION", "fruiting");
+      drawClimatePanel("fruiting");
       incSlots.forEach((r, i) => {
         const [x, y, w, h] = r,
           b = fruitShelves[i];
@@ -2749,8 +2834,7 @@
           drawLockedShelf(r);
           return;
         }
-        box(x, y, w, h, "#638a83");
-        box(x, y + h - 4, w, 4, "#d5b17a");
+        drawChamberRack(r);
         if (b) {
           box(x + 2, y + 2, w - 4, 10, speciesColor(fruitSpecies(b)));
           smallText(speciesShort(fruitSpecies(b)), x + 3, y + 10);
@@ -3634,12 +3718,11 @@
     }
     function drawLockedShelf(r) {
       const [x, y, w, h] = r;
-      box(x, y, w, h, "#576d72");
-      box(x + 3, y + 3, w - 6, h - 7, "#728580");
+      drawChamberRack(r, true);
       box(x + 25, y + 16, 12, 12, "#b5b5a0");
       box(x + 27, y + 11, 8, 7, "#b5b5a0");
       box(x + 29, y + 13, 4, 4, "#576d72");
-      smallText("BLOQUEADO", x + 4, y + 46);
+      smallText("BLOQUEADO", x + 4, y + 51);
     }
     function drawChamberControl(view) {
       const cap = chamberCapacity(view),

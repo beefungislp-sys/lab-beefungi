@@ -22,4 +22,4 @@ No se incorporan el segundo canvas, capas móviles, ciclo ambiental ni suavizado
 
 ## Aplicación actual
 
-Sala principal y vistas cercanas de triturador, pasteurizado y mezcla. Los dibujantes compartidos transmiten el acabado a sus pacas, mesas y cestos. La extensión completa a cuarto estéril, cámaras, tienda y química se hará en pasadas posteriores.
+Sala principal, triturador, pasteurizado, mezcla, sala de cultivo cenital y cámaras de incubación y fructificación. Los dibujantes compartidos transmiten el acabado a pacas, mesas, cestos, estantes y carritos. La extensión completa a cuarto estéril, tienda y química se hará en pasadas posteriores.

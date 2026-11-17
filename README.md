@@ -68,3 +68,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Estilo visual de referencia
 
 [Guía visual](outputs/ESTILO-VISUAL-LAB-BEEFUNGI.md): pixel art cálido, texturas estables, volumen y sombras suaves, con mapa y luz fijos. [Adaptación de electronicwave](outputs/TANDA-TEXTURAS-SOMBRAS-FIJAS.md) documenta lo reutilizado del fork y su aplicación a sala principal, triturador, pasteurizado y mezcla.
+
+## Cámaras con el acabado cálido
+
+[Incubación y fructificación](outputs/TANDA-PULIDO-CAMARAS-CULTIVO.md): vista aérea, estantes de acero, carritos, panel de ambiente y bolsas integrados al estilo de texturas estables y sombras suaves. Conserva colonización, especies y reglas de cultivo.
