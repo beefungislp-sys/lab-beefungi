@@ -41,7 +41,7 @@ Química A–D: puerta inferior tras cosechar Cordyceps; primero extracción/env
 
 ## Progresión activa — prueba gratuita
 
-[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): condiciones actuales de cada desbloqueo. Pleurotus → primera cosecha/tienda → primera venta/mejoras → hito principal/sala estéril, Melena y primer asistente → cosecha Melena/Reishi → árbol estéril completo/Cordyceps, Petri inicial, agitación y segundo asistente → cosecha Cordyceps/victoria y extracción-envasado → primer gotero/mesa de química y espirulina. Sólo aparecen las opciones disponibles; las mejoras se reúnen en un menú superior con contador rojo. La mezcla principal permanece exclusiva de Pleurotus. [Guía del recorrido](outputs/TANDA-GUIA-RECORRIDO.md): una flecha encadena los módulos por primera vez y espera sus desbloqueos. [Nota de la tanda](outputs/TANDA-DESBLOQUEOS-GRATUITOS.md).
+[Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): condiciones actuales de cada desbloqueo. Pleurotus y mejoras de preparación desde el inicio → primera cosecha/tienda → primera venta/mejoras de cámaras → hito principal/sala estéril, Melena y primer asistente → cosecha Melena/Reishi → árbol estéril completo/Cordyceps, Petri inicial, agitación y segundo asistente → cosecha Cordyceps/victoria y extracción-envasado → primer gotero/mesa de química y espirulina. Sólo aparecen las opciones disponibles; las mejoras se reúnen en un menú superior con contador rojo. La mezcla principal permanece exclusiva de Pleurotus. [Guía del recorrido](outputs/TANDA-GUIA-RECORRIDO.md): una flecha encadena los módulos por primera vez y espera sus desbloqueos. [Nota de la tanda](outputs/TANDA-DESBLOQUEOS-GRATUITOS.md).
 
 ## Asistentes y cambios de receta
 
@@ -96,3 +96,8 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Campana basada en la referencia
 
 [Campana abierta](outputs/TANDA-CAMPANA-REFERENCIA.md): filtro delgado, luz cálida, mesa con profundidad y patas propias, compartidos por sus tres medios y la miniatura. Las [referencias de arte](outputs/referencias/README.md) incluyen también una propuesta nueva para el esterilizador.
+
+
+## Campana con sprite de la referencia
+
+[Sprite y mejoras iniciales](outputs/TANDA-SPRITE-CAMPANA-MEJORAS-INICIALES.md): campana transparente pixelizada a partir de la imagen aprobada, con materiales interactivos separados. Triturador, pasteurizado y mezcla ofrecen sus mejoras desde el inicio; se conserva el hito completo de sala estéril.

@@ -31,3 +31,8 @@ Los muebles bloqueados no se dibujan: aparecen al desbloquearlos, sin candados n
 ## Proporciones de estaciones estériles
 
 Los aparatos deben caber sobre su cubierta; las reservas descansan en mesas o repisas, sin flotar. Separar rótulos, patas y travesaños. Centrar la caída del agua sobre el recipiente y mantener los frascos dibujados dentro de sus zonas táctiles. Las miniaturas cenitales deben corresponder al medio seleccionado y dejar espacio entre aparato, reservas y etiquetas.
+
+
+## Prueba de sprites derivados de referencia
+
+La campana usa un sprite transparente extraído de la referencia aprobada y pixelizado. Sus ingredientes continúan dibujándose por separado para conservar interacción y animación. El asset se incorpora al HTML como data URI, con escalado sin suavizado y un dibujo de respaldo si no carga. El fondo del cuarto permanece fijo e independiente. Los siguientes assets se evaluarán antes de extender este método.

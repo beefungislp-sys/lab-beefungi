@@ -6,9 +6,9 @@
 
 | Condición | Desbloqueo |
 |---|---|
-| Inicio | Pleurotus, triturador, pasteurizado, mezcla principal, oficina y cámaras de cuatro espacios |
+| Inicio | Pleurotus, triturador, pasteurizado, mezcla principal, oficina y cámaras de cuatro espacios; menú Mejoras con las ramas de triturador, pasteurizado y mezcla comprables desde el inicio |
 | Primera cosecha de Pleurotus | Tienda con un primer cliente ya esperando una porción de Pleurotus |
-| Primera venta | Botón Mejoras en la barra superior; menú interno con todas las ofertas disponibles |
+| Primera venta | Se añaden al menú las mejoras de incubación y fructificación |
 | Hito principal completo | Sala estéril, Melena de León y contratación del primer asistente, juntos |
 | Primera cosecha de Melena | Reishi |
 | Árbol estéril completo y Reishi desbloqueado | Cordyceps, una placa Petri en inventario, agitación y contratación del segundo asistente, juntos |
@@ -53,6 +53,8 @@ Ambos conservan sus desbloqueos anteriores. El principal atiende Pleurotus; el d
 ## Menú de mejoras
 
 Botón integrado en la barra superior. Un contador rojo muestra cuántas compras/contrataciones se pueden realizar ahora. El panel se abre dentro del juego, agrupa todas las estaciones y enseña sólo la siguiente mejora de cada rama disponible. No aparecen árboles futuros.
+
+Las ramas de triturador, pasteurizado (capacidad y agua) y mezcla están disponibles desde el inicio, sin exigir una venta. Comprar una etapa ofrece la siguiente hasta completar la rama. Esto no abre por sí solo la sala estéril: también debe cumplirse la ampliación de ambas cámaras a seis, descrita en el hito principal.
 
 Una estación ocupada conserva su oferta deshabilitada hasta estar libre; no se cobra ni cambia de sala al comprar. Las mejoras completas y asistentes contratados dejan de ofrecerse. E, Escape, Regresar o × cierran el panel; no se camina ni se usan estaciones por debajo. Los avisos de desbloqueo cierran el panel para poder leerse.
 
