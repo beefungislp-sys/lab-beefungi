@@ -775,6 +775,8 @@
       preparedCordy = 0,
       sterileCordy = 0,
       cordySubStock = 3;
+    let prepModeRevision = 0,
+      sterilizerModeRevision = 0;
     const specialHoppers = {
       liquid: { sawdust: 0, nutrients: 0 },
       cordy: { sawdust: 0, nutrients: 0 },
@@ -798,6 +800,7 @@
         y: 145,
         task: null,
         action: 0,
+        notice: "",
       };
     let gloveLevel = 0,
       gloveJarQueue = [];
@@ -4730,6 +4733,35 @@
     function helperJar() {
       if (pleuroStock() && mixedJars < 6) addJar();
     }
+    // Una tarea conserva su contexto, se valida antes de caminar y antes de ejecutar,
+    // y sólo puede consumirse una vez. Las acciones no reservan ni descuentan material en viaje.
+    function createAssistantTask(scope, key, target, valid, action) {
+      const owner = scope === "main" ? helper : labHelper;
+      const task = {
+        scope,
+        key,
+        ...target,
+        completed: false,
+        cancelled: false,
+        valid: () =>
+          !task.completed && !task.cancelled && !owner.paused && valid(),
+        run: () => {
+          if (!task.valid()) return false;
+          task.completed = true;
+          action();
+          return true;
+        },
+      };
+      return task;
+    }
+    function cancelAssistantTask(assistant) {
+      if (assistant.task) assistant.task.cancelled = true;
+      assistant.task = null;
+      assistant.action = 0;
+    }
+    function hasFreeChamberSlot(slots, capacity) {
+      return slots.some((bag, i) => i < capacity && !bag);
+    }
     function helperShortage() {
       if (helper.paused) return "Falta saldo";
       if (!bags && !bagJob) return "Falta bolsas";
@@ -4750,46 +4782,111 @@
         !mixedStraw
       )
         return "Falta paja";
-      if (!tank.water && !waterRunning && !tank.left && (loads || tank.n))
-        return helper.hired && !helper.paused ? "" : "Falta agua";
-      if (bagsSinceClean >= 6 && !cleaning) return "Falta limpieza";
-      return "";
+      if (bagsSinceClean >= cleanInterval() && !cleaning)
+        return "Falta limpieza";
+      if (
+        waitingIncubation &&
+        !hasFreeChamberSlot(incubation, incubationCapacity)
+      )
+        return "Incubación llena";
+      return ""; // El agua la puede llenar el propio ayudante.
     }
     function nextHelperTask() {
-      if (!bags && !bagJob) return null;
-      if (bagsSinceClean >= 6 && cleaning && !bagJob)
-        return { x: 232, y: 147, run: cleanMix };
+      if (!bags) return null;
+      const activeTank = tank;
+      const task = (key, x, y, valid, run) =>
+        createAssistantTask(
+          "main",
+          key,
+          { x, y },
+          () => bags > 0 && valid(),
+          run,
+        );
+      if (bagsSinceClean >= cleanInterval() && cleaning && !bagJob)
+        return task(
+          "clean",
+          232,
+          147,
+          () => bagsSinceClean >= cleanInterval() && cleaning > 0 && !bagJob,
+          cleanMix,
+        );
       if (treatedLoads && mixedStraw < 6)
-        return { x: 232, y: 147, run: addStraw };
+        return task(
+          "straw",
+          232,
+          147,
+          () => treatedLoads > 0 && mixedStraw < 6,
+          addStraw,
+        );
       if (mixedStraw > mixedJars && pleuroStock() && mixedJars < 6)
-        return { x: 232, y: 147, run: helperJar };
+        return task(
+          "mycelium",
+          232,
+          147,
+          () => mixedStraw > mixedJars && pleuroStock() > 0 && mixedJars < 6,
+          helperJar,
+        );
+      const tankAvailable = () => tank === activeTank && !tank.left;
       if (!tank.left) {
         if (!tank.water && !waterRunning && (loads || tank.n))
-          return {
-            x: 232,
-            y: 129,
-            run: () => {
-              if (!tank.left && !tank.water && (loads || tank.n)) {
-                helperWaterPermit = true;
-                waterRunning = true;
-              }
+          return task(
+            "water",
+            232,
+            129,
+            () =>
+              tankAvailable() &&
+              !tank.water &&
+              !waterRunning &&
+              (loads > 0 || tank.n > 0),
+            () => {
+              helperWaterPermit = true;
+              waterRunning = true;
             },
-          };
+          );
         if (!tank.lime && lime && (loads || tank.n))
-          return { x: 232, y: 129, run: () => tankAdd("lime") };
+          return task(
+            "lime",
+            232,
+            129,
+            () =>
+              tankAvailable() &&
+              !tank.lime &&
+              lime > 0 &&
+              (loads > 0 || tank.n > 0),
+            () => tankAdd("lime"),
+          );
         if (
           loads &&
           tank.n < tankCapacity &&
           treatedLoads + tank.n < tankCapacity
         )
-          return { x: 232, y: 129, run: () => tankAdd("raw") };
+          return task(
+            "raw",
+            232,
+            129,
+            () =>
+              tankAvailable() &&
+              loads > 0 &&
+              tank.n < tankCapacity &&
+              treatedLoads + tank.n < tankCapacity,
+            () => tankAdd("raw"),
+          );
       }
       if (
         bales &&
         crusherQueue + (job ? 1 : 0) < crusherCapacity() &&
         loads < basketCapacity()
       )
-        return { x: 87, y: 129, run: queueBale };
+        return task(
+          "bale",
+          87,
+          129,
+          () =>
+            bales > 0 &&
+            crusherQueue + (job ? 1 : 0) < crusherCapacity() &&
+            loads < basketCapacity(),
+          queueBale,
+        );
       return null;
     }
     function advanceAutomation(dt) {
@@ -4808,8 +4905,7 @@
       if (helper.paid >= 30) {
         if (!progressionPreview && saleCoins < 0.25) {
           helper.paused = true;
-          helper.task = null;
-          helper.action = 0;
+          cancelAssistantTask(helper);
           helper.notice = "Falta saldo";
           return;
         }
@@ -4819,6 +4915,10 @@
       }
       helper.paused = false;
       helper.notice = helperShortage();
+      if (helper.task?.valid && !helper.task.valid()) {
+        cancelAssistantTask(helper);
+        return;
+      }
       if (!helper.task) {
         helper.action = 0;
         helper.task = nextHelperTask();
@@ -4839,8 +4939,8 @@
       helper.action += dt;
       if (helper.action < 2) return;
       t.run();
-      helper.task = null;
-      helper.action = 0;
+      cancelAssistantTask(helper);
+      helper.notice = helperShortage();
     }
     function drawHelper() {
       if (!helper.hired) return;
@@ -4853,12 +4953,20 @@
       box(x - 4, y + 4, 3, 5 + step, "#344b62");
       box(x + 2, y + 4, 3, 6 - step, "#344b62");
       smallText(helper.paused ? "SIN SALDO" : "AYUDANTE", x - 22, y - 22);
-      if (helper.notice) {
-        const bx = Math.max(10, Math.min(220, x - 42));
-        box(bx, y - 49, 92, 20, "#fff0cb");
-        box(x - 2, y - 29, 5, 4, "#fff0cb");
-        smallText(helper.notice, bx + 4, y - 36);
-      }
+      drawAssistantNotice(helper.notice, x, y);
+    }
+    function drawAssistantNotice(notice, x, y, lift = 0) {
+      if (!notice) return;
+      const width = Math.min(
+        146,
+        Math.max(92, Math.ceil(notice.length * 4.3) + 10),
+      );
+      const bx = Math.max(8, Math.min(312 - width, x - width / 2));
+      const top = y - 49 - lift;
+      box(bx, top, width, 20, "#fff0cb");
+      box(x - 2, top + 20, 5, 4, "#fff0cb");
+      if (lift) box(x, top + 24, 1, lift, "#fff0cb");
+      smallText(notice, bx + 5, top + 13);
     }
     function updateUpgradeControls() {
       const chamber = auxView === "incubation" || auxView === "fruiting",
@@ -5270,111 +5378,308 @@
           ]
         : null;
     }
-    function guardLabShelf(shelf, index, run) {
-      const expected = shelf[index];
-      return () => {
-        if (shelf[index] === expected) run(index);
-      };
+    function labShelfTask(key, shelf, index, predicate, run) {
+      const expected = shelf[index],
+        flush = expected?.flush || 0;
+      const capacity = () =>
+        shelf === incubation ? incubationCapacity : fruitingCapacity;
+      return createAssistantTask(
+        "cultivation",
+        key,
+        { room: "cultivation", x: shelf === incubation ? 85 : 235 },
+        () =>
+          index < capacity() &&
+          shelf[index] === expected &&
+          predicate(expected) &&
+          (expected?.flush || 0) === flush,
+        () => run(index),
+      );
     }
     function nextLabTask() {
-      const task = (room, x, run) => ({ room, x, run });
       const incMode = majorityMode(incubation, "incubation"),
         fruitMode = majorityMode(fruitShelves, "fruiting");
       if (incMode !== null && climate !== incMode)
-        return task(
+        return createAssistantTask(
           "cultivation",
-          85,
-          () => (climate = majorityMode(incubation, "incubation") ?? climate),
+          "incClimate",
+          { room: "cultivation", x: 85 },
+          () =>
+            majorityMode(incubation, "incubation") === incMode &&
+            climate !== incMode,
+          () => {
+            climate = incMode;
+          },
         );
       if (fruitMode !== null && fruitClimate !== fruitMode)
-        return task(
+        return createAssistantTask(
           "cultivation",
-          235,
+          "fruitClimate",
+          { room: "cultivation", x: 235 },
           () =>
-            (fruitClimate =
-              majorityMode(fruitShelves, "fruiting") ?? fruitClimate),
+            majorityMode(fruitShelves, "fruiting") === fruitMode &&
+            fruitClimate !== fruitMode,
+          () => {
+            fruitClimate = fruitMode;
+          },
         );
-      let i = incubation.findIndex((b) => b?.contaminated);
-      if (i >= 0)
-        return task(
-          "cultivation",
-          85,
-          guardLabShelf(incubation, i, compostIncubation),
-        );
-      i = fruitShelves.findIndex((b) => b?.exhausted);
-      if (i >= 0)
-        return task(
-          "cultivation",
-          235,
-          guardLabShelf(fruitShelves, i, compostBlock),
-        );
-      i = fruitShelves.findIndex(
-        (b) => b && b.fruitProgress >= 1 && !b.exhausted,
+      let i = incubation.findIndex(
+        (b, i) => i < incubationCapacity && b?.contaminated,
       );
       if (i >= 0)
-        return task(
-          "cultivation",
-          235,
-          guardLabShelf(fruitShelves, i, harvestBag),
+        return labShelfTask(
+          "compostInc",
+          incubation,
+          i,
+          (b) => !!b?.contaminated,
+          compostIncubation,
+        );
+      i = fruitShelves.findIndex(
+        (b, i) => i < fruitingCapacity && b?.exhausted,
+      );
+      if (i >= 0)
+        return labShelfTask(
+          "compostFruit",
+          fruitShelves,
+          i,
+          (b) => !!b?.exhausted,
+          compostBlock,
+        );
+      i = fruitShelves.findIndex(
+        (b, i) =>
+          i < fruitingCapacity && b && b.fruitProgress >= 1 && !b.exhausted,
+      );
+      if (i >= 0)
+        return labShelfTask(
+          "harvest",
+          fruitShelves,
+          i,
+          (b) => b && b.fruitProgress >= 1 && !b.exhausted,
+          harvestBag,
         );
       i = fruitShelves.findIndex((b, i) => i < fruitingCapacity && !b);
-      if (fruitingCart.length && i >= 0)
-        return task("cultivation", 235, () => placeFruiting(i));
-      i = incubation.findIndex((b) => b && !b.contaminated && b.progress >= 1);
-      if (i >= 0)
-        return task(
+      if (fruitingCart.length && i >= 0) {
+        const index = i,
+          head = fruitingCart[0];
+        return createAssistantTask(
           "cultivation",
-          85,
-          guardLabShelf(incubation, i, moveToFruiting),
+          "placeFruit",
+          { room: "cultivation", x: 235 },
+          () =>
+            index < fruitingCapacity &&
+            !fruitShelves[index] &&
+            fruitingCart[0] === head,
+          () => placeFruiting(index),
+        );
+      }
+      i = incubation.findIndex(
+        (b, i) =>
+          i < incubationCapacity && b && !b.contaminated && b.progress >= 1,
+      );
+      if (i >= 0)
+        return labShelfTask(
+          "moveToFruit",
+          incubation,
+          i,
+          (b) => b && !b.contaminated && b.progress >= 1,
+          moveToFruiting,
         );
       i = incubation.findIndex((b, i) => i < incubationCapacity && !b);
-      if (waitingIncubation && i >= 0)
-        return task("cultivation", 85, () => placeIncubation(i));
+      if (waitingIncubation && i >= 0) {
+        const index = i,
+          head = waitingBagData[0],
+          count = waitingIncubation;
+        return createAssistantTask(
+          "cultivation",
+          "placeInc",
+          { room: "cultivation", x: 85 },
+          () =>
+            index < incubationCapacity &&
+            !incubation[index] &&
+            waitingIncubation > 0 &&
+            waitingBagData[0] === head &&
+            (head !== undefined || waitingIncubation === count),
+          () => placeIncubation(index),
+        );
+      }
+      // El tipo cargado se captura, nunca se lee el selector al llegar a la olla.
+      const selectedInput = sterilizerMode,
+        inputRevision = sterilizerModeRevision,
+        tankRef = woodTank,
+        items = woodTank.items;
+      const tankContext = () =>
+        sterilizerMode === selectedInput &&
+        sterilizerModeRevision === inputRevision &&
+        woodTank === tankRef &&
+        woodTank.items === items &&
+        !woodTank.left &&
+        (woodTank.lid || 0) <= 0.1;
+      const tankTask = (key, valid, action, medium) =>
+        createAssistantTask(
+          "sterilizer",
+          key,
+          { room: "sterileRoom", x: 235, medium },
+          () => tankContext() && valid(),
+          action,
+        );
       if (!woodTank.left && (woodTank.lid || 0) <= 0.1) {
-        if (
-          preparedFor(sterilizerMode) &&
-          woodTank.n < woodCapacity &&
-          compatibleTankType(sterilizerMode)
-        )
-          return task("sterileRoom", 235, loadWood);
+        const types = [
+          ...new Set([selectedInput, prepMode, "wood", "cordy", "liquid"]),
+        ];
+        const type = types.find(
+          (type) => preparedFor(type) > 0 && compatibleTankType(type),
+        );
+        if (type && woodTank.n < woodCapacity)
+          return tankTask(
+            "load",
+            () =>
+              woodTank.n < woodCapacity &&
+              preparedFor(type) > 0 &&
+              compatibleTankType(type),
+            () => loadWood(type),
+            type,
+          );
         if (woodTank.n && woodTank.water < 1 && !woodTank.running)
-          return task("sterileRoom", 235, () => {
-            if (woodTank.n && !woodTank.left && woodTank.water < 1) {
+          return tankTask(
+            "sterileWater",
+            () => woodTank.n > 0 && woodTank.water < 1 && !woodTank.running,
+            () => {
               labFill.sterile = true;
               woodTank.running = true;
-            }
-          });
+            },
+          );
         if (woodTank.n && woodTank.water >= 1)
-          return task("sterileRoom", 235, startWoodCycle);
+          return tankTask(
+            "sterilize",
+            () => woodTank.n > 0 && woodTank.water >= 1,
+            startWoodCycle,
+          );
       }
       if (prepPausedAfterRemove) return null;
-      if (
-        woodPrepState.bag &&
-        woodPrepState.water < 1 &&
-        !woodPrepState.running
-      )
-        return task("sterileRoom", 85, () => {
-          if (woodPrepState.bag && woodPrepState.water < 1) {
+      const mode = prepMode,
+        revision = prepModeRevision,
+        hopper = activePrepHopper(),
+        prep = woodPrepState;
+      const prepContext = () =>
+        prepMode === mode &&
+        prepModeRevision === revision &&
+        activePrepHopper() === hopper &&
+        !prepPausedAfterRemove;
+      const prepTask = (key, valid, action) =>
+        createAssistantTask(
+          "prep",
+          key,
+          { room: "sterileRoom", x: 85, medium: mode },
+          () => prepContext() && valid(),
+          action,
+        );
+      if (prep.bag && prep.water < 1 && !prep.running)
+        return prepTask(
+          "prepWater",
+          () =>
+            woodPrepState === prep &&
+            prep.bag &&
+            prep.water < 1 &&
+            !prep.running,
+          () => {
             labFill.prep = true;
-            woodPrepState.running = true;
-          }
-        });
+            prep.running = true;
+          },
+        );
+      if (mode !== "liquid" && hopper.sawdust < 4 && materialStock())
+        return prepTask(
+          "substrate",
+          () =>
+            woodPrepLevel === 2 && hopper.sawdust < 4 && materialStock() > 0,
+          addWoodSawdust,
+        );
+      if (hopper.nutrients < 4 && nutrientStock)
+        return prepTask(
+          "nutrients",
+          () =>
+            woodPrepLevel === 2 && hopper.nutrients < 4 && nutrientStock > 0,
+          addWoodNutrients,
+        );
+      if (
+        !prep.bag &&
+        !woodPrepExit &&
+        (mode === "wood" ? bags : liquidEmpty) &&
+        (mode === "liquid" || hopper.sawdust) &&
+        hopper.nutrients
+      )
+        return prepTask(
+          "container",
+          () =>
+            woodPrepState === prep &&
+            !prep.bag &&
+            !woodPrepExit &&
+            (mode === "wood" ? bags > 0 : liquidEmpty > 0) &&
+            (mode === "liquid" || hopper.sawdust > 0) &&
+            hopper.nutrients > 0,
+          placeWoodPrepBag,
+        );
+      return null;
+    }
+    function labInoculationNotice() {
+      const types = [
+        ...new Set([prepMode, sterilizerMode, "wood", "liquid", "cordy"]),
+      ];
+      for (const type of types) {
+        if (!sterileFor(type) && !(type === "wood" && gloveWood)) continue;
+        if (type === "wood")
+          return speciesStockTotal("Melena de leon") +
+            speciesStockTotal("Reishi") +
+            gloveJarCount() >
+            0
+            ? "Falta inocular"
+            : "Falta micelio";
+        if (type === "liquid")
+          return speciesStockTotal("Cordyceps") > 0
+            ? "Falta inocular CL"
+            : "Falta Petri";
+        if (matureLiquidCount()) return "Falta inocular arroz";
+        if (liquidStirrers.some((j) => j && j.progress < 1))
+          return "Agitando CL";
+        return "Falta CL maduro";
+      }
+      if (liquidPending.length)
+        return liquidStirrers.filter(Boolean).length >= agitationCapacity
+          ? "Agitación llena"
+          : "Falta agitar CL";
+      return "";
+    }
+    function labHelperShortage() {
+      if (labHelper.paused) return "Falta saldo";
+      if (
+        fruitingCart.length &&
+        !hasFreeChamberSlot(fruitShelves, fruitingCapacity)
+      )
+        return "Fructificación llena";
+      if (
+        waitingIncubation &&
+        !hasFreeChamberSlot(incubation, incubationCapacity)
+      )
+        return "Incubación llena";
+      if (prepPausedAfterRemove) return "Preparación pausada";
+      const handoff = labInoculationNotice();
+      if (handoff) return handoff;
+      const prep = woodPrepState,
+        hopper = activePrepHopper();
+      if (
+        !prep.bag &&
+        !woodPrepExit &&
+        !(prepMode === "wood" ? bags : liquidEmpty)
+      )
+        return prepMode === "wood" ? "Falta bolsas" : "Falta frascos";
       if (
         prepMode !== "liquid" &&
-        activePrepHopper().sawdust < 4 &&
-        materialStock()
+        !prep.sawdust &&
+        !hopper.sawdust &&
+        !materialStock()
       )
-        return task("sterileRoom", 85, addWoodSawdust);
-      if (activePrepHopper().nutrients < 4 && nutrientStock)
-        return task("sterileRoom", 85, addWoodNutrients);
-      if (
-        !woodPrepState.bag &&
-        (prepMode === "wood" ? bags : liquidEmpty) &&
-        (prepMode === "liquid" || activePrepHopper().sawdust) &&
-        activePrepHopper().nutrients
-      )
-        return task("sterileRoom", 85, placeWoodPrepBag);
-      return null;
+        return prepMode === "wood" ? "Falta aserrín" : "Falta arroz";
+      if (!prep.nutrients && !hopper.nutrients && !nutrientStock)
+        return "Falta nutrientes";
+      return "";
     }
     function advanceLabHelper(dt) {
       if (progressionBypass && labUnlocked()) liquidUnlocked = true;
@@ -5383,6 +5688,8 @@
       if (labHelper.paid >= 30) {
         if (!progressionPreview && saleCoins < 0.5) {
           labHelper.paused = true;
+          cancelAssistantTask(labHelper);
+          labHelper.notice = "Falta saldo";
           return;
         }
         if (!progressionPreview)
@@ -5390,6 +5697,11 @@
         labHelper.paid -= 30;
       }
       labHelper.paused = false;
+      labHelper.notice = labHelperShortage();
+      if (labHelper.task?.valid && !labHelper.task.valid()) {
+        cancelAssistantTask(labHelper);
+        return;
+      }
       if (!labHelper.task) {
         labHelper.task = nextLabTask();
         labHelper.action = 0;
@@ -5415,8 +5727,8 @@
       labHelper.action += dt;
       if (labHelper.action < 2.5) return;
       task.run();
-      labHelper.task = null;
-      labHelper.action = 0;
+      cancelAssistantTask(labHelper);
+      labHelper.notice = labHelperShortage();
     }
     function drawLabHelper() {
       const room = auxView === null && !close ? "main" : auxView;
@@ -5429,6 +5741,15 @@
       box(x - 4, y + 7, 4, 5, "#344b62");
       box(x + 2, y + 7, 4, 5, "#344b62");
       smallText(labHelper.paused ? "SIN SALDO" : "LAB", x - 12, y - 23);
+      const lift =
+        room === "main" &&
+        helper.hired &&
+        helper.notice &&
+        labHelper.notice &&
+        Math.abs(x - helper.x) < 120
+          ? 26
+          : 0;
+      drawAssistantNotice(labHelper.notice, x, y, lift);
     }
     function openLiquid(view) {
       if (!liquidUnlocked) {
@@ -5440,7 +5761,7 @@
           say("Espera a terminar la preparación actual.");
           return;
         }
-        prepMode = "liquid";
+        setPrepRecipeMode("liquid");
         openWoodStation("woodPrep");
         return;
       }
@@ -5905,6 +6226,37 @@
     function canSwitchSterilizer() {
       return !woodTank.left && (woodTank.lid || 0) <= 0.1;
     }
+    function invalidateLabRecipe(scope) {
+      if (labHelper.task?.scope === scope) cancelAssistantTask(labHelper);
+      if (scope === "prep") {
+        if (labFill.prep) woodPrepState.running = false;
+        labFill.prep = false;
+      } else {
+        if (labFill.sterile) woodTank.running = false;
+        labFill.sterile = false;
+      }
+      labHelper.notice = labHelperShortage();
+    }
+    function setPrepRecipeMode(mode) {
+      if (!["wood", "liquid", "cordy"].includes(mode) || !canSwitchPrep())
+        return false;
+      if (prepMode !== mode) {
+        prepMode = mode;
+        prepModeRevision++;
+        invalidateLabRecipe("prep");
+      }
+      return true;
+    }
+    function setSterilizerRecipeMode(mode) {
+      if (!["wood", "liquid", "cordy"].includes(mode) || !canSwitchSterilizer())
+        return false;
+      if (sterilizerMode !== mode) {
+        sterilizerMode = mode;
+        sterilizerModeRevision++;
+        invalidateLabRecipe("sterilizer");
+      }
+      return true;
+    }
     function cycleStationMode() {
       if (!liquidUnlocked) return;
       if (auxView === "glovebox") {
@@ -5917,13 +6269,13 @@
           say("Termina el recipiente antes de cambiar de preparación.");
           return;
         }
-        prepMode = modes[(modes.indexOf(prepMode) + 1) % 3];
+        setPrepRecipeMode(modes[(modes.indexOf(prepMode) + 1) % 3]);
       } else if (auxView === "woodSterilizer") {
         if (!canSwitchSterilizer()) {
           say("Espera a que termine el ciclo y abra la olla.");
           return;
         }
-        sterilizerMode = modes[(modes.indexOf(sterilizerMode) + 1) % 3];
+        setSterilizerRecipeMode(modes[(modes.indexOf(sterilizerMode) + 1) % 3]);
       }
       say(
         "Modo " +
@@ -6245,9 +6597,9 @@
       labFill.prep = false;
       prepPausedAfterRemove = true;
       if (labHelper.task?.room === "sterileRoom" && labHelper.task.x === 85) {
-        labHelper.task = null;
-        labHelper.action = 0;
+        cancelAssistantTask(labHelper);
       }
+      labHelper.notice = labHelperShortage();
       say(
         "Recipiente devuelto. Contenido descartado; los depósitos conservan su reserva.",
       );
@@ -6261,7 +6613,7 @@
           card = visiblePreparedCards().find((card) => inside(p, card.r));
         if (card) {
           if (woodTank.left || (woodTank.lid || 0) > 0.1) return;
-          sterilizerMode = card.type;
+          setSterilizerRecipeMode(card.type);
           if (
             preparedFor(card.type) &&
             !woodTank.left &&

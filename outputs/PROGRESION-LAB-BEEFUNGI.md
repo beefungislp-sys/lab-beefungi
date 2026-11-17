@@ -46,6 +46,10 @@ Cosechar Cordyceps abre únicamente extracción y envasado. La mesa de química 
 
 La receta inicial de química pasa a solución de espirulina. Si se eligen nutrientes de hongos, la flecha indica cambiar receta; preparar nutrientes de hongos no completa el tutorial de solución. Si ya había una mezcla en marcha, permite terminarla y luego cambiar. La guía sigue sales A → B → mezcla terminada → garrafón de espirulina.
 
+## Asistentes
+
+Ambos conservan sus desbloqueos anteriores. El principal atiende Pleurotus; el de laboratorio sustrato, esterilizador y cámaras, con inoculación manual. Cambiar de receta cancela y replantea sus tareas afectadas; no se ejecuta una acción pendiente sobre otro medio. Ambos muestran avisos de faltantes/capacidad y el laboratorio señala los pasos manuales que faltan. El CL permanece sin contaminación por ahora.
+
 ## Menú de mejoras
 
 Botón integrado en la barra superior. Un contador rojo muestra cuántas compras/contrataciones se pueden realizar ahora. El panel se abre dentro del juego, agrupa todas las estaciones y enseña sólo la siguiente mejora de cada rama disponible. No aparecen árboles futuros.

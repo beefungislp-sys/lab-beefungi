@@ -98,6 +98,12 @@ ${dragIcons.map(match => `| \`${match[1]}\` | ${match[2]} | ${link(match[1], mat
 
 En celular/lápiz la tarjeta intenta medir 76 píxeles CSS y queda separada 52 píxeles del dedo; si falta espacio arriba, pasa al lado y se mantiene dentro del canvas. Se conserva un mínimo de escala para que los sprites aumenten respecto al dibujo anterior. El marcador amarillo pequeño sigue la posición real de entrega. La bolsa vacía sigue vacía, y la cosecha mueve hongos; al llevar a composta se ve el bloque.
 
+## Asistentes: planificación y avisos
+
+Tareas compartidas con contexto y ejecución única: ${locate('createAssistantTask')}; cancelación: ${locate('cancelAssistantTask')}. Preparación principal: ${locate('nextHelperTask')} y ${locate('advanceAutomation')}; laboratorio: ${locate('nextLabTask')} y ${locate('advanceLabHelper')}. Los cambios de receta pasan por ${locate('setPrepRecipeMode')} y ${locate('setSterilizerRecipeMode')}.
+
+Avisos de faltantes/capacidad/pasos manuales: ${locate('helperShortage')}, ${locate('labHelperShortage')} y ${locate('labInoculationNotice')}. Ambas burbujas comparten ${locate('drawAssistantNotice')}; la de laboratorio se eleva cuando quedan muy juntas en la sala principal.
+
 ## Paleta actual
 
 ${colors.length} colores hexadecimales encontrados en fuente/estilos. Son valores existentes, no una nueva paleta aprobada. La futura pasada puede agruparlos en tokens antes de cambiar colores.

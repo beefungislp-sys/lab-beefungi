@@ -43,6 +43,10 @@ Química A–D: puerta inferior tras cosechar Cordyceps; primero extracción/env
 
 [Documento de progresión](outputs/PROGRESION-LAB-BEEFUNGI.md): condiciones actuales de cada desbloqueo. Pleurotus → primera cosecha/tienda → primera venta/mejoras → hito principal/sala estéril, Melena y primer asistente → cosecha Melena/Reishi → árbol estéril completo/Cordyceps, Petri inicial, agitación y segundo asistente → cosecha Cordyceps/victoria y extracción-envasado → primer gotero/mesa de química y espirulina. Sólo aparecen las opciones disponibles; las mejoras se reúnen en un menú superior con contador rojo. La mezcla principal permanece exclusiva de Pleurotus. [Guía del recorrido](outputs/TANDA-GUIA-RECORRIDO.md): una flecha encadena los módulos por primera vez y espera sus desbloqueos. [Nota de la tanda](outputs/TANDA-DESBLOQUEOS-GRATUITOS.md).
 
+## Asistentes y cambios de receta
+
+[Revisión de asistentes](outputs/TANDA-REVISION-ASISTENTES.md): tareas con contexto capturado, cancelación al cambiar de modo, validación antes de consumir y protección de bolsas/carritos/cosechas. Ambos muestran faltantes o pasos manuales pendientes; el CL sigue sin contaminación por ahora.
+
 ## Organización y catálogo gráfico
 
 [Catálogo gráfico](outputs/CATALOGO-GRAFICO.md): inventario de estaciones, sprites, interfaz, colores y referencias a líneas de código. `npm run format` ordena la fuente; `npm run catalog` regenera las referencias después de mover código. El archivo HTML continúa como fuente única; no se edita `docs/` a mano. [Iconos de arrastre](outputs/TANDA-ICONOS-ARRASTRE.md): 32 tipos en un catálogo compartido, con tamaño ampliado y desplazamiento para que el dedo no los tape.
