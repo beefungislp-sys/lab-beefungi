@@ -1,0 +1,25 @@
+# Estilo visual de Lab BeeFungi
+
+## Dirección acordada
+
+Pixel art cálido de 16 bits, más detallado y texturizado, manteniendo la lectura sencilla del juego y sus controles en celular. Referencia de esta decisión: la prueba de electronicwave en `outputs/BEEFUNGI-fork-electronicwave`, especialmente su captura diurna y las notas de sesión. El fork permanece como referencia independiente.
+
+## Reglas para las siguientes pasadas
+
+- Cámara y mapa fijos. Suelo, paredes y ventanas no se desplazan cuando camina el personaje. Sin parallax ni temblor de cámara.
+- Iluminación cálida constante. Sin hora simulada ni estados de amanecer, tarde o noche. Los reflejos de agua y las animaciones de proceso pueden seguir moviéndose.
+- Materiales con volumen: base, borde superior/izquierdo claro y borde inferior/derecho oscuro. Madera miel, acero azul verdoso, paredes crema y suelo salvia.
+- Textura fina y estable: vetas, fibras, motas y desgaste discretos, con semilla fija. El fondo debe ser más tranquilo que ingredientes, flechas y controles.
+- Sombras de contacto y luz radial suaves, de baja opacidad, subordinadas al sprite pixelado. No oscurecer textos ni alterar los colores de avisos de faltantes.
+- Conservar geometrías, escalas de interacción y paleta de especies. El mundo lógico sigue en 320 × 240, con lienzo de 640 × 480.
+- No cambiar movimiento, tiempos, recetas, inventarios ni probabilidades durante una pasada de arte.
+
+## Componentes reutilizados
+
+Adaptados del fork: `texHash`, `drawFloorTexture`, `drawWallTexture`, `softLight`/`softShadow`, detalle de `bale`, `drawWarmTable`, `drawWarmBasket` y biseles del triturador/tanque en miniatura. El piso cercano usa la misma textura con una región diferente; se redujo un poco la densidad para mantener legibilidad.
+
+No se incorporan el segundo canvas, capas móviles, ciclo ambiental ni suavizado de movimiento del fork. El render sigue en el canvas existente, en coordenadas fijas.
+
+## Aplicación actual
+
+Sala principal y vistas cercanas de triturador, pasteurizado y mezcla. Los dibujantes compartidos transmiten el acabado a sus pacas, mesas y cestos. La extensión completa a cuarto estéril, cámaras, tienda y química se hará en pasadas posteriores.

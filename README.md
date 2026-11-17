@@ -64,3 +64,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Continuación del pulido cálido
 
 [Pasteurizado y mezcla](outputs/TANDA-PULIDO-PASTEURIZADO-MEZCLA.md): tanque con nivel de agua y acero detallado, vitrina, bandeja y llenadora renovadas, madera y cestos unificados. Mantiene reglas y zonas de interacción; añade pruebas de dibujo sin efectos sobre la simulación.
+
+## Estilo visual de referencia
+
+[Guía visual](outputs/ESTILO-VISUAL-LAB-BEEFUNGI.md): pixel art cálido, texturas estables, volumen y sombras suaves, con mapa y luz fijos. [Adaptación de electronicwave](outputs/TANDA-TEXTURAS-SOMBRAS-FIJAS.md) documenta lo reutilizado del fork y su aplicación a sala principal, triturador, pasteurizado y mezcla.
