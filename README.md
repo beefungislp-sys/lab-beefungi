@@ -121,3 +121,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Arrastre centrado de micelio
 
 [Corrección de arrastre](outputs/TANDA-ARRASTRE-MICELIO-CENTRADO.md): los frascos pierden la tarjeta azul y siguen el centro del mouse con el mismo tamaño. En táctil se conserva la separación del dedo y el destino real.
+
+## Método de remodelación y área estéril
+
+[Guía de remodelación de arte](outputs/GUIA-REMODELACION-ARTE.md): assets primero, fondo reutilizable por área, composición y arrastre compartido. La [pasada de inoculación y sustrato](outputs/TANDA-REMODELACION-INOCULACION-SUSTRATO.md) aplica el método a las cajas, mechero, materiales y llenadora, con un ambiente cercano común.

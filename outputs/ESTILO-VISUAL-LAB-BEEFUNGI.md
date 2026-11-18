@@ -39,7 +39,7 @@ La prueba de un sprite transparente de la campana queda archivada como referenci
 
 ## Perspectiva cercana y capas
 
-Para las mesas cercanas se toma como referencia una vista frontal ligeramente elevada: horizontales niveladas, verticales rectas, superficie visible y patas apoyadas en el suelo. La navegación de salas sigue siendo aérea. La primera aplicación es la campana; las otras estaciones se adaptarán por separado.
+Para las mesas cercanas se toma como referencia una vista frontal ligeramente elevada: horizontales niveladas, verticales rectas, superficie visible y patas apoyadas en el suelo. La navegación de salas sigue siendo aérea. El cuarto estéril comparte su base cercana mediante `drawSterileWorkroom(title, stockPanel)`; los aparatos y sus sombras se componen aparte.
 
 Orden de dibujo: ambiente fijo → aparato → materiales → acciones y avisos. La pared y el suelo deben concordar con la profundidad del mueble. Ventana, texturas y luz son estables; sólo se animan los procesos. Materiales, iconos de arrastre y miniaturas deben compartir dibujantes. La referencia se conserva en `referencias/PERSPECTIVA-CERCANA-MESAS.png`.
 
@@ -51,4 +51,10 @@ Bolsas de aserrín esterilizado: textura fina de madera, espacio transparente, f
 
 ## Vista previa de arrastre
 
-Con mouse, el icono acompaña al cursor por su centro. Los frascos de micelio se dibujan sin tarjeta de fondo ni marco exterior, conservando su escala. En táctil se separa la vista previa del dedo para mantenerla visible, sin desplazar el destino real. La opción de fondo se declara en el catálogo único de iconos.
+Con mouse, el icono acompaña al cursor por su centro. Los frascos de micelio y los materiales remodelados del área estéril se dibujan sin tarjeta de fondo ni marco exterior, conservando su escala. En táctil se separa la vista previa del dedo para mantenerla visible, sin desplazar el destino real. La opción de fondo se declara en el catálogo único de iconos.
+
+## Cajas y mesa de sustrato
+
+Las cajas inferiores mantienen acrílico transparente con tapa, esquinas y puertos con guantes; las reservas usan los mismos frascos y bolsas de la campana. El mechero tiene base apoyada, cuerpo metálico y llama animada; el ambiente permanece fijo. Aserrín y arroz tienen montículos propios; nutrientes y recipientes vacíos comparten dibujo con el arrastre. La llenadora muestra acero, luz interior y el nivel real de ambas reservas.
+
+Procedimiento completo: [GUIA-REMODELACION-ARTE.md](GUIA-REMODELACION-ARTE.md).
