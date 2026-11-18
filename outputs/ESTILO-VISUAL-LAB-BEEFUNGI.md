@@ -48,3 +48,7 @@ Orden de dibujo: ambiente fijo → aparato → materiales → acciones y avisos.
 Frascos de micelio: vidrio con hombros y base redondeados, tapa crema acanalada y grano mayormente cubierto de blanco; conservar algunos granos visibles. La marca de especie se sitúa en la tapa para despejar el contenido.
 
 Bolsas de aserrín esterilizado: textura fina de madera, espacio transparente, filtro claro, sellado superior y pliegues con reflejos suaves. No dibujar micelio blanco en el aserrín antes de inocular. Sus dibujos en mesa, arrastre y animaciones comparten la misma función. Referencia: `referencias/MICELIO-MELENA-ASERRIN-CONCEPTO.png`.
+
+## Vista previa de arrastre
+
+Con mouse, el icono acompaña al cursor por su centro. Los frascos de micelio se dibujan sin tarjeta de fondo ni marco exterior, conservando su escala. En táctil se separa la vista previa del dedo para mantenerla visible, sin desplazar el destino real. La opción de fondo se declara en el catálogo único de iconos.

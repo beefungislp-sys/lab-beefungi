@@ -10569,7 +10569,11 @@
     }
 
     // === ICONOS DE ARRASTRE: catálogo único para todos los módulos ===
-    const dragIcon = (label, draw) => ({ label, draw });
+    const dragIcon = (label, draw, options = {}) => ({
+      label,
+      draw,
+      ...options,
+    });
     function drawLooseStraw(mixed = false) {
       // Montón fibroso: no una paca/cubo. Contraste suficiente incluso al reducirlo.
       for (let i = 0; i < 48; i++) {
@@ -10616,10 +10620,14 @@
         box(-12, -13, 25, 30, "#eee6c7");
         box(-14, -18, 29, 6, "#a6bec1");
       }),
-      jar: dragIcon("Micelio", () => {
-        c.scale(1.45, 1.45);
-        jar(-7, -9);
-      }),
+      jar: dragIcon(
+        "Micelio",
+        () => {
+          c.scale(1.45, 1.45);
+          jar(-7.5, -8.5);
+        },
+        { bare: true },
+      ),
       cleaning: dragIcon("Spray y trapo", () => drawCleaningKit(-17, -13)),
       incbag: dragIcon("Bolsa sin incubar", () =>
         drawIncubationContainer(
@@ -10655,15 +10663,19 @@
       woodPrepared: dragIcon("Recipiente preparado", (d) =>
         drawPreparedContainer(d.type || sterilizerMode, -14, -18),
       ),
-      gloveInoculum: dragIcon("Micelio interior", () => {
-        c.scale(1.45, 1.45);
-        (gloveLevel >= 3 ? drawLaminarJar : jar)(
-          -7,
-          -9,
-          true,
-          gloveJar || selectedSpecies,
-        );
-      }),
+      gloveInoculum: dragIcon(
+        "Micelio interior",
+        () => {
+          c.scale(1.45, 1.45);
+          (gloveLevel >= 3 ? drawLaminarJar : jar)(
+            -7.5,
+            gloveLevel >= 3 ? -8.25 : -8.5,
+            true,
+            gloveJar || selectedSpecies,
+          );
+        },
+        { bare: true },
+      ),
       gloveWood: dragIcon("Bolsa esterilizada", () =>
         (gloveLevel >= 3 ? drawLaminarBag : drawPreparedSubstrateBag)(
           -14,
@@ -10672,15 +10684,19 @@
           true,
         ),
       ),
-      gloveJar: dragIcon("Frasco de micelio", () => {
-        c.scale(1.45, 1.45);
-        (gloveLevel >= 3 ? drawLaminarJar : jar)(
-          -7,
-          -9,
-          true,
-          gloveJar || selectedSpecies,
-        );
-      }),
+      gloveJar: dragIcon(
+        "Frasco de micelio",
+        () => {
+          c.scale(1.45, 1.45);
+          (gloveLevel >= 3 ? drawLaminarJar : jar)(
+            -7.5,
+            gloveLevel >= 3 ? -8.25 : -8.5,
+            true,
+            gloveJar || selectedSpecies,
+          );
+        },
+        { bare: true },
+      ),
       gloveClean: dragIcon("Limpieza de cabina", () =>
         drawCleaningKit(-17, -13),
       ),
@@ -10749,8 +10765,10 @@
         1.1,
         Math.min(3, (touch ? 76 : 60) / (48 * pixelsPerUnit)),
       );
-      const half = 24 * scale,
-        gap = (touch ? 52 : 10) / pixelsPerUnit;
+      const half = 24 * scale;
+      // El mouse sostiene el centro del objeto; sólo el dedo necesita separación.
+      if (!touch) return { x: d.now.x, y: d.now.y, scale, half, touch };
+      const gap = 52 / pixelsPerUnit;
       let x = d.now.x,
         y = d.now.y - gap - half;
       // Cerca del borde superior se coloca al lado, para no volver bajo el dedo.
@@ -10772,13 +10790,17 @@
       const icon = dragIconCatalog[drag.kind || "bale"];
       c.save();
       // Marca pequeña en la posición real: el destino no se desplaza con el icono.
-      box(drag.now.x - 3, drag.now.y - 3, 6, 1, "#ffe16a");
-      box(drag.now.x - 3, drag.now.y + 3, 6, 1, "#ffe16a");
+      if (layout.touch) {
+        box(drag.now.x - 3, drag.now.y - 3, 6, 1, "#ffe16a");
+        box(drag.now.x - 3, drag.now.y + 3, 6, 1, "#ffe16a");
+      }
       c.translate(layout.x, layout.y);
       c.scale(layout.scale, layout.scale);
-      c.globalAlpha = 0.94;
-      box(-24, -24, 48, 48, "#e2e5ce");
-      box(-23, -23, 46, 46, "#3b5968");
+      if (!icon.bare) {
+        c.globalAlpha = 0.94;
+        box(-24, -24, 48, 48, "#e2e5ce");
+        box(-23, -23, 46, 46, "#3b5968");
+      }
       c.globalAlpha = 1;
       icon.draw(drag);
       c.restore();

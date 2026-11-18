@@ -117,3 +117,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Materiales de campana desde la referencia
 
 [Micelio y aserrín en código](outputs/TANDA-MICELIO-ASERRIN-EN-CODIGO.md): frascos redondeados con micelio blanco y tapa acanalada; bolsas con aserrín fino, filtro, sellado y pliegues. Comparten dibujo en mesa, arrastre, animación y miniatura.
+
+## Arrastre centrado de micelio
+
+[Corrección de arrastre](outputs/TANDA-ARRASTRE-MICELIO-CENTRADO.md): los frascos pierden la tarjeta azul y siguen el centro del mouse con el mismo tamaño. En táctil se conserva la separación del dedo y el destino real.

@@ -90,7 +90,7 @@ Geometrías a revisar junto al dibujo: \`mixBasket\`, \`jarCase\`, \`mixTray\`, 
 
 ## Iconos de cada tipo de arrastre
 
-${dragIcons.length} tipos explícitos en un único catálogo. Render común: ${locate('drawDragPreview')}; tamaño, desplazamiento para dedo y límites: ${locate('dragPreviewLayout')}. Los módulos ya no dibujan vistas previas por separado.
+${dragIcons.length} tipos explícitos en un único catálogo. Render común: ${locate('drawDragPreview')}; tamaño, centro del mouse y separación/límites para dedo: ${locate('dragPreviewLayout')}. Los frascos de micelio declaran \`bare: true\` para dibujarse sin tarjeta. Los módulos ya no dibujan vistas previas por separado.
 
 | Tipo de arrastre | Icono | Código |
 |---|---|---|
