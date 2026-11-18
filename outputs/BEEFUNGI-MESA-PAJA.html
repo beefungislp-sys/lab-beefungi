@@ -402,6 +402,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .game-toolbar #tester-unlock {
+      flex-shrink: 0;
+      width: 68px;
+      padding: 4px;
+      background: #b8ced0;
+    }
     .game-toolbar #station-mode {
       flex: 1;
       text-align: left;
@@ -474,6 +480,11 @@
         >
           <span id="upgrade-title">Mejoras</span
           ><span id="upgrade-count" hidden></span></button
+        ><button
+          id="tester-unlock"
+          title="Desbloquear todas las áreas y mejoras para probar"
+        >
+          Tester</button
         ><button data-extra id="station-mode" hidden>Cambiar modo</button
         ><button id="prep-remove" hidden>Retirar</button
         ><button id="back">← Regresar</button>
@@ -9689,6 +9700,7 @@
     }
     function updateEconomyControls() {
       updateWallet();
+      updateTesterControls();
       const toggle = document.querySelector("#test-mode");
       toggle.textContent = testMode
         ? "Modo prueba: activado"
@@ -9941,7 +9953,9 @@
     let hericiumUsed = false,
       hericiumBuffer = "",
       hericiumLastKey = 0;
-    function activateHericium() {
+    function activateHericium(
+      message = "HERICIUM · Todas las áreas disponibles · +1 000 000 monedas",
+    ) {
       if (hericiumUsed) return false;
       hericiumUsed = true;
       shopUnlocked = true;
@@ -9956,11 +9970,39 @@
       walkPath = [];
       renderOrders();
       updateWallet();
-      queueUnlock(
-        "HERICIUM · Todas las áreas disponibles · +1 000 000 monedas",
-      );
+      queueUnlock(message);
       return true;
     }
+    let testerUnlocked = false;
+    function enableTester() {
+      if (testerUnlocked) return false;
+      const rewarded = activateHericium(
+        "TESTER · Todas las áreas y mejoras disponibles · +1 000 000 monedas",
+      );
+      unlockLabTest();
+      agitationCapacity = 6;
+      testerUnlocked = true;
+      if (!rewarded)
+        queueUnlock(
+          "TESTER · Todas las mejoras disponibles. Se conservan tus procesos e inventarios.",
+        );
+      updateTesterControls();
+      updateEconomyControls();
+      return true;
+    }
+    function updateTesterControls() {
+      const button = document.querySelector("#tester-unlock");
+      button.hidden = false;
+      button.disabled = testerUnlocked;
+      button.textContent = testerUnlocked ? "Tester ✓" : "Tester";
+      button.setAttribute?.(
+        "aria-label",
+        testerUnlocked
+          ? "Tester activado"
+          : "Tester: desbloquear todas las áreas y mejoras",
+      );
+    }
+    document.querySelector("#tester-unlock").onclick = enableTester;
     function handleHericiumKey(e) {
       if (
         e.isComposing ||

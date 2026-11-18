@@ -101,3 +101,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Campana con sprite de la referencia
 
 [Sprite y mejoras iniciales](outputs/TANDA-SPRITE-CAMPANA-MEJORAS-INICIALES.md): campana transparente pixelizada a partir de la imagen aprobada, con materiales interactivos separados. Triturador, pasteurizado y mezcla ofrecen sus mejoras desde el inicio; se conserva el hito completo de sala estéril.
+
+## Tester visible
+
+[Botón Tester global](outputs/TANDA-BOTON-TESTER-GLOBAL.md): disponible arriba en cada módulo. Abre todas las áreas y especies, instala las mejoras y añade un millón de monedas. Conserva los procesos; los asistentes se contratan manualmente. Recargar vuelve al arranque normal porque la partida sigue en memoria.
