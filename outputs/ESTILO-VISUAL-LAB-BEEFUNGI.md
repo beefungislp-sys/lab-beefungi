@@ -64,3 +64,9 @@ Procedimiento completo: [GUIA-REMODELACION-ARTE.md](GUIA-REMODELACION-ARTE.md).
 La llenadora usa dos tolvas transparentes con cono inferior, cámara redondeada con ventana y paleta, boquilla y bastidor abierto. El recipiente debe seguir visible bajo la salida. El agua entra a la cámara y las reservas muestran cantidades reales. La miniatura comparte el dibujante del aparato.
 
 El esterilizador tiene cuerpo cilíndrico, tapa abatible, junta, canastilla, manómetro y cierres. Mantener el cepillado con bajo contraste para que los reflejos definan el volumen. El borde frontal oculta la base de los recipientes cargados. La tapa cierra, vibra suavemente y emite vapor sólo durante el ciclo. Conservar escala por capacidad y fondo existente.
+
+## Mesa base normalizada
+
+Las mesas de producción comparten `drawStainlessTable`: cubierta trapezoidal cepillada, canto fino, cuatro patas con pies y travesaños. Reflejos cálidos a la izquierda y acero azul verdoso en sombra. La profundidad de la cubierta se adapta a la composición del módulo, manteniendo sus materiales y zonas de interacción. La campana integra el mismo componente; sus patas se omiten en la miniatura. Oficina y mostrador siguen usando madera.
+
+Referencia: `referencias/MESA-ACERO-BASE-CONCEPTO.png`. El dibujo del juego es íntegramente en código y el ambiente permanece separado.

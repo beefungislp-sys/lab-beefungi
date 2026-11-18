@@ -14,6 +14,10 @@ Las referencias se generaron con la herramienta integrada `image_gen`, sin CLI. 
 
 Se conserva el fondo ya aprobado del juego. Las imágenes sirven para proporciones y materiales; el juego no las carga como sprites.
 
+## Mesa de acero reutilizable
+
+`MESA-ACERO-BASE-CONCEPTO.png`: referencia de cubierta, faldón, cuatro patas, pies y travesaños; adaptada al componente compartido `drawStainlessTable` para mesas de producción. [Prompt original](PROMPT-MESA-ACERO-BASE.md).
+
 ## Prompt final del esterilizador
 
 ```text

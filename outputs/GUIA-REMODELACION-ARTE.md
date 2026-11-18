@@ -45,6 +45,8 @@ Texturas y luces del ambiente deben permanecer estables: semilla fija, sin movim
 
 La cámara cercana es frontal ligeramente elevada: horizontales niveladas, verticales rectas y superficie superior visible. Comprobar que el equipo cabe en su mesa, sus patas alcanzan el suelo y los rótulos no cruzan cantos ni travesaños. Las mejoras cambian el tamaño del aparato sin estirar arbitrariamente todos los detalles.
 
+Para mesas de producción reutilizar `drawStainlessTable(x, y, w, h, legHeight)`: `h` es la profundidad de cubierta y `legHeight` el tramo de patas. No duplicar el mueble dentro de cada aparato. La campana ya integra esta base; oficina y mostrador conservan su componente de madera. Ajustar la profundidad a los objetos existentes antes de mover sus hitboxes.
+
 ## 5. Unificar el arrastre
 
 Reutilizar el dibujante del objeto en `dragIconCatalog`, la mesa y las animaciones. En esta pasada se conectaron los nuevos frascos, bolsas, aserrín, nutrientes y kit de limpieza.

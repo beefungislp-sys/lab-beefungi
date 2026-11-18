@@ -1278,7 +1278,7 @@
         box(167, 52, 2, 2, "#f1d694");
         smallText("TIENDA", 145, 66, p.ink);
       }
-      drawWarmTable(38, 79, 104);
+      drawStainlessTable(38, 79, 104, 29, 8);
       if (bales > 0) bale(43, 86, 0.7);
       if (bales > 1) bale(71, 84, 0.7);
       box(107, 84, 27, 25, "#416970");
@@ -1308,7 +1308,7 @@
       drawWarmBasket(104, 111, 34, 22, loads, basketCapacity());
       smallText(loads + "/" + basketCapacity(), 112, 141);
       if (job) drawProcessClock(126, 84, 10, job.t / 3);
-      drawWarmTable(186, 79, 92);
+      drawStainlessTable(186, 79, 92, 29, 8);
       const tw = 18 + tankCapacity * 6,
         th = 14 + tankCapacity * 2;
       box(192, 108 - th, tw, th, "#557c80");
@@ -1335,7 +1335,7 @@
       drawWarmBasket(244, 111, 34, 23, treatedLoads, tankCapacity);
       smallText(treatedLoads + "/" + tankCapacity, 249, 144);
       if (tank.left) drawProcessClock(265, 87, 10, 1 - tank.left / 10);
-      drawWarmTable(186, 163, 92);
+      drawStainlessTable(186, 163, 92, 29, 8);
       if (autoMixer) {
         box(191, 161, 80, 32, "#a9bdc3");
         box(194, 163, 74, 2, "#e4e8cf");
@@ -1469,7 +1469,7 @@
     }
     function drawCrusherStation() {
       drawWarmStationBackdrop();
-      drawWarmTable(12, 117, 296, 17, 53);
+      drawStainlessTable(12, 117, 296, 17, 53);
       for (let i = 0; i < Math.min(bales, 6); i++)
         bale(28 + (i % 3) * 29, 87 - Math.floor(i / 3) * 25);
       text("PACAS: " + bales, 25, 43);
@@ -1663,7 +1663,7 @@
         jar(28 + (j % 3) * 45, 43 + Math.floor(j / 3) * 27, j < visiblePleuro);
       text("MICELIO " + visiblePleuro + "/6", 184, 61);
       smallText("PLEUROTUS", 184, 74);
-      drawWarmTable(5, 122, 310, 98, 20);
+      drawStainlessTable(5, 122, 310, 98, 14);
       drawWarmBasket(12, 143, 73, 57, treatedLoads, tankCapacity);
       text("PAST. " + treatedLoads + "/" + tankCapacity, 16, 211);
       softShadow(163, 197, 70, 5, 0.24);
@@ -1903,7 +1903,7 @@
       box(6, 4, 171, 23, warmPalette.wall);
       text("PASTEURIZADO DE PAJA", 14, 22);
       if (autoWater) smallText("AUTO", 224, 40);
-      drawWarmTable(10, 118, 300, 24, 60);
+      drawStainlessTable(10, 118, 300, 24, 60);
       const [x, y, w, h] = pasteurTankRect(),
         innerX = x + 7,
         innerY = y + 10,
@@ -4598,35 +4598,139 @@
       );
       drawWoodGuide();
     }
+    // Mesa base compartida: superficie y huella compatibles con cada módulo.
     function drawStainlessTable(x, y, w, h, legHeight = 8) {
-      softShadow(x + w / 2, y + h + legHeight - 1, w * 0.56, 4, 0.24);
-      box(x + 3, y + 3, w, h, "#6f858e");
-      box(x, y, w, h, "#bac7c9");
-      box(x + 2, y + 2, w - 4, h - 7, "#9fB1b6");
-      box(x + 5, y + 5, w - 10, 2, "#e0e9e5");
-      box(x + 4, y + h - 5, w - 8, 3, "#849ba3");
-      for (const lx of [x + 8, x + w - 12]) {
-        box(lx, y + h, 6, legHeight, "#92a9b0");
-        box(lx, y + h, 2, legHeight, "#d1dfda");
+      const apron = Math.max(2, Math.min(7, h * 0.2)),
+        front = y + h - apron,
+        inset = Math.min(w * 0.045, h * 0.22),
+        lw = Math.max(2, Math.min(7, w * 0.024)),
+        frontLegs = [x + w * 0.035, x + w * 0.965 - lw],
+        backLegs = [x + w * 0.115, x + w * 0.885 - lw],
+        bottom = y + h + legHeight,
+        backBottom = y + h + legHeight * 0.68;
+      if (legHeight > 0) {
+        softShadow(
+          x + w / 2,
+          bottom,
+          w * 0.49,
+          Math.max(1.5, Math.min(4, legHeight * 0.12)),
+          0.2,
+        );
+        for (const xx of backLegs)
+          drawStainlessTableLeg(xx, y + h - 2, lw, backBottom - (y + h - 2));
+        if (legHeight > 7) {
+          const braceY = y + h + legHeight * 0.58;
+          box(
+            backLegs[0],
+            braceY,
+            backLegs[1] - backLegs[0] + lw,
+            Math.max(1, lw * 0.7),
+            "#486e73",
+          );
+          artRect(
+            backLegs[0] + 1,
+            braceY,
+            backLegs[1] - backLegs[0] + lw - 2,
+            0.5,
+            "#a3bcb0",
+          );
+          for (let i = 0; i < 2; i++) {
+            const fx = frontLegs[i] + lw / 2,
+              bx = backLegs[i] + lw / 2;
+            drawLaminarFace(
+              [
+                [fx, braceY + legHeight * 0.22],
+                [bx, braceY - 1],
+                [bx, braceY + lw * 0.55],
+                [fx, braceY + legHeight * 0.22 + lw * 0.6],
+              ],
+              "#668b85",
+            );
+            c.strokeStyle = "#a7c0af";
+            c.lineWidth = 0.5;
+            c.beginPath();
+            c.moveTo(fx, braceY + legHeight * 0.22);
+            c.lineTo(bx, braceY);
+            c.stroke();
+          }
+        }
+        for (const xx of frontLegs)
+          drawStainlessTableLeg(xx, y + h - 1, lw, bottom - (y + h - 1));
       }
-      box(x + 10, y + h + legHeight - 3, w - 20, 2, "#708b96");
-      artRect(x + 1, y + 1, w - 2, 0.5, "#f5f0d7");
-      artRect(x + 1, y + 2, 1, h - 3, "#d7e1cf");
-      artRect(x + w - 2, y + 3, 1, h - 4, "#607f87");
-      artRect(x + 4, y + h - 2, w - 8, 0.5, "#4f707b");
-      // Cepillado y pequeñas marcas fijas, más suaves que ingredientes e iconos.
-      for (let i = 0; i < Math.max(2, Math.floor(w / 19)); i++) {
-        const xx = x + 7 + Math.floor(texHash(i, x, 94) * (w - 24)),
-          yy = y + 9 + Math.floor(texHash(i, y, 95) * Math.max(1, h - 20));
-        artRect(xx, yy, 5 + (i % 5), 0.5, i % 2 ? "#b4c5c0" : "#a2b6b5");
+      // Encimera trapezoidal; la textura queda recortada dentro del tablero.
+      const top = [
+        [x + inset, y],
+        [x + w - inset, y],
+        [x + w, front],
+        [x, front],
+      ];
+      drawLaminarFace(top, "#9db5ac");
+      c.save();
+      drawLaminarFace(top);
+      c.clip();
+      for (let col = 0; col < w; col += 2) {
+        const u = col / w,
+          warm = Math.exp(-Math.pow((u - 0.12) / 0.19, 2)),
+          shine = Math.exp(-Math.pow((u - 0.5) / 0.12, 2)),
+          dark = Math.exp(-Math.pow((u - 0.82) / 0.17, 2));
+        artRect(
+          x + col,
+          y,
+          2,
+          h,
+          `rgb(${Math.round(146 + warm * 49 + shine * 24 - dark * 23)},${Math.round(169 + warm * 23 + shine * 22 - dark * 17)},${Math.round(161 + warm * 7 + shine * 14 - dark * 10)})`,
+        );
       }
-      for (const xx of [x + 4, x + w - 6])
-        artRect(xx, y + h - 4, 1, 1, "#dfe6cf");
-      for (const lx of [x + 8, x + w - 12]) {
-        artRect(lx + 5, y + h, 1, legHeight, "#527780");
-        box(lx - 1, y + h + legHeight - 1, 8, 2, "#45616b");
+      c.globalAlpha = 0.2;
+      for (let i = 0; i < Math.max(10, (w * h) / 110); i++) {
+        const xx = x + texHash(i, 37, 173) * w,
+          yy = y + texHash(i, 48, 174) * Math.max(1, h - apron);
+        artRect(
+          xx,
+          yy,
+          3 + texHash(i, 13, 175) * Math.min(15, w * 0.08),
+          0.5,
+          i % 3 ? "#e4e6cc" : "#5f8383",
+        );
       }
-      artRect(x + 11, y + h + legHeight - 3, w - 22, 0.5, "#c5d5c9");
+      c.restore();
+      c.strokeStyle = "#dfe3c9";
+      c.lineWidth = 0.65;
+      drawLaminarFace(top);
+      c.stroke();
+      // Canto doblado y faldón: claros al frente y bajo la luz izquierda.
+      box(x, front, w, apron, "#466c74");
+      for (let col = 1; col < w - 1; col += 2) {
+        const u = col / w,
+          light = Math.exp(-Math.pow((u - 0.16) / 0.2, 2));
+        artRect(
+          x + col,
+          front + 1,
+          2,
+          Math.max(1, apron - 2),
+          `rgb(${Math.round(101 + light * 58)},${Math.round(135 + light * 39)},${Math.round(133 + light * 20)})`,
+        );
+      }
+      artRect(x + 1, front, w - 2, 0.8, "#f0e9ce");
+      artRect(x + 1, y + h - 1, w - 2, 0.7, "#355b65");
+      artRect(x, front, 1, apron, "#bdcdb8");
+      artRect(x + w - 1, front, 1, apron, "#345b66");
+      if (w > 45 && apron >= 3)
+        for (const xx of [frontLegs[0] + lw / 2, frontLegs[1] + lw / 2]) {
+          drawLaminarOval(xx - 1, front + apron * 0.45, 2, 2, "#47676c");
+          artRect(xx - 0.5, front + apron * 0.45, 0.8, 0.6, "#e3e4c8");
+        }
+    }
+    function drawStainlessTableLeg(x, y, w, h) {
+      if (h <= 0) return;
+      box(x, y, w, h, "#658983");
+      artRect(x, y, Math.max(0.5, w * 0.22), h, "#c0cdb8");
+      artRect(x + w * 0.3, y, Math.max(0.5, w * 0.25), h, "#8eada0");
+      artRect(x + w - 0.8, y, 0.8, h, "#3f666f");
+      const footH = Math.max(1, Math.min(2.5, h * 0.12));
+      box(x + w * 0.3, y + h - footH, w * 0.4, footH, "#aebda9");
+      drawLaminarOval(x - 1, y + h, w + 2, footH, "#354d55");
+      artRect(x, y + h, w, 0.5, "#79938b");
     }
     function drawPressurePot(x, y, scale = 1) {
       c.save();
@@ -5250,25 +5354,6 @@
       }
     }
     function drawLaminarHoodFrame(miniature = false) {
-      // Coordenadas locales comunes: cubierta a 78..106, patas a 106..148.
-      if (!miniature) {
-        softShadow(112, 148, 113, 4, 0.2);
-        box(16, 132, 192, 6, "#426b73");
-        drawLaminarSteel(17, 132, 190, 4, 8);
-        artRect(18, 132, 188, 0.5, "#c3d4c4");
-        for (const lx of [9, 207]) {
-          box(lx - 1, 104, 9, 43, "#3e626d");
-          drawLaminarSteel(lx, 105, 6, 41, 2);
-          artRect(lx + 1, 106, 1, 39, "#b6cdbe");
-          box(lx - 2, 145, 11, 4, "#4b6f73");
-          artRect(lx - 1, 145, 9, 1, "#a7bdb2");
-          artRect(lx, 148, 7, 0.5, "#344f59");
-        }
-        for (const bx of [19, 202]) {
-          box(bx, 133, 3, 3, "#b8cbbd");
-          artRect(bx + 1, 134, 1, 1, "#587c7c");
-        }
-      }
       // Respaldo opaco, con sombra en los bordes y luz cálida bajo el filtro.
       box(6, 29, 212, 72, "#52747a");
       for (let row = 0; row < 48; row++) {
@@ -5289,24 +5374,7 @@
       softShadow(11, 48, 10, 31, 0.17);
       softShadow(214, 48, 11, 31, 0.22);
       c.restore();
-      // Plano trapezoidal de acero: comparte perspectiva con suelo y mejillas.
-      c.save();
-      drawLaminarFace(
-        [
-          [12, 78],
-          [212, 78],
-          [223, 100],
-          [1, 100],
-        ],
-        "#a9bdb3",
-      );
-      c.clip();
-      drawLaminarSteel(0, 78, 224, 24, 4, 20);
-      for (let y = 80; y < 100; y += 2) artRect(1, y, 222, 0.5, "#a1b7ad");
-      softLight(116, 86, 54, 13, "255,231,172", 0.2);
-      c.restore();
-      artRect(12, 78, 200, 0.5, "#677f7d");
-      artRect(13, 79, 198, 0.5, "#d8dfc7");
+      drawStainlessTable(0, 78, 224, 28, miniature ? 0 : 42);
       // Caras laterales: borde exterior claro y retorno interior más oscuro.
       for (const [poly, shade] of [
         [
@@ -5377,12 +5445,6 @@
       box(25, 31, 174, 4, "#9e885c");
       box(27, 32, 170, 2, "#f5d99d");
       artRect(29, 32, 166, 1, "#fff4cf");
-      // Canto de la mesa y sus encuentros con las caras laterales.
-      box(0, 100, 224, 6, "#486f77");
-      drawLaminarSteel(1, 101, 222, 4, 3);
-      artRect(1, 100, 222, 1, "#e1e7d1");
-      artRect(1, 105, 222, 0.5, "#355662");
-      for (const xx of [3, 220]) artRect(xx, 102, 1, 2, "#d4ddc9");
     }
     function drawLaminarFlowHood(
       x = 97,

@@ -127,3 +127,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Guía de remodelación de arte](outputs/GUIA-REMODELACION-ARTE.md): assets primero, fondo reutilizable por área, composición y arrastre compartido. La [pasada de inoculación y sustrato](outputs/TANDA-REMODELACION-INOCULACION-SUSTRATO.md) aplica el método a las cajas, mechero, materiales y llenadora, con un ambiente cercano común.
 
 [Mezcladora y esterilizador desde referencias](outputs/TANDA-MEZCLADORA-ESTERILIZADOR-REFERENCIAS.md): tolvas transparentes, cámara de mezcla con paleta y esterilizador cilíndrico con tapa abatible. Conserva el fondo, controles y procesos existentes.
+
+[Mesa de acero compartida](outputs/TANDA-MESA-ACERO-COMPARTIDA.md): cubierta, patas y travesaños reutilizados en las mesas de producción y en la campana, conservando proporciones de cada módulo. Oficina y tienda mantienen sus muebles de madera.
