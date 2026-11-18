@@ -109,3 +109,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Escenario de campana por capas
 
 [Campana, ambiente y materiales](outputs/TANDA-CAMPANA-CAPAS.md): fondo fijo dibujado en código, suelo en perspectiva, campana independiente y frascos/bolsas renovados que comparten dibujo con sus iconos de arrastre y animaciones.
+
+## Campana íntegramente en código
+
+[Campana procedural](outputs/TANDA-CAMPANA-EN-CODIGO.md): sustituye el sprite por planos de acero, reflejos, textura cepillada, filtro, luz cálida y sombras de contacto dibujados en canvas. Vista cercana y miniatura comparten componentes; la guía visual y el catálogo quedan actualizados.

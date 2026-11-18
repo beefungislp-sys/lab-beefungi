@@ -1,8 +1,10 @@
 # Sprite de campana de flujo
 
+**Referencia histórica.** El juego actual dibuja la campana íntegramente en código. Este PNG se conserva para comparar el acabado; ya no se carga ni se incorpora como base64 a la fuente.
+
 `campana-flujo-sprite.png` es un asset de 448 × 296 con alfa, derivado de la referencia aprobada `../referencias/CAMPANA-FLUJO-CONCEPTO.png`. Herramienta: `image_gen` integrada, sin CLI.
 
-Preparación solicitada de pixelización: retirar alfa residual inferior a 32, recortar por alfa visible, reducir con filtro BOX, cuantizar RGB a 192 colores mediante MEDIANCUT sin dithering y conservar el canal alfa separado. Se integra una copia base64 en `../BEEFUNGI-MESA-PAJA.html`; no necesita solicitudes de red. El PNG es el original de trabajo de esta versión pixelizada.
+Preparación solicitada de pixelización: retirar alfa residual inferior a 32, recortar por alfa visible, reducir con filtro BOX, cuantizar RGB a 192 colores mediante MEDIANCUT sin dithering y conservar el canal alfa separado. En la prueba anterior se integraba una copia base64 en el HTML. El PNG es el original de trabajo de esa versión pixelizada.
 
 ## Prompt final
 

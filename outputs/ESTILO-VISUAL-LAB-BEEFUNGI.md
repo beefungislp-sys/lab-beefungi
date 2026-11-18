@@ -33,9 +33,9 @@ Los muebles bloqueados no se dibujan: aparecen al desbloquearlos, sin candados n
 Los aparatos deben caber sobre su cubierta; las reservas descansan en mesas o repisas, sin flotar. Separar rótulos, patas y travesaños. Centrar la caída del agua sobre el recipiente y mantener los frascos dibujados dentro de sus zonas táctiles. Las miniaturas cenitales deben corresponder al medio seleccionado y dejar espacio entre aparato, reservas y etiquetas.
 
 
-## Prueba de sprites derivados de referencia
+## Referencias y dibujo en código
 
-La campana usa un sprite transparente extraído de la referencia aprobada y pixelizado. Sus ingredientes continúan dibujándose por separado para conservar interacción y animación. El asset se incorpora al HTML como data URI, con escalado sin suavizado y un dibujo de respaldo si no carga. El fondo del cuarto permanece fijo e independiente. Los siguientes assets se evaluarán antes de extender este método.
+La prueba de un sprite transparente de la campana queda archivada como referencia de materiales y proporciones. La versión actual dibuja el equipo íntegramente en canvas: caras, reflejos, cepillado, filtro, iluminación, patas y sombras. No carga el PNG ni mantiene una copia base64. Aparato, fondo e ingredientes continúan separados; miniatura y vista cercana comparten la composición.
 
 ## Perspectiva cercana y capas
 
