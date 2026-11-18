@@ -36,3 +36,9 @@ Los aparatos deben caber sobre su cubierta; las reservas descansan en mesas o re
 ## Prueba de sprites derivados de referencia
 
 La campana usa un sprite transparente extraído de la referencia aprobada y pixelizado. Sus ingredientes continúan dibujándose por separado para conservar interacción y animación. El asset se incorpora al HTML como data URI, con escalado sin suavizado y un dibujo de respaldo si no carga. El fondo del cuarto permanece fijo e independiente. Los siguientes assets se evaluarán antes de extender este método.
+
+## Perspectiva cercana y capas
+
+Para las mesas cercanas se toma como referencia una vista frontal ligeramente elevada: horizontales niveladas, verticales rectas, superficie visible y patas apoyadas en el suelo. La navegación de salas sigue siendo aérea. La primera aplicación es la campana; las otras estaciones se adaptarán por separado.
+
+Orden de dibujo: ambiente fijo → aparato → materiales → acciones y avisos. La pared y el suelo deben concordar con la profundidad del mueble. Ventana, texturas y luz son estables; sólo se animan los procesos. Materiales, iconos de arrastre y miniaturas deben compartir dibujantes. La referencia se conserva en `referencias/PERSPECTIVA-CERCANA-MESAS.png`.

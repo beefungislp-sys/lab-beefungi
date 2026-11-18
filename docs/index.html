@@ -4116,9 +4116,9 @@
             c.save();
             c.translate(x + 23, y + 20);
             c.scale(0.5, 0.5);
-            jar(0, 0);
+            drawLaminarJar(0, 0);
             c.restore();
-            drawPreparedSubstrateBag(x + 66, y + 16, 0.45, true);
+            drawLaminarBag(x + 66, y + 16, 0.45, true);
           } else {
             box(x + 15, y + 8, gw, 26, "#accac5");
             box(x + 26, y + 17, 11, 10, "#6a8d91");
@@ -5029,6 +5029,160 @@
           artRect(xx, y + 6, 2, 2, "#e6e7c8");
       }
     }
+    // Escenario cercano por capas: ambiente fijo, equipo, materiales y efectos.
+    function drawLaminarRoom() {
+      box(0, 0, 320, 240, "#e8dbb6");
+      for (let i = 0; i < 230; i++) {
+        const x = Math.floor(texHash(i, 7, 80) * 320),
+          y = Math.floor(texHash(i, 13, 81) * 60);
+        artRect(x, y, i % 4 ? 0.5 : 1, 0.5, i % 3 ? "#e1d3ad" : "#f4e7c5");
+      }
+      // Ventana alta: el alféizar y la luz no se mueven con el personaje.
+      softShadow(49, 30, 39, 3, 0.13);
+      box(13, 4, 72, 26, "#997446");
+      box(15, 5, 68, 23, "#c8a36b");
+      artRect(14, 4, 70, 1, "#e9c58a");
+      for (const x of [18, 51]) {
+        box(x, 8, 29, 16, "#bccba9");
+        for (let yy = 8; yy < 24; yy++)
+          artRect(x + 1, yy, 27, 1, yy < 15 ? "#e9e5b9" : "#c6d1ad");
+        for (let i = 0; i < 35; i++)
+          artRect(
+            x + 2 + texHash(i, x, 82) * 24,
+            9 + texHash(i, x, 83) * 13,
+            1,
+            0.5,
+            i % 2 ? "#f7edc8" : "#b9c7a6",
+          );
+        artRect(x, 8, 1, 16, "#f3deb0");
+      }
+      box(47, 7, 4, 18, "#b38e59");
+      artRect(47, 7, 1, 18, "#ebce97");
+      box(11, 28, 76, 3, "#b18b57");
+      artRect(12, 28, 74, 1, "#edd09b");
+      text("FLUJO LAMINAR", 109, 21);
+      // Zócalo: retícula vertical independiente del suelo en perspectiva.
+      box(0, 64, 320, 140, "#a6b598");
+      for (let y = 65; y < 204; y += 18)
+        for (let x = 0; x < 320; x += 18) {
+          box(
+            x + 1,
+            y,
+            17,
+            17,
+            texHash(x, y, 84) > 0.5 ? "#b7c3a5" : "#afbd9f",
+          );
+          artRect(x + 1, y, 16, 0.5, "#d3d8b8");
+          artRect(x + 1, y + 16, 16, 0.5, "#8fA38c");
+          for (let i = 0; i < 3; i++)
+            artRect(
+              x + 3 + texHash(x, y, i + 85) * 11,
+              y + 3 + texHash(x, y, i + 89) * 10,
+              1.5,
+              0.5,
+              i % 2 ? "#c6cfaf" : "#a8b99b",
+            );
+        }
+      box(0, 60, 320, 5, "#bd965f");
+      artRect(0, 60, 320, 1, "#f0d29a");
+      artRect(0, 64, 320, 0.5, "#937545");
+      // Las juntas se abren hacia el frente, manteniendo las verticales del mueble.
+      box(0, 204, 320, 36, "#b1bba0");
+      const floorRows = [204, 211, 222, 240],
+        floorX = (x, y) => 160 + (x - 160) * (0.58 + ((y - 204) / 36) * 0.42);
+      for (let row = 0; row < floorRows.length - 1; row++) {
+        const top = floorRows[row],
+          bottom = floorRows[row + 1];
+        for (let col = -2; col < 8; col++) {
+          const left = col * 48 - 24,
+            right = left + 48;
+          c.beginPath();
+          c.moveTo(floorX(left, top), top);
+          c.lineTo(floorX(right, top), top);
+          c.lineTo(floorX(right, bottom), bottom);
+          c.lineTo(floorX(left, bottom), bottom);
+          c.closePath();
+          c.fillStyle = (col + row) % 2 ? "#b8c1a4" : "#aeb99c";
+          c.fill();
+          c.strokeStyle = "#8eA187";
+          c.lineWidth = 0.7;
+          c.stroke();
+        }
+        artRect(0, top + 1, 320, 0.5, "#d0d5b5");
+      }
+      box(0, 202, 320, 2, "#8fA18a");
+      artRect(0, 202, 320, 0.5, "#c6d0af");
+      softLight(63, 48, 102, 76, "255,238,190", 0.12);
+      softShadow(197, 212, 107, 5, 0.13);
+      // Zona tranquila para leer existencias sin tapar el equipo.
+      box(11, 71, 65, 80, "#c7d1b3");
+      artRect(12, 71, 63, 0.5, "#e2e3c3");
+      artRect(75, 72, 0.5, 78, "#a3b397");
+    }
+    function drawLaminarJar(x, y, available = true) {
+      softShadow(x + 7, y + 21, 9, 1.5, 0.15);
+      box(x, y, 15, 20, "#9eb8ad");
+      box(x + 1, y + 1, 13, 18, "#d7dfc6");
+      if (available) {
+        box(x + 2, y + 8, 11, 10, "#d6bd83");
+        for (let i = 0; i < 36; i++)
+          artRect(
+            x + 2 + texHash(i, 1, 91) * 10,
+            y + 8 + texHash(i, 1, 92) * 9,
+            i % 4 ? 0.7 : 1.4,
+            0.7,
+            i % 3 ? "#f2e5ba" : "#b79b64",
+          );
+      }
+      box(x - 1, y - 3, 17, 5, "#d1c69f");
+      artRect(x, y - 3, 15, 1, "#fff0c7");
+      artRect(x - 1, y + 1, 17, 0.5, "#8a9c8e");
+      artRect(x + 1, y + 3, 1, 13, "#f3f1d5");
+      artRect(x + 12, y + 4, 0.5, 13, "#e4e9cd");
+      artRect(x + 2, y + 19, 11, 0.5, "#668b87");
+    }
+    function drawLaminarBag(x, y, scale = 1, sterile = true) {
+      c.save();
+      c.translate(Math.round(x), Math.round(y));
+      c.scale(scale, scale);
+      softShadow(15, 35, 14, 2, 0.14);
+      box(4, 5, 24, 27, "#b6c6b1");
+      box(5, 6, 22, 25, "#d9dfbf");
+      for (let row = 0; row < 19; row++) {
+        const inset = Math.max(0, 5 - Math.floor(row / 2));
+        artRect(
+          6 + inset,
+          12 + row,
+          20 - inset * 2,
+          1,
+          row % 4 ? "#c4a46a" : "#ddc087",
+        );
+      }
+      for (let i = 0; i < 65; i++) {
+        const xx = 7 + texHash(i, 5, 93) * 17,
+          yy = 16 + texHash(i, 5, 94) * 13;
+        artRect(xx, yy, i % 3 ? 2.3 : 1, 0.7, i % 4 ? "#ecd09a" : "#9c7d50");
+      }
+      box(3, 1, 26, 4, "#d8d9b8");
+      artRect(4, 1, 24, 1, "#fff0cb");
+      artRect(4, 4, 24, 0.5, "#8fa18e");
+      artRect(4, 6, 1, 25, "#f5efd0");
+      artRect(27, 6, 0.7, 25, "#809d94");
+      artRect(5, 32, 22, 1, "#e8e9c7");
+      c.strokeStyle = "#f6edca";
+      c.lineWidth = 0.7;
+      c.beginPath();
+      c.moveTo(5, 7);
+      c.lineTo(15, 13);
+      c.lineTo(26, 7);
+      c.moveTo(6, 10);
+      c.lineTo(8, 26);
+      c.lineTo(5, 30);
+      c.moveTo(25, 12);
+      c.lineTo(23, 27);
+      c.stroke();
+      c.restore();
+    }
     function drawGloveStation() {
       if (isCordyBlockHood()) {
         drawCordyBlockHood();
@@ -5059,15 +5213,7 @@
         const jarLimit = gloveLevel >= 3 ? 2 : 3,
           bagLimit = gloveLevel >= 3 ? 4 : 3;
         for (let i = 0; i < Math.min(bagLimit, gloveAvailableBags()); i++) {
-          if (gloveLevel >= 3)
-            softShadow(
-              195 + (i % 2) * 25,
-              143 + Math.floor(i / 2) * 20,
-              12,
-              2,
-              0.13,
-            );
-          drawPreparedSubstrateBag(
+          (gloveLevel >= 3 ? drawLaminarBag : drawPreparedSubstrateBag)(
             181 + (i % 2) * 25,
             gloveLevel >= 3
               ? 113 + Math.floor(i / 2) * 20
@@ -5077,8 +5223,10 @@
           );
         }
         for (let i = 0; i < Math.min(jarLimit, gloveAvailableJars()); i++) {
-          if (gloveLevel >= 3) softShadow(126 + i * 21, 142, 9, 2, 0.13);
-          jar(119 + i * 21, gloveLevel >= 3 ? 121 : 110);
+          (gloveLevel >= 3 ? drawLaminarJar : jar)(
+            119 + i * 21,
+            gloveLevel >= 3 ? 121 : 110,
+          );
           box(
             121 + i * 21,
             gloveLevel >= 3 ? 127 : 116,
@@ -5097,13 +5245,14 @@
           i < Math.min(gloveLevel >= 3 ? 3 : 2, gloveAvailableBags());
           i++
         )
-          drawPreparedSubstrateBag(
+          (gloveLevel >= 3 ? drawLaminarBag : drawPreparedSubstrateBag)(
             205 + (i % 2) * 21,
             129 + Math.floor(i / 2) * 23,
             0.65,
             true,
           );
-        if (gloveAvailableJars()) jar(105, 142);
+        if (gloveAvailableJars())
+          (gloveLevel >= 3 ? drawLaminarJar : jar)(105, 142);
         drawGloveAnimation(woodBagJob);
       }
       if (gloveLevel < 3)
@@ -5168,7 +5317,12 @@
         exit = Math.max(0, Math.min(1, (t - 1.9) / 0.6)),
         bagX = 187 + exit * 120,
         bagY = 102 - Math.sin(exit * Math.PI) * 6;
-      drawPreparedSubstrateBag(bagX, bagY, 1.35, true);
+      (gloveLevel >= 3 ? drawLaminarBag : drawPreparedSubstrateBag)(
+        bagX,
+        bagY,
+        1.35,
+        true,
+      );
       const deposited = Math.max(0, Math.min(1, t / 0.8));
       for (let i = 0; i < Math.floor(deposited * 19); i++)
         box(
@@ -5184,7 +5338,7 @@
         c.save();
         c.translate(129 + 57 * p, 110 - 10 * Math.sin(p * Math.PI));
         c.rotate(p * 1.7);
-        jar(-7, -8);
+        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -8);
         c.restore();
         if (t > 0.25 && t < 0.8)
           for (let i = 0; i < 8; i++)
@@ -5202,15 +5356,21 @@
       }
     }
     function drawWoodStation() {
-      drawSterileBackdrop(
-        auxView === "woodPrep"
-          ? "MESA DE SUSTRATO"
-          : auxView === "woodSterilizer"
-            ? "ESTERILIZADOR"
-            : gloveLevel >= 3
-              ? "CAMPANA DE FLUJO LAMINAR"
-              : "CABINA CON GUANTES",
-      );
+      if (
+        auxView === "glovebox" &&
+        (gloveLevel >= 3 || isCordyHood() || isCordyBlockHood())
+      )
+        drawLaminarRoom();
+      else
+        drawSterileBackdrop(
+          auxView === "woodPrep"
+            ? "MESA DE SUSTRATO"
+            : auxView === "woodSterilizer"
+              ? "ESTERILIZADOR"
+              : gloveLevel >= 3
+                ? "CAMPANA DE FLUJO LAMINAR"
+                : "CABINA CON GUANTES",
+        );
       if (auxView === "woodPrep") drawStainlessTable(14, 92, 292, 98, 25);
       else if (auxView === "woodSterilizer")
         drawStainlessTable(110, 126, 196, 60, 34);
@@ -10313,14 +10473,19 @@
       ),
       gloveInoculum: dragIcon("Micelio interior", () => {
         c.scale(1.45, 1.45);
-        jar(-7, -9);
+        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -9);
       }),
       gloveWood: dragIcon("Bolsa esterilizada", () =>
-        drawPreparedSubstrateBag(-14, -18, 1, true),
+        (gloveLevel >= 3 ? drawLaminarBag : drawPreparedSubstrateBag)(
+          -14,
+          -18,
+          1,
+          true,
+        ),
       ),
       gloveJar: dragIcon("Frasco de micelio", () => {
         c.scale(1.45, 1.45);
-        jar(-7, -9);
+        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -9);
       }),
       gloveClean: dragIcon("Limpieza de cabina", () =>
         drawCleaningKit(-17, -13),

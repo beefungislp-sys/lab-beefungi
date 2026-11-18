@@ -105,3 +105,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Tester visible
 
 [Botón Tester global](outputs/TANDA-BOTON-TESTER-GLOBAL.md): disponible arriba en cada módulo. Abre todas las áreas y especies, instala las mejoras y añade un millón de monedas. Conserva los procesos; los asistentes se contratan manualmente. Recargar vuelve al arranque normal porque la partida sigue en memoria.
+
+## Escenario de campana por capas
+
+[Campana, ambiente y materiales](outputs/TANDA-CAMPANA-CAPAS.md): fondo fijo dibujado en código, suelo en perspectiva, campana independiente y frascos/bolsas renovados que comparten dibujo con sus iconos de arrastre y animaciones.
