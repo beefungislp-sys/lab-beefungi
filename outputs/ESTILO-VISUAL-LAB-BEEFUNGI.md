@@ -58,3 +58,9 @@ Con mouse, el icono acompaña al cursor por su centro. Los frascos de micelio y 
 Las cajas inferiores mantienen acrílico transparente con tapa, esquinas y puertos con guantes; las reservas usan los mismos frascos y bolsas de la campana. El mechero tiene base apoyada, cuerpo metálico y llama animada; el ambiente permanece fijo. Aserrín y arroz tienen montículos propios; nutrientes y recipientes vacíos comparten dibujo con el arrastre. La llenadora muestra acero, luz interior y el nivel real de ambas reservas.
 
 Procedimiento completo: [GUIA-REMODELACION-ARTE.md](GUIA-REMODELACION-ARTE.md).
+
+## Mezcladora y esterilizador desde las referencias
+
+La llenadora usa dos tolvas transparentes con cono inferior, cámara redondeada con ventana y paleta, boquilla y bastidor abierto. El recipiente debe seguir visible bajo la salida. El agua entra a la cámara y las reservas muestran cantidades reales. La miniatura comparte el dibujante del aparato.
+
+El esterilizador tiene cuerpo cilíndrico, tapa abatible, junta, canastilla, manómetro y cierres. Mantener el cepillado con bajo contraste para que los reflejos definan el volumen. El borde frontal oculta la base de los recipientes cargados. La tapa cierra, vibra suavemente y emite vapor sólo durante el ciclo. Conservar escala por capacidad y fondo existente.

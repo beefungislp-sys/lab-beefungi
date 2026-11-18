@@ -80,6 +80,8 @@ Probar en escritorio y en marcos de celular horizontal y vertical. Comprobar sep
 | Mechero y limpieza | Materiales, volumen, llama y composición acordes con la campana. |
 | Mesa de sustrato | Montículos diferenciados, bolsa y frasco vacíos, nutrientes, reflejos y llenadora con niveles reales. |
 | Ambiente estéril | Base cercana compartida para todas sus estaciones. |
-| Esterilizador y agitación | Reciben el fondo compartido; esta pasada no sustituye sus aparatos por nuevos diseños. |
+| Esterilizador | En la continuación se adapta a la referencia: cilindro, tapa abatible, canastilla y manómetro; conserva su escala por capacidad. |
+| Llenadora de sustrato | En la continuación se adapta a la referencia: tolvas, cámara, paleta y plataforma abiertas. |
+| Agitación | Recibe el fondo compartido; su aparato conserva el diseño previo. |
 
 La mesa de sustrato se delegó con límites claros: dibujantes propios y composición de esa estación, sin tocar recetas ni funciones de inoculación. La integración final unificó iconos, ambiente y validación. En futuras delegaciones conviene separar funciones y zonas de edición del mismo modo.

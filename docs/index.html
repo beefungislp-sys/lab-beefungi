@@ -4059,7 +4059,12 @@
       artRect(173, 46, 22, 1, "#e0e9d1");
       artRect(172, 51, 1, 18, "#e2e8cc");
       artRect(174, 39, 14, 0.5, running ? "#b8dec2" : "#f9c5a5");
-      if (running)
+      if (woodPrepLevel === 2) {
+        box(171, 72, 7, 12, "#82a5a1");
+        artRect(172, 73, 1, 10, "#dfE6cc");
+        if (running)
+          for (let yy = 74; yy < 84; yy += 4) box(174, yy, 2, 2, "#bce5dd");
+      } else if (running)
         for (let yy = 76; yy < 140; yy += 7) box(173, yy, 3, 4, "#a4e2e4");
     }
     function drawSterileMiniCaption(x, y, w, label) {
@@ -4075,12 +4080,12 @@
         smallText(st.label, x + 4, y + h + 7);
         if (st.view === "woodPrep") {
           if (woodPrepLevel === 2) {
-            box(x + 23, y + 5, 69, 22, "#78999b");
-            box(x + 25, y + 6, 65, 19, "#bfd0c6");
-            box(x + 42, y + 10, 31, 15, "#456772");
-            box(x + 29, y + 4, 9, 7, "#92b4ab");
-            box(x + 78, y + 4, 9, 7, "#92b4ab");
-            artRect(x + 25, y + 6, 65, 0.5, "#edf0d1");
+            c.save();
+            c.translate(x + 24, y + 1);
+            c.scale(0.49, 0.25);
+            c.translate(-100, -62);
+            drawSubstrateMixer(true);
+            c.restore();
           } else if (prepMode === "liquid") {
             drawEmptyJar(x + 49, y + 4, 0.55);
           } else if (prepMode === "cordy") {
@@ -4286,22 +4291,7 @@
       c.restore();
     }
     function drawPreparedSubstrateBag(x, y, scale = 1, sterile = false) {
-      c.save();
-      c.translate(Math.round(x), Math.round(y));
-      c.scale(scale, scale);
-      box(5, 10, 21, 22, sterile ? "#b2b491" : "#b39b68");
-      for (let i = 0; i < 40; i++)
-        box(
-          6 + ((i * 7) % 18),
-          12 + ((i * 11) % 18),
-          2,
-          1,
-          i % 3 ? "#d3bf88" : "#8c784e",
-        );
-      box(9, 3, 13, 5, "#c5d9ce");
-      box(9, 7, 13, 3, sterile ? "#7fb3ac" : "#879a9f");
-      drawEmptySubstrateBag(0, 0);
-      c.restore();
+      drawLaminarBag(x, y, scale, sterile);
     }
     function woodPrepGuideStep() {
       if (woodGuideDone || woodPrepExit) return null;
@@ -4469,33 +4459,68 @@
       c.restore();
     }
     function drawSubstrateHopper(x, y, w, h, count, nutrient = false) {
-      box(x, y, w, h, "#6c9290");
-      box(x + 2, y + 3, w - 4, h - 6, "#b4c8b8");
-      const fill = ((h - 8) * Math.min(4, count)) / 4;
+      const shape = [
+        [x + 2, y + 3],
+        [x + w - 2, y + 3],
+        [x + w - 2, y + h - 12],
+        [x + w * 0.64, y + h - 3],
+        [x + w * 0.64, y + h],
+        [x + w * 0.36, y + h],
+        [x + w * 0.36, y + h - 3],
+        [x + 2, y + h - 12],
+      ];
+      drawLaminarFace(shape, "#adc1b2");
+      c.save();
+      drawLaminarFace(shape);
+      c.clip();
+      const fill = ((h - 8) * Math.min(4, Math.max(0, count))) / 4,
+        top = y + h - 2 - fill;
       if (fill > 0) {
         box(
           x + 3,
-          y + h - 4 - fill,
+          top,
           w - 6,
           fill,
-          nutrient ? "#e6d7a9" : "#c6a16a",
+          nutrient ? "#ddcca0" : prepMode === "cordy" ? "#d9c48c" : "#bc955c",
         );
-        for (let i = 0; i < 16; i++) {
-          const yy = y + h - 5 - texHash(i, x, 145) * fill;
+        drawLaminarOval(
+          x + 3,
+          top - 2,
+          w - 6,
+          4,
+          nutrient ? "#f0e2b9" : "#d9b97b",
+        );
+        for (let i = 0; i < 80; i++)
           artRect(
-            x + 4 + texHash(i, x, 146) * (w - 9),
-            yy,
-            1,
+            x + 3 + texHash(i, 19, 152) * (w - 6),
+            top + texHash(i, 18, 153) * fill,
+            nutrient ? 1.2 : 0.8,
             0.6,
-            nutrient ? "#f7edcc" : "#e0c18a",
+            nutrient
+              ? i % 3
+                ? "#efe3bf"
+                : "#bdac7d"
+              : i % 3
+                ? "#e5c488"
+                : "#9c7c4e",
           );
-        }
       }
-      box(x - 1, y, w + 2, 3, "#93afa1");
-      artRect(x, y, w, 0.5, "#e6e7ca");
-      artRect(x + 2, y + 4, 0.7, h - 8, "#ecedcf");
-      artRect(x + w - 3, y + 4, 0.5, h - 8, "#527c7b");
+      c.restore();
+      c.strokeStyle = "#dce4ca";
+      c.lineWidth = 0.6;
+      drawLaminarFace(shape);
+      c.stroke();
+      artRect(x + 5, y + 6, 1.5, h - 18, "#f3eed4");
+      artRect(x + w - 6, y + 7, 0.7, h - 18, "#d1dfc4");
+      drawLaminarOval(x, y, w, 7, "#526f73");
+      drawLaminarOval(x + 1, y, w - 2, 5, "#b7c7b6");
+      artRect(x + 5, y + 1, w - 10, 0.7, "#fff0cf");
+      box(x + w / 2 - 4, y - 3, 8, 3, "#617f7c");
+      artRect(x + w / 2 - 3, y - 3, 6, 0.7, "#dfe6ca");
+      box(x + w * 0.35, y + h - 2, w * 0.3, 4, "#71918a");
+      artRect(x + w * 0.35, y + h - 2, w * 0.3, 1, "#dce3c9");
     }
+
     function drawSubstrateJarGlints(x, y, scale = 1) {
       c.save();
       c.translate(x, y);
@@ -4607,75 +4632,178 @@
       c.save();
       c.translate(Math.round(x), Math.round(y));
       c.scale(scale, scale);
-      const lid = woodTank.lid || 0,
+      const lid = Math.max(0, Math.min(1, woodTank.lid || 0)),
         water = woodTank.water || 0;
-      softShadow(77, 132, 76, 5, 0.26);
-      box(16, 60, 119, 68, "#8ea2a7");
-      box(10, 65, 131, 54, "#aabcc0");
-      box(22, 72, 107, 48, "#c9d6d4");
-      box(26, 76, 4, 39, "#e3ebe5");
-      box(122, 76, 3, 39, "#7e959e");
-      artRect(14, 68, 2, 47, "#dae4d9");
-      artRect(18, 70, 2, 48, "#b9ceca");
-      artRect(130, 70, 2, 46, "#688b94");
-      artRect(31, 78, 1, 35, "#f7f0d7");
-      artRect(35, 80, 1, 27, "#dee7d9");
-      artRect(25, 120, 101, 1, "#eaf0da");
-      for (let i = 0; i < 5; i++)
-        artRect(45 + i * 14, 114 + (i % 2), 7, 0.5, "#b8cec6");
-      box(85, 84, 18, 15, "#6a8990");
-      box(87, 86, 14, 11, "#eee8cb");
-      artRect(93, 88, 1, 6, "#496b72");
-      artRect(89, 92, 4, 1, "#b79a6a");
-      box(22, 125, 107, 6, "#7e939d");
-      box(-3, 80, 18, 16, "#415966");
-      box(138, 80, 18, 16, "#415966");
-      box(0, 83, 12, 7, "#8fa7af");
-      box(141, 83, 12, 7, "#8fa7af");
-      if (lid < 0.95) {
-        box(9, 51, 132, 12, "#d5e0da");
-        box(17, 56, 116, 15, "#3e5966");
-        if (water) box(24, 64, 102, 5 * water, "#83c4cf");
-        for (let i = 0; i < woodTank.n; i++)
-          drawPreparedContainer(
-            tankItemTypes()[i],
-            34 + (i % 3) * 29,
-            54 + Math.floor(i / 3) * 16,
-            0.65,
-          );
-      }
-      box(33, 86, 7, 29, "#67828e");
-      box(35, 111 - 25 * water, 3, 25 * water, "#82c9d2");
       const shake =
-          woodTank.left && lid >= 0.95
-            ? Math.floor(performance.now() / 140) % 2
-            : 0,
-        ly = 10 + 40 * lid + shake;
-      box(14, ly, 122, 6, "#d5e0dc");
-      box(8, ly + 6, 134, 5, "#a2b5bc");
-      box(17, ly + 11, 116, 3, "#718d99");
-      box(63, ly - 8, 28, 8, "#425b68");
-      box(68, ly - 10, 18, 3, "#9cb4bb");
-      box(105, ly - 8, 5, 8, "#718b96");
-      artRect(16, ly + 1, 118, 1, "#f6f0d9");
-      artRect(10, ly + 7, 130, 0.5, "#d5e2d6");
-      artRect(21, ly + 12, 108, 0.5, "#4a717c");
-      artRect(65, ly - 7, 23, 1, "#749594");
-      for (const xx of [27, 120]) artRect(xx, ly + 4, 3, 2, "#73939a");
-      if (woodTank.left && lid >= 0.95) {
-        for (let i = 0; i < 4; i++) {
-          const phase = (performance.now() / 100 + i * 5) % 17;
-          box(
-            102 + Math.floor(Math.sin(i + phase / 4) * 4),
-            ly - 10 - phase,
-            5,
+        woodTank.left && lid >= 0.95
+          ? Math.sin(performance.now() / 95) * 0.45
+          : 0;
+      softShadow(77, 134, 70, 4, 0.23);
+      // Hinged lid stays behind the open basket, then settles on the rim.
+      if (lid < 0.95) drawPressureLid(lid, shake);
+      for (const xx of [26, 112]) {
+        box(xx, 122, 15, 11, "#4a6b70");
+        artRect(xx + 1, 123, 3, 8, "#b9c9b7");
+        box(xx - 1, 131, 17, 4, "#354f5b");
+        artRect(xx, 131, 15, 1, "#99b2a6");
+      }
+      drawLaminarOval(14, 110, 124, 22, "#345c67");
+      // Column shading makes the vessel cylindrical rather than a flat box.
+      for (let col = 0; col < 120; col++) {
+        const light = Math.sin((col / 119) * Math.PI),
+          glint = Math.exp(-Math.pow((col - 29) / 9, 2));
+        box(
+          16 + col,
+          65,
+          1,
+          55,
+          `rgb(${Math.round(75 + light * 38 + glint * 32)},${Math.round(112 + light * 36 + glint * 25)},${Math.round(114 + light * 29 + glint * 19)})`,
+        );
+      }
+      c.save();
+      c.globalAlpha = 0.25;
+      for (let i = 0; i < 210; i++)
+        artRect(
+          18 + texHash(i, 14, 158) * 116,
+          70 + texHash(i, 12, 159) * 46,
+          2 + texHash(i, 3, 160) * 5,
+          0.4,
+          i % 3 ? "#a5beb0" : "#638b87",
+        );
+      c.restore();
+      drawLaminarOval(14, 114, 124, 15, "#76978e");
+      drawLaminarOval(17, 114, 118, 10, "#87a69a");
+      artRect(23, 121, 106, 0.7, "#cad8bc");
+      for (const xx of [1, 137]) {
+        box(xx, 78, 16, 23, "#3e6069");
+        box(xx + 2, 80, 12, 18, "#c2ceba");
+        box(xx + 5, 82, 7, 12, "#547b7e");
+        artRect(xx + 2, 80, 12, 1, "#f3e9ca");
+      }
+      // Dark inner basket and water are visible only while the lid is open.
+      drawLaminarOval(9, 49, 133, 32, "#c9d1ba");
+      drawLaminarOval(14, 52, 123, 25, "#54746f");
+      drawLaminarOval(21, 56, 109, 19, water ? "#80b0ac" : "#304f59");
+      if (lid < 0.95) {
+        for (let i = 0; i < 13; i++)
+          drawLaminarOval(
+            23 + i * 8,
+            54 + Math.abs(6 - i) * 0.65,
             3,
-            "#dfebe1",
+            2,
+            "#2f4f55",
           );
+        const types = tankItemTypes();
+        for (let i = woodTank.n - 1; i >= 0; i--) {
+          const bx = 31 + (i % 3) * 29,
+            by = 49 + Math.floor(i / 3) * 10;
+          if (types[i] === "wood") drawLaminarBag(bx, by, 0.64, false);
+          else drawPreparedContainer(types[i], bx, by, 0.64);
         }
       }
+      // Front rolled rim occludes the bases of the bags inside the vessel.
+      drawLaminarFace(
+        [
+          [10, 65],
+          [17, 73],
+          [40, 78],
+          [111, 78],
+          [136, 72],
+          [142, 65],
+          [140, 74],
+          [128, 80],
+          [107, 83],
+          [42, 83],
+          [20, 78],
+          [10, 72],
+        ],
+        "#a6b9ac",
+      );
+      artRect(39, 78, 73, 1, "#f1e8cb");
+      artRect(41, 82, 68, 0.6, "#52777b");
+      for (const xx of [30, 116]) {
+        box(xx, 73, 8, 17, "#4c6e72");
+        box(xx + 1, 74, 6, 13, "#b6c5b0");
+        artRect(xx + 2, 75, 2, 10, "#eee6cb");
+        box(xx - 1, 72, 10, 3, "#8eaba0");
+      }
+      drawLaminarOval(66, 89, 25, 25, "#344f59");
+      drawLaminarOval(68, 90, 21, 22, "#becbb6");
+      drawLaminarOval(70, 92, 17, 18, "#f1e8ca");
+      for (let i = 0; i < 7; i++) {
+        const a = Math.PI * (0.8 + i * 0.23);
+        artRect(78 + Math.cos(a) * 6, 101 + Math.sin(a) * 7, 1, 1, "#526e70");
+      }
+      c.strokeStyle = "#365863";
+      c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(78, 101);
+      c.lineTo(woodTank.left ? 83 : 80, woodTank.left ? 96 : 95);
+      c.stroke();
+      drawLaminarOval(77, 100, 2, 2, "#365863");
+      box(41, 91, 6, 24, "#4f7579");
+      box(43, 93, 2, 20, "#a5c7b7");
+      box(43, 113 - 19 * water, 2, 19 * water, "#8bd1d1");
+      box(77, 119, 4, 12, "#73968f");
+      drawLaminarOval(75, 126, 8, 5, "#c3d0b9");
+      drawLaminarOval(77, 127, 4, 2, "#3a5d65");
+      box(79, 118, 15, 2, "#b95141");
+      artRect(80, 118, 12, 0.6, "#eea17f");
+      if (lid >= 0.95) drawPressureLid(lid, shake);
+      if (woodTank.left && lid >= 0.95)
+        for (let i = 0; i < 4; i++) {
+          const phase = (performance.now() / 110 + i * 5) % 18;
+          c.save();
+          c.globalAlpha = 0.55 * (1 - phase / 22);
+          drawLaminarOval(
+            104 + Math.sin(i + phase / 4) * 3,
+            48 - phase,
+            5 + phase * 0.2,
+            3,
+            "#eef0da",
+          );
+          c.restore();
+        }
       c.restore();
     }
+    function drawPressureLid(lid, shake = 0) {
+      const yy = 1 + 48 * lid + shake,
+        hh = 57 - 40 * lid;
+      drawLaminarOval(8, yy, 136, hh, "#3e5b65");
+      drawLaminarOval(10, yy, 132, hh - 2, "#b8c6b3");
+      drawLaminarOval(14, yy + 3, 124, hh - 7, "#987d58");
+      drawLaminarOval(16, yy + 4, 120, hh - 9, "#587b7b");
+      drawLaminarOval(
+        19,
+        yy + 6,
+        114,
+        hh - 13,
+        lid < 0.95 ? "#a6b8aa" : "#c5ceba",
+      );
+      c.save();
+      c.globalAlpha = 0.35;
+      for (let i = 0; i < 23; i++) {
+        const t = i / 22,
+          half = 54 * Math.sqrt(Math.max(0, 1 - Math.pow(t * 2 - 1, 2)));
+        artRect(
+          76 - half,
+          yy + 7 + t * Math.max(1, hh - 15),
+          half * 2,
+          0.4,
+          i % 3 ? "#d2d9bd" : "#8ca49b",
+        );
+      }
+      c.restore();
+      const hy = yy - 5;
+      box(63, hy, 27, 5, "#3f626b");
+      box(66, hy - 3, 21, 3, "#9aafa1");
+      artRect(67, hy - 3, 18, 0.6, "#f2e8ca");
+      for (const xx of [28, 117]) {
+        box(xx, yy + hh * 0.2, 6, 5, "#829f95");
+        artRect(xx + 1, yy + hh * 0.2, 4, 1, "#e5e5c9");
+      }
+    }
+
     function drawWoodSterilizer() {
       drawPreparedPool();
       drawPressurePot(
@@ -4685,15 +4813,15 @@
       );
       if (woodAutoWater) smallText("AUTO", 278, 52);
       box(273, 68, 8, 20, "#8fadb2");
-      box(253, 79, 28, 7, "#bdcfca");
-      box(251, 83, 7, 20, "#8eacb2");
+      box(235, 79, 46, 7, "#bdcfca");
+      box(235, 83, 7, 14, "#8eacb2");
       box(271, 61, 21, 4, woodTank.running ? "#83c6ad" : "#e3514e");
       artRect(274, 69, 1, 10, "#dde9d2");
-      artRect(254, 80, 25, 1, "#f0ecd0");
-      artRect(252, 87, 1, 12, "#dae6cc");
+      artRect(237, 80, 42, 1, "#f0ecd0");
+      artRect(236, 87, 1, 8, "#dae6cc");
       artRect(273, 61, 17, 0.5, "#f7b398");
       if (woodTank.running)
-        for (let yy = 105; yy < 153; yy += 6) box(253, yy, 3, 3, "#b1e5e4");
+        for (let yy = 98; yy < 109; yy += 4) box(237, yy, 3, 3, "#b1e5e4");
       box(149, 181, 94, 14, "#d2dfca");
       artRect(150, 181, 92, 0.5, "#f0ecd0");
       smallText("CARGAS " + woodTank.n + "/" + woodCapacity, 157, 191);
@@ -5856,7 +5984,7 @@
         );
       if (auxView === "woodPrep") drawStainlessTable(14, 92, 292, 98, 25);
       else if (auxView === "woodSterilizer")
-        drawStainlessTable(110, 126, 196, 60, 34);
+        drawStainlessTable(110, 165, 196, 21, 34);
       else if (gloveLevel < 3 && !isCordyHood() && !isCordyBlockHood())
         drawStainlessTable(14, 98, 292, 96, 17);
       if (auxView === "woodPrep") {
@@ -6528,59 +6656,112 @@
       updateUpgradeControls();
     };
 
-    function drawWoodFiller() {
-      softShadow(174, 191, 76, 3, 0.18);
-      box(100, 92, 147, 98, "#466b75");
-      drawLaminarSteel(102, 94, 143, 94, 11);
-      artRect(101, 92, 145, 1, "#e0e6cc");
-      artRect(101, 189, 145, 1, "#355965");
-      artRect(102, 95, 1, 92, "#c8d8c5");
-      artRect(244, 95, 1, 92, "#3e6470");
-      // Zona de llenado abierta y despejada: mismo hueco que el recipiente activo.
-      box(140, 108, 68, 72, "#3c606a");
-      box(143, 111, 62, 66, "#a9bdb0");
-      box(145, 113, 58, 61, "#bccbb8");
-      artRect(143, 111, 62, 1, "#e5e7cb");
-      artRect(143, 176, 62, 1, "#527b7a");
-      softLight(174, 123, 29, 24, "255,238,184", 0.11);
-      box(151, 99, 44, 6, "#718f88");
-      artRect(152, 100, 42, 2, "#eee6b7");
-      box(170, 105, 7, 5, "#8fae9f");
-      artRect(171, 105, 1, 4, "#e1e6ca");
+    function drawSubstrateMixer(mini = false) {
+      softShadow(174, 192, 72, 3, 0.2);
+      // Open support frame leaves the active bag or jar visible beneath the nozzle.
+      for (const xx of [105, 234]) {
+        drawLaminarSteel(xx, 98, 11, 89, 166);
+        artRect(xx + 1, 99, 1, 86, "#dae1c6");
+        box(xx - 2, 186, 15, 4, "#365b65");
+      }
+      box(116, 179, 118, 5, "#688e88");
+      artRect(118, 179, 114, 1, "#d3dec1");
+      drawLaminarFace(
+        [
+          [134, 172],
+          [211, 172],
+          [219, 185],
+          [128, 185],
+        ],
+        "#7d9e95",
+      );
+      artRect(130, 184, 87, 1, "#e3e4c7");
+      box(129, 185, 88, 4, "#4f7679");
+      // Rounded mixing chamber, with a small inspection window.
+      drawLaminarOval(129, 83, 91, 20, "#597c7e");
+      drawLaminarSteel(130, 92, 89, 24, 167);
+      drawLaminarOval(130, 107, 89, 18, "#78978d");
+      drawLaminarOval(133, 108, 83, 13, "#b8c6ae");
+      box(143, 94, 64, 22, "#446872");
+      box(146, 96, 58, 18, "#8da99a");
+      const mix =
+        woodPrepState.bag && (woodPrepState.sawdust || woodPrepState.nutrients);
+      if (mix) {
+        box(148, 107, 54, 6, prepMode === "liquid" ? "#c5b77f" : "#bd995f");
+        if (!mini)
+          for (let i = 0; i < 40; i++)
+            artRect(
+              148 + texHash(i, 4, 170) * 53,
+              106 + texHash(i, 6, 171) * 7,
+              1,
+              0.6,
+              i % 3 ? "#dcc18b" : "#9b814e",
+            );
+      }
+      const angle =
+        woodPrepState.blend > 0 && woodPrepState.blend < 1
+          ? performance.now() / 170
+          : 0;
+      box(173, 97, 3, 15, "#d6dcc2");
+      c.save();
+      c.translate(174, 108);
+      c.scale(1, 0.35);
+      c.rotate(angle);
+      box(-20, -1, 40, 2, "#d9dfc5");
+      box(-1, -12, 2, 24, "#a4bbac");
+      c.restore();
+      artRect(148, 97, 1, 15, "#f5edce");
+      artRect(147, 96, 55, 0.7, "#e4e7c9");
+      for (const xx of [143, 205])
+        for (const yy of [94, 113]) box(xx, yy, 2, 2, "#c1cdb3");
+      drawLaminarFace(
+        [
+          [151, 122],
+          [199, 122],
+          [182, 132],
+          [167, 132],
+        ],
+        "#8caaa0",
+      );
+      artRect(155, 123, 40, 0.6, "#e4e5c7");
+      box(168, 130, 14, 5, "#b4c6b3");
+      artRect(169, 130, 2, 4, "#ece9cb");
+      // Independent hoppers correspond to the actual four-unit reserves.
       const hopper = activePrepHopper();
       drawSubstrateHopper(
-        116,
-        92,
-        19,
-        35,
+        108,
+        65,
+        43,
+        34,
         prepMode === "liquid" ? 0 : hopper.sawdust,
       );
-      drawSubstrateHopper(211, 92, 19, 35, hopper.nutrients, true);
-      box(236, 140, 8, 13, "#557c7c");
-      box(238, 143, 4, 5, woodPrepState.running ? "#b5d6a2" : "#83a995");
-      artRect(239, 143, 2, 1, "#e1e8c3");
-      for (let i = 0; i < 5; i++) {
-        artRect(110, 150 + i * 5, 17, 1, "#426976");
-        artRect(111, 151 + i * 5, 15, 0.5, "#acbeb0");
-      }
-      for (const xx of [105, 239])
-        for (const yy of [97, 182]) {
-          box(xx, yy, 2, 2, "#d8dfc5");
-          artRect(xx + 0.5, yy + 0.5, 1, 0.5, "#678880");
+      drawSubstrateHopper(198, 65, 43, 34, hopper.nutrients, true);
+      for (const xx of [110, 235])
+        for (const yy of [105, 180]) {
+          box(xx, yy, 2, 2, "#d6dfc3");
+          artRect(xx + 0.5, yy + 0.5, 1, 0.5, "#64867e");
         }
-      box(106, 184, 135, 5, "#84a69a");
-      artRect(107, 184, 133, 1, "#c6d8be");
-      if (prepMode === "liquid") smallText("SIN SOLIDOS", 108, 72);
+      box(222, 118, 9, 13, "#4e7375");
+      box(224, 121, 5, 5, woodPrepState.running ? "#c8d8a4" : "#95b09c");
+      if (!mini) {
+        for (let i = 0; i < 4; i++) artRect(119, 142 + i * 4, 9, 1, "#577b7b");
+        softLight(174, 145, 29, 29, "255,236,181", 0.06);
+      }
+    }
+    function drawWoodFiller() {
+      drawSubstrateMixer();
+      if (prepMode === "liquid") smallText("SIN SOLIDOS", 108, 55);
       else
         drawHopperBar(
           108,
-          72,
+          51,
           activePrepHopper().sawdust,
           prepMode === "wood" ? "ASERRIN" : "CORDY",
         );
-      drawHopperBar(202, 72, activePrepHopper().nutrients, "NUTR.");
+      drawHopperBar(202, 51, activePrepHopper().nutrients, "NUTR.");
     }
     // === NAVEGACION Y RUTAS ===
+
     function drawWalkTarget() {
       if (!walkPath.length || walkRoom() !== walkView) return;
       const p = walkPath[walkPath.length - 1];

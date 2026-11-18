@@ -1,10 +1,18 @@
 # Referencias de estaciones estériles
 
 - `CAMPANA-FLUJO-CONCEPTO.png`: referencia aprobada por el usuario y adaptada al canvas del juego.
-- `ESTERILIZADOR-CONCEPTO.png`: nueva propuesta visual, pendiente de adaptación al juego.
+- `ESTERILIZADOR-CONCEPTO.png`: propuesta inicial del esterilizador, conservada como historial.
 - `MICELIO-MELENA-ASERRIN-CONCEPTO.png`: referencia aprobada de frascos colonizados y bolsas esterilizadas sin inocular, adaptada a los dibujantes de la campana.
 
 Las referencias se generaron con la herramienta integrada `image_gen`, sin CLI. Son referencias de arte, no instrucciones técnicas de laboratorio. Se preservan los originales generados.
+
+## Mezcladora y esterilizador: referencias actuales
+
+- `MEZCLADORA-SUSTRATO-CONCEPTO.png`: tolvas transparentes, cámara con paleta y plataforma para bolsas; adaptada al aparato de sustrato en código.
+- `ESTERILIZADOR-MESA-CONCEPTO.png`: cilindro con tapa abatible, canastilla y manómetro; adaptada al esterilizador en código.
+- [Prompts de ambas imágenes](PROMPTS-MEZCLADORA-ESTERILIZADOR.md).
+
+Se conserva el fondo ya aprobado del juego. Las imágenes sirven para proporciones y materiales; el juego no las carga como sprites.
 
 ## Prompt final del esterilizador
 
