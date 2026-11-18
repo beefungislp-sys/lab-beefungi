@@ -42,3 +42,9 @@ La prueba de un sprite transparente de la campana queda archivada como referenci
 Para las mesas cercanas se toma como referencia una vista frontal ligeramente elevada: horizontales niveladas, verticales rectas, superficie visible y patas apoyadas en el suelo. La navegación de salas sigue siendo aérea. La primera aplicación es la campana; las otras estaciones se adaptarán por separado.
 
 Orden de dibujo: ambiente fijo → aparato → materiales → acciones y avisos. La pared y el suelo deben concordar con la profundidad del mueble. Ventana, texturas y luz son estables; sólo se animan los procesos. Materiales, iconos de arrastre y miniaturas deben compartir dibujantes. La referencia se conserva en `referencias/PERSPECTIVA-CERCANA-MESAS.png`.
+
+## Materiales de la campana
+
+Frascos de micelio: vidrio con hombros y base redondeados, tapa crema acanalada y grano mayormente cubierto de blanco; conservar algunos granos visibles. La marca de especie se sitúa en la tapa para despejar el contenido.
+
+Bolsas de aserrín esterilizado: textura fina de madera, espacio transparente, filtro claro, sellado superior y pliegues con reflejos suaves. No dibujar micelio blanco en el aserrín antes de inocular. Sus dibujos en mesa, arrastre y animaciones comparten la misma función. Referencia: `referencias/MICELIO-MELENA-ASERRIN-CONCEPTO.png`.

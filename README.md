@@ -113,3 +113,7 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 ## Campana íntegramente en código
 
 [Campana procedural](outputs/TANDA-CAMPANA-EN-CODIGO.md): sustituye el sprite por planos de acero, reflejos, textura cepillada, filtro, luz cálida y sombras de contacto dibujados en canvas. Vista cercana y miniatura comparten componentes; la guía visual y el catálogo quedan actualizados.
+
+## Materiales de campana desde la referencia
+
+[Micelio y aserrín en código](outputs/TANDA-MICELIO-ASERRIN-EN-CODIGO.md): frascos redondeados con micelio blanco y tapa acanalada; bolsas con aserrín fino, filtro, sellado y pliegues. Comparten dibujo en mesa, arrastre, animación y miniatura.

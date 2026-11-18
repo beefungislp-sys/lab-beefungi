@@ -5195,68 +5195,179 @@
       artRect(12, 71, 63, 0.5, "#e2e3c3");
       artRect(75, 72, 0.5, 78, "#a3b397");
     }
-    function drawLaminarJar(x, y, available = true) {
-      softShadow(x + 7, y + 21, 9, 1.5, 0.15);
-      box(x, y, 15, 20, "#9eb8ad");
-      box(x + 1, y + 1, 13, 18, "#d7dfc6");
-      if (available) {
-        box(x + 2, y + 8, 11, 10, "#d6bd83");
-        for (let i = 0; i < 36; i++)
-          artRect(
-            x + 2 + texHash(i, 1, 91) * 10,
-            y + 8 + texHash(i, 1, 92) * 9,
-            i % 4 ? 0.7 : 1.4,
-            0.7,
-            i % 3 ? "#f2e5ba" : "#b79b64",
-          );
+    function drawLaminarOval(x, y, w, h, color) {
+      // Óvalos escalonados a medio píxel para vidrio y tapas, sin sprites externos.
+      for (let row = 0; row < h * 2; row++) {
+        const t = ((row + 0.5) / (h * 2)) * 2 - 1,
+          span = Math.round(w * Math.sqrt(Math.max(0, 1 - t * t)) * 2) / 2;
+        artRect(
+          Math.round((x + (w - span) / 2) * 2) / 2,
+          y + row / 2,
+          span,
+          0.5,
+          color,
+        );
       }
-      box(x - 1, y - 3, 17, 5, "#d1c69f");
-      artRect(x, y - 3, 15, 1, "#fff0c7");
-      artRect(x - 1, y + 1, 17, 0.5, "#8a9c8e");
-      artRect(x + 1, y + 3, 1, 13, "#f3f1d5");
-      artRect(x + 12, y + 4, 0.5, 13, "#e4e9cd");
-      artRect(x + 2, y + 19, 11, 0.5, "#668b87");
+    }
+    function drawLaminarJar(x, y, available = true, species = selectedSpecies) {
+      c.save();
+      c.translate(x, y);
+      softShadow(7.5, 21, 9, 1.5, 0.17);
+      // Hombros redondeados y base gruesa de vidrio.
+      drawLaminarOval(0, 0, 15, 6, "#91aaa0");
+      box(0, 3, 15, 14, "#9fb8a9");
+      drawLaminarOval(0, 16, 15, 5, "#78968c");
+      box(1, 4, 13, 13, "#c5d2b9");
+      drawLaminarOval(1, 1, 13, 5, "#d1dcc2");
+      drawLaminarOval(1, 16, 13, 4, "#c5d1b6");
+      if (available) {
+        box(1.5, 7, 12, 10, "#e2d8b5");
+        drawLaminarOval(1.5, 5.5, 12, 3, "#eee4c4");
+        drawLaminarOval(1.5, 15, 12, 4, "#e7dbb9");
+        // Micelio cremoso dominante, con grano visible entre la trama blanca.
+        for (let i = 0; i < 80; i++)
+          artRect(
+            2 + texHash(i, 1, 121) * 10.5,
+            7 + texHash(i, 1, 122) * 10.5,
+            i % 4 ? 0.7 : 1.4,
+            0.6,
+            i % 4 ? "#f5eed6" : "#d7cba9",
+          );
+        c.strokeStyle = "#fff5de";
+        c.lineWidth = 0.45;
+        for (let i = 0; i < 14; i++) {
+          const gx = 3 + texHash(i, 4, 123) * 8,
+            gy = 8 + texHash(i, 4, 124) * 8;
+          c.beginPath();
+          c.moveTo(gx - 1, gy + 1);
+          c.lineTo(gx, gy);
+          c.lineTo(gx + 2, gy - 0.5);
+          c.moveTo(gx, gy);
+          c.lineTo(gx + 0.5, gy + 1.5);
+          c.stroke();
+        }
+        for (let i = 0; i < 10; i++) {
+          const gx = 3 + texHash(i, 3, 125) * 8,
+            gy = 8 + texHash(i, 3, 126) * 8;
+          drawLaminarOval(gx, gy, 1.5, 0.9, "#c5a56e");
+          artRect(gx + 0.3, gy, 0.7, 0.4, "#ebd49a");
+        }
+      }
+      // Reflejos y doble curva inferior mantienen visible el espesor del frasco.
+      artRect(1, 4, 1, 12, "#f8f3d9");
+      artRect(2, 3, 1, 2, "#f8f3d9");
+      artRect(12.5, 4, 0.5, 12.5, "#e6ebce");
+      drawLaminarOval(1.5, 17.5, 12, 2, "#c8d5b9");
+      artRect(3, 18.5, 9, 0.5, "#eef0d0");
+      // Tapa crema acanalada. La especie se identifica sólo con una marca arriba.
+      drawLaminarOval(-1, -2, 17, 4, "#9caa93");
+      box(-1, -2.5, 17, 3, "#d4c7a4");
+      for (let xx = 0; xx < 15; xx += 1.5) artRect(xx, -2, 0.5, 2.5, "#b8af90");
+      drawLaminarOval(-1, -4.5, 17, 4, "#eddfb9");
+      drawLaminarOval(0, -4.5, 15, 2.5, "#f8edcc");
+      drawLaminarOval(6, -3.5, 3, 1, speciesColor(species));
+      artRect(1, 1, 13, 0.5, "#6f8b81");
+      c.restore();
     }
     function drawLaminarBag(x, y, scale = 1, sterile = true) {
       c.save();
       c.translate(Math.round(x), Math.round(y));
       c.scale(scale, scale);
-      softShadow(15, 35, 14, 2, 0.14);
-      box(4, 5, 24, 27, "#b6c6b1");
-      box(5, 6, 22, 25, "#d9dfbf");
-      for (let row = 0; row < 19; row++) {
-        const inset = Math.max(0, 5 - Math.floor(row / 2));
+      softShadow(15, 35, 15, 2, 0.17);
+      // Fuelle abierto en la base y espacio transparente sobre el aserrín.
+      const silhouette = [
+        [4, 4],
+        [27, 4],
+        [27, 11],
+        [30, 32],
+        [28, 34],
+        [2, 34],
+        [1, 32],
+        [4, 11],
+      ];
+      c.save();
+      c.globalAlpha = 0.24;
+      drawLaminarFace(silhouette, "#dee4cb");
+      c.restore();
+      c.save();
+      drawLaminarFace(silhouette);
+      c.clip();
+      for (let row = 0; row < 18; row++) {
+        const t = row / 18;
         artRect(
-          6 + inset,
-          12 + row,
-          20 - inset * 2,
+          4,
+          15 + row,
+          23,
           1,
-          row % 4 ? "#c4a46a" : "#ddc087",
+          `rgb(${Math.round(206 - t * 24)},${Math.round(167 - t * 29)},${Math.round(104 - t * 18)})`,
         );
       }
-      for (let i = 0; i < 65; i++) {
-        const xx = 7 + texHash(i, 5, 93) * 17,
-          yy = 16 + texHash(i, 5, 94) * 13;
-        artRect(xx, yy, i % 3 ? 2.3 : 1, 0.7, i % 4 ? "#ecd09a" : "#9c7d50");
+      drawLaminarOval(4, 13.5, 23, 4, "#d8b87d");
+      for (let i = 0; i < 150; i++) {
+        const gx = 4.5 + texHash(i, 5, 127) * 22,
+          gy = 16 + texHash(i, 5, 128) * 16;
+        artRect(
+          gx,
+          gy,
+          i % 7 ? 0.6 : 1.4,
+          0.55,
+          ["#e2c18a", "#b18c57", "#c39d63", "#d3ad72"][i % 4],
+        );
       }
-      box(3, 1, 26, 4, "#d8d9b8");
-      artRect(4, 1, 24, 1, "#fff0cb");
-      artRect(4, 4, 24, 0.5, "#8fa18e");
-      artRect(4, 6, 1, 25, "#f5efd0");
-      artRect(27, 6, 0.7, 25, "#809d94");
-      artRect(5, 32, 22, 1, "#e8e9c7");
-      c.strokeStyle = "#f6edca";
-      c.lineWidth = 0.7;
+      c.restore();
+      // Filtro claro en la parte vacía: el sustrato aún no lleva micelio.
+      box(11.5, 7, 7.5, 5.5, sterile ? "#eee4c7" : "#d6d4b9");
+      artRect(12, 7, 6.5, 0.5, "#fff0d1");
+      for (let i = 0; i < 18; i++)
+        artRect(
+          12 + texHash(i, 2, 129) * 6,
+          8 + texHash(i, 2, 130) * 3.5,
+          0.5,
+          0.5,
+          "#d6c7a5",
+        );
+      // Sellado térmico y pliegues del plástico, con un retorno de sombra fino.
+      box(3, 1, 26, 3, "#d9d4b6");
+      artRect(4, 1, 24, 0.6, "#fff2d1");
+      artRect(4, 3.5, 24, 0.5, "#8fa18f");
+      for (let xx = 5; xx < 28; xx += 1.5) artRect(xx, 2, 0.5, 1, "#c1b99a");
+      c.strokeStyle = "#f7eed0";
+      c.lineWidth = 0.65;
       c.beginPath();
-      c.moveTo(5, 7);
-      c.lineTo(15, 13);
-      c.lineTo(26, 7);
-      c.moveTo(6, 10);
-      c.lineTo(8, 26);
-      c.lineTo(5, 30);
-      c.moveTo(25, 12);
-      c.lineTo(23, 27);
+      c.moveTo(4, 5);
+      c.lineTo(4, 11);
+      c.lineTo(1.5, 32);
+      c.lineTo(4, 33);
+      c.lineTo(27.5, 33);
+      c.lineTo(29.5, 32);
+      c.lineTo(27, 11);
+      c.lineTo(27, 5);
       c.stroke();
+      c.lineWidth = 0.55;
+      c.beginPath();
+      c.moveTo(5, 5);
+      c.lineTo(11, 8);
+      c.moveTo(26, 5);
+      c.lineTo(21, 10);
+      c.moveTo(5, 11);
+      c.lineTo(8, 21);
+      c.lineTo(4, 31);
+      c.moveTo(25, 12);
+      c.lineTo(23, 25);
+      c.lineTo(28, 31);
+      c.stroke();
+      c.save();
+      c.globalAlpha = 0.42;
+      c.strokeStyle = "#fdf5da";
+      c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(6, 14);
+      c.lineTo(7.5, 19);
+      c.moveTo(25, 15);
+      c.lineTo(24, 21);
+      c.stroke();
+      c.restore();
+      artRect(3, 34, 25, 0.5, "#718e87");
       c.restore();
     }
     function drawGloveStation() {
@@ -5299,21 +5410,18 @@
           );
         }
         for (let i = 0; i < Math.min(jarLimit, gloveAvailableJars()); i++) {
+          const jarSpecies =
+            i === 0
+              ? gloveJar || selectedSpecies
+              : gloveJarQueue[i - 1] || selectedSpecies;
           (gloveLevel >= 3 ? drawLaminarJar : jar)(
             119 + i * 21,
             gloveLevel >= 3 ? 121 : 110,
+            true,
+            jarSpecies,
           );
-          box(
-            121 + i * 21,
-            gloveLevel >= 3 ? 127 : 116,
-            11,
-            3,
-            speciesColor(
-              i === 0
-                ? gloveJar || selectedSpecies
-                : gloveJarQueue[i - 1] || selectedSpecies,
-            ),
-          );
+          if (gloveLevel < 3)
+            box(121 + i * 21, 116, 11, 3, speciesColor(jarSpecies));
         }
       } else {
         for (
@@ -5414,7 +5522,7 @@
         c.save();
         c.translate(129 + 57 * p, 110 - 10 * Math.sin(p * Math.PI));
         c.rotate(p * 1.7);
-        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -8);
+        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -8, true, job.species);
         c.restore();
         if (t > 0.25 && t < 0.8)
           for (let i = 0; i < 8; i++)
@@ -10549,7 +10657,12 @@
       ),
       gloveInoculum: dragIcon("Micelio interior", () => {
         c.scale(1.45, 1.45);
-        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -9);
+        (gloveLevel >= 3 ? drawLaminarJar : jar)(
+          -7,
+          -9,
+          true,
+          gloveJar || selectedSpecies,
+        );
       }),
       gloveWood: dragIcon("Bolsa esterilizada", () =>
         (gloveLevel >= 3 ? drawLaminarBag : drawPreparedSubstrateBag)(
@@ -10561,7 +10674,12 @@
       ),
       gloveJar: dragIcon("Frasco de micelio", () => {
         c.scale(1.45, 1.45);
-        (gloveLevel >= 3 ? drawLaminarJar : jar)(-7, -9);
+        (gloveLevel >= 3 ? drawLaminarJar : jar)(
+          -7,
+          -9,
+          true,
+          gloveJar || selectedSpecies,
+        );
       }),
       gloveClean: dragIcon("Limpieza de cabina", () =>
         drawCleaningKit(-17, -13),
