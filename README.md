@@ -129,3 +129,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Mezcladora y esterilizador desde referencias](outputs/TANDA-MEZCLADORA-ESTERILIZADOR-REFERENCIAS.md): tolvas transparentes, cámara de mezcla con paleta y esterilizador cilíndrico con tapa abatible. Conserva el fondo, controles y procesos existentes.
 
 [Mesa de acero compartida](outputs/TANDA-MESA-ACERO-COMPARTIDA.md): cubierta, patas y travesaños reutilizados en las mesas de producción y en la campana, conservando proporciones de cada módulo. Oficina y tienda mantienen sus muebles de madera.
+
+[Estante de agitación](outputs/TANDA-ESTANTE-AGITACION.md): un solo bastidor de dos niveles para cuatro o seis agitadores, con nuevas referencias y assets de bases magnéticas y frascos de cultivo líquido compartidos por todo el circuito.

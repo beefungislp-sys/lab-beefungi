@@ -18,6 +18,14 @@ Se conserva el fondo ya aprobado del juego. Las imágenes sirven para proporcion
 
 `MESA-ACERO-BASE-CONCEPTO.png`: referencia de cubierta, faldón, cuatro patas, pies y travesaños; adaptada al componente compartido `drawStainlessTable` para mesas de producción. [Prompt original](PROMPT-MESA-ACERO-BASE.md).
 
+## Estante y assets de agitación
+
+- `ESTANTE-AGITACION-CONCEPTO.png`: bastidor único de dos niveles y seis dispositivos.
+- `AGITADOR-MAGNETICO-CONCEPTO.png`: agitador aislado con plato, perilla y luz; transparente.
+- `FRASCOS-CL-ESTADOS-CONCEPTO.png`: cuatro estados del mismo frasco, incluido vacío; transparente.
+
+Adaptados a dibujantes compartidos en código. [Prompts de generación](PROMPTS-ESTANTE-AGITACION.md).
+
 ## Prompt final del esterilizador
 
 ```text

@@ -70,3 +70,9 @@ El esterilizador tiene cuerpo cilíndrico, tapa abatible, junta, canastilla, man
 Las mesas de producción comparten `drawStainlessTable`: cubierta trapezoidal cepillada, canto fino, cuatro patas con pies y travesaños. Reflejos cálidos a la izquierda y acero azul verdoso en sombra. La profundidad de la cubierta se adapta a la composición del módulo, manteniendo sus materiales y zonas de interacción. La campana integra el mismo componente; sus patas se omiten en la miniatura. Oficina y mostrador siguen usando madera.
 
 Referencia: `referencias/MESA-ACERO-BASE-CONCEPTO.png`. El dibujo del juego es íntegramente en código y el ambiente permanece separado.
+
+## Estante de cultivo líquido
+
+Agitación usa un bastidor único con postes continuos y dos entrepaños, sin apilar mesas independientes. Mostrar 2 × 2 puestos al inicio y 3 × 2 al ampliar. Aparato, frasco y rótulo deben caber en la misma zona de recepción, dejando espacio entre filas. La miniatura comparte el dibujante del estante.
+
+Agitadores compactos con plato circular, perilla crema e indicador pequeño. Frascos redondeados con filtro, caldo ámbar y barra magnética; el micelio se densifica por todo el líquido sin cambiar su nivel. El mismo frasco se reutiliza en el resto del circuito de CL y en sus iconos, sin tarjeta opaca.

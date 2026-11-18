@@ -47,6 +47,8 @@ La cámara cercana es frontal ligeramente elevada: horizontales niveladas, verti
 
 Para mesas de producción reutilizar `drawStainlessTable(x, y, w, h, legHeight)`: `h` es la profundidad de cubierta y `legHeight` el tramo de patas. No duplicar el mueble dentro de cada aparato. La campana ya integra esta base; oficina y mostrador conservan su componente de madera. Ajustar la profundidad a los objetos existentes antes de mover sus hitboxes.
 
+Si el mueble es un estante, componer un bastidor continuo con entrepaños en lugar de apilar mesas. Agitación usa `drawAgitationRack`, compartido con su miniatura. Cuando cambie la distribución de puestos, derivar dibujo y destinos táctiles del mismo arreglo y verificar todos los destinos antes de publicar.
+
 ## 5. Unificar el arrastre
 
 Reutilizar el dibujante del objeto en `dragIconCatalog`, la mesa y las animaciones. En esta pasada se conectaron los nuevos frascos, bolsas, aserrín, nutrientes y kit de limpieza.
@@ -84,6 +86,6 @@ Probar en escritorio y en marcos de celular horizontal y vertical. Comprobar sep
 | Ambiente estéril | Base cercana compartida para todas sus estaciones. |
 | Esterilizador | En la continuación se adapta a la referencia: cilindro, tapa abatible, canastilla y manómetro; conserva su escala por capacidad. |
 | Llenadora de sustrato | En la continuación se adapta a la referencia: tolvas, cámara, paleta y plataforma abiertas. |
-| Agitación | Recibe el fondo compartido; su aparato conserva el diseño previo. |
+| Agitación | Estante único de dos niveles, con agitadores magnéticos y frascos de CL compartidos con todo su circuito. |
 
 La mesa de sustrato se delegó con límites claros: dibujantes propios y composición de esa estación, sin tocar recetas ni funciones de inoculación. La integración final unificó iconos, ambiente y validación. En futuras delegaciones conviene separar funciones y zonas de edición del mismo modo.

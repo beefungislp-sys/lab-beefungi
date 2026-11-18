@@ -7498,19 +7498,15 @@
     }
     function drawLiquidDoor() {
       if (!liquidUnlocked) return;
-      drawStainlessTable(182, 158, 115, 42, 12);
-      for (let i = 0; i < agitationCapacity; i++) {
-        const x =
-            189 +
-            (i % (agitationCapacity === 6 ? 3 : 4)) *
-              (agitationCapacity === 6 ? 33 : 24),
-          y = agitationCapacity === 6 ? 165 + Math.floor(i / 3) * 15 : 177;
-        box(x, y, 19, 6, "#547c8c");
-        if (liquidStirrers[i])
-          drawLiquidJar(x + 2, y - 15, 0.5, liquidStirrers[i].progress);
-      }
+      c.save();
+      c.translate(182, 157);
+      c.scale(115 / 280, 51 / 183);
+      c.translate(-20, -45);
+      drawAgitationRack(true);
+      c.restore();
       smallText("AGITACION " + agitationCapacity, 186, 217);
     }
+
     function isCordyHood() {
       return (
         liquidUnlocked &&
@@ -7564,12 +7560,15 @@
       return true;
     }
     function liquidSlotRects() {
-      return Array.from({ length: agitationCapacity }, (_, i) =>
-        agitationCapacity === 4
-          ? [22 + i * 75, 65, 58, 115]
-          : [12 + (i % 3) * 100, 58 + Math.floor(i / 3) * 62, 90, 57],
-      );
+      const cols = agitationCapacity === 6 ? 3 : 2;
+      return Array.from({ length: agitationCapacity }, (_, i) => [
+        (cols === 3 ? 30 : 45) + (i % cols) * (cols === 3 ? 96 : 130),
+        54 + Math.floor(i / cols) * 66,
+        cols === 3 ? 68 : 100,
+        60,
+      ]);
     }
+
     function liquidSlotAt(p) {
       return liquidSlotRects().findIndex((r) => inside(p, r));
     }
@@ -7616,86 +7615,274 @@
       box(2, 12, 25, 2, "#638d9b");
       c.restore();
     }
-    function drawLiquidJar(x, y, scale = 1, progress = 0) {
+    function drawLiquidJar(x, y, scale = 1, progress = 0, stirAngle = null) {
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(4, 0, 20, 4, "#789ba7");
-      box(2, 5, 24, 30, "#b9d6cf");
-      box(5, 14, 18, 17, "#d4b76f");
-      box(5, 8, 2, 22, "#eff2df");
-      for (let i = 0; i < Math.floor(progress * 22); i++)
-        box(8 + ((i * 5) % 12), 16 + ((i * 7) % 14), 2, 1, "#f1e9cb");
-      box(3, 34, 22, 2, "#7ca6ae");
-      box(14, 0, 4, 2, "#eff2df");
-      artRect(5, 1, 7, 0.5, "#c4d9cd");
-      artRect(24, 7, 0.5, 25, "#6b9999");
-      artRect(7, 31, 14, 0.5, "#e5e7c8");
+      const filled = progress !== null,
+        p = Math.max(0, Math.min(1, progress || 0));
+      softShadow(14, 36, 13, 1.5, 0.14);
+      const silhouette = [
+        [7, 5],
+        [22, 5],
+        [26, 9],
+        [27, 30],
+        [25, 34],
+        [4, 34],
+        [2, 30],
+        [3, 9],
+      ];
+      drawLaminarFace(silhouette, "#99b5a6");
+      drawLaminarOval(3, 29, 23, 7, "#8ea99b");
+      drawLaminarFace(
+        [
+          [7, 7],
+          [21, 7],
+          [24, 10],
+          [25, 29],
+          [23, 32],
+          [6, 32],
+          [4, 29],
+          [5, 10],
+        ],
+        "#c0d0b4",
+      );
+      if (filled) {
+        // Fixed liquid level; maturation adds suspended clouds, never a bottom-up fill.
+        for (let row = 0; row < 17; row++)
+          artRect(
+            5,
+            15 + row,
+            19,
+            1,
+            `rgb(${Math.round(201 - row * 0.9)},${Math.round(161 - row * 0.6)},${Math.round(87 - row * 0.5)})`,
+          );
+        drawLaminarOval(5, 13, 19, 4, "#e3c47e");
+        c.save();
+        c.beginPath();
+        c.rect(5, 16, 19, 15);
+        c.clip();
+        for (let i = 0; i < Math.floor(p * 35); i++) {
+          const gx = 6 + texHash(i, 23, 181) * 17,
+            gy = 17 + texHash(i, 16, 182) * 13;
+          c.globalAlpha = 0.35 + p * 0.4;
+          drawLaminarOval(
+            gx - 1.5,
+            gy - 1,
+            3 + texHash(i, 2, 183) * 2,
+            2,
+            "#f1e7c7",
+          );
+          c.strokeStyle = "#f8efd4";
+          c.lineWidth = 0.45;
+          c.beginPath();
+          c.moveTo(gx - 2, gy + 1);
+          c.lineTo(gx, gy - 1);
+          c.lineTo(gx + 3, gy + 0.5);
+          c.moveTo(gx, gy - 1);
+          c.lineTo(gx + 0.5, gy - 2.5);
+          c.stroke();
+        }
+        c.restore();
+        drawLaminarOval(6, 30, 17, 3, "#cdb279");
+        artRect(8, 30, 12, 0.5, "#e8d69a");
+        c.save();
+        c.translate(14, 29.5);
+        c.scale(1, 0.45);
+        if (stirAngle !== null) c.rotate(stirAngle);
+        drawLaminarOval(-3.5, -1.5, 7, 3, "#f2e8c8");
+        artRect(-2, -1, 4, 0.5, "#fff2d4");
+        c.restore();
+      }
+      // Transparent shoulders, meniscus, round base and glass glints.
+      c.strokeStyle = "#e4e9ce";
+      c.lineWidth = 0.6;
+      drawLaminarFace(silhouette);
+      c.stroke();
+      artRect(5, 11, 1.4, 18, "#edf0d7");
+      artRect(7, 10, 1, 6, "#f6f1d5");
+      artRect(23.5, 11, 0.6, 18, "#d4e2c4");
+      artRect(24, 16, 0.5, 12, "#7e9e91");
+      drawLaminarOval(5, 5, 19, 5, "#94b0a1");
+      drawLaminarOval(7, 6, 15, 3, "#d9dfc0");
+      drawLaminarOval(3, 0, 24, 6, "#9caa8d");
+      box(3, 2, 24, 4, "#d8cfac");
+      for (let xx = 5; xx < 26; xx += 1.5) artRect(xx, 2, 0.5, 3, "#a89e7c");
+      drawLaminarOval(3, 0, 24, 4, "#eee1bc");
+      artRect(6, 1, 16, 0.5, "#fff0ce");
+      drawLaminarOval(11, -0.5, 9, 2.5, "#c6c4a6");
+      drawLaminarOval(12, -0.5, 7, 1.5, "#f2ead0");
+      artRect(6, 33, 17, 0.5, "#e1e6c7");
       c.restore();
+    }
+    function drawMagneticStirrer(
+      x,
+      y,
+      w = 60,
+      progress = null,
+      miniature = false,
+    ) {
+      const active = progress !== null,
+        ready = active && progress >= 1;
+      softShadow(x + w / 2, y + 18, w * 0.47, 1.5, 0.16);
+      for (const xx of [x + 4, x + w - 9]) box(xx, y + 15, 5, 3, "#34545f");
+      drawLaminarFace(
+        [
+          [x + 4, y],
+          [x + w - 4, y],
+          [x + w, y + 7],
+          [x, y + 7],
+        ],
+        "#9bafa0",
+      );
+      box(x, y + 7, w, 9, "#416b75");
+      drawLaminarSteel(x + 1, y + 8, w - 2, 7, 185);
+      artRect(x + 1, y + 7, w - 2, 0.7, "#dce1c7");
+      artRect(x + 1, y + 15, w - 2, 0.5, "#345a65");
+      drawLaminarOval(x + w * 0.16, y - 2, w * 0.68, 8, "#4a6b70");
+      drawLaminarOval(x + w * 0.17, y - 2, w * 0.66, 6, "#bdc7b0");
+      drawLaminarOval(x + w * 0.2, y - 1, w * 0.6, 4, "#e0dcc0");
+      artRect(x + w * 0.27, y, w * 0.35, 0.5, "#f7e9c7");
+      drawLaminarOval(x + w * 0.17, y + 9, 4, 4, "#32505b");
+      drawLaminarOval(
+        x + w * 0.17 + 1,
+        y + 10,
+        2,
+        2,
+        ready ? "#bae398" : active ? "#efcb7b" : "#789b8d",
+      );
+      const kx = x + w * 0.79,
+        ky = y + 11;
+      drawLaminarOval(kx - 4, ky - 4, 8, 8, "#345762");
+      drawLaminarOval(kx - 3, ky - 3, 6, 6, "#ddcfaa");
+      c.strokeStyle = "#496769";
+      c.lineWidth = 0.6;
+      c.beginPath();
+      c.moveTo(kx, ky);
+      c.lineTo(kx + (active ? 1.5 : 0), ky - 2);
+      c.stroke();
+      if (!miniature)
+        for (const xx of [x + 2, x + w - 4])
+          artRect(xx, y + 9, 1, 1, "#d7dfc2");
+    }
+    function drawAgitationShelf(y) {
+      drawLaminarFace(
+        [
+          [30, y - 4],
+          [288, y - 4],
+          [297, y + 2],
+          [21, y + 2],
+        ],
+        "#aebcaf",
+      );
+      artRect(31, y - 4, 256, 0.6, "#e7e4c8");
+      box(21, y + 2, 276, 4, "#587c7d");
+      artRect(22, y + 2, 274, 0.7, "#e4e4c7");
+      artRect(22, y + 5, 274, 0.5, "#355c66");
+      for (const xx of [24, 292]) {
+        box(xx, y + 2, 2, 2, "#c1cdb3");
+        artRect(xx + 0.5, y + 2.5, 1, 0.5, "#5b7974");
+      }
+    }
+    function drawAgitationRack(miniature = false) {
+      softShadow(159, 229, 139, 3, 0.2);
+      // One continuous frame, rather than independently stacked worktables.
+      for (const xx of [29, 283]) {
+        drawLaminarSteel(xx, 47, 4, 174, 186);
+        artRect(xx, 48, 0.7, 172, "#c2d1bb");
+      }
+      box(31, 205, 254, 3, "#567b78");
+      artRect(32, 205, 252, 0.5, "#a8c0ad");
+      for (const [a, b] of [
+        [
+          [31, 181],
+          [68, 217],
+        ],
+        [
+          [286, 181],
+          [250, 217],
+        ],
+      ]) {
+        drawLaminarFace(
+          [
+            [a[0] - 2, a[1]],
+            [a[0] + 2, a[1]],
+            [b[0] + 2, b[1]],
+            [b[0] - 2, b[1]],
+          ],
+          "#60857e",
+        );
+        c.strokeStyle = "#aec5b0";
+        c.lineWidth = 0.6;
+        c.beginPath();
+        c.moveTo(...a);
+        c.lineTo(...b);
+        c.stroke();
+      }
+      drawAgitationShelf(109);
+      drawAgitationShelf(175);
+      for (const xx of [20, 293]) {
+        drawLaminarSteel(xx, 44, 6, 181, 187);
+        artRect(xx + 1, 45, 0.7, 179, "#d3dcc2");
+        box(xx - 1, 224, 8, 3, "#496e70");
+        drawLaminarOval(xx - 2, 227, 10, 2, "#34515b");
+        for (const yy of [45, 111, 177]) {
+          box(xx + 1, yy, 3, 3, "#d8dec2");
+          artRect(xx + 2, yy + 1, 1, 1, "#56766e");
+        }
+      }
+      drawLaminarSteel(25, 44, 269, 4, 188);
+      artRect(26, 44, 267, 0.7, "#e0e2c7");
+      liquidSlotRects().forEach((r, i) => {
+        const center = r[0] + r[2] / 2,
+          jar = liquidStirrers[i],
+          deviceW = agitationCapacity === 6 ? 60 : 70;
+        drawMagneticStirrer(
+          center - deviceW / 2,
+          r[1] + 38,
+          deviceW,
+          jar ? jar.progress : null,
+          miniature,
+        );
+        if (jar)
+          drawLiquidJar(
+            center - 14,
+            r[1] + 2,
+            1,
+            jar.progress,
+            jar.progress >= 1 ? null : performance.now() / 150,
+          );
+        if (!miniature) {
+          box(center - 24, r[1] + 55, 48, 8, "#ccd7bd");
+          const status = jar
+            ? jar.progress >= 1
+              ? "LISTO"
+              : Math.floor(jar.progress * 100) + "%"
+            : "LIBRE";
+          smallText(
+            status,
+            center - status.length * 2,
+            r[1] + 61,
+            jar?.progress >= 1 ? "#3b775e" : "#355563",
+          );
+        }
+      });
     }
 
     function drawAgitationStation() {
       drawSterileWorkroom("AGITACION");
-      if (agitationCapacity === 4) drawStainlessTable(14, 118, 292, 74, 24);
-      else {
-        drawStainlessTable(14, 82, 292, 29, 31);
-        drawStainlessTable(14, 144, 292, 48, 24);
-      }
-      liquidSlotRects().forEach((r, i) => {
-        const [x, y, w, h] = r,
-          b = liquidStirrers[i];
-        if (agitationCapacity === 4) {
-          box(x, 127, w, 28, "#648691");
-          box(x + 3, 130, w - 6, 20, "#b3cbc8");
-          drawSterileHousingDetail(x, 127, w, 28);
-          artRect(x + 8, 128, w - 16, 1, "#e5ead1");
-          box(x + w - 10, 143, 4, 3, b ? "#9ac7a9" : "#6f908c");
-          if (b) {
-            drawLiquidJar(x + 15, 92, 1, b.progress);
-            c.save();
-            c.translate(x + 29, 116);
-            c.rotate(b.progress >= 1 ? 0 : performance.now() / 150);
-            box(-4, -1, 8, 2, "#e9ead6");
-            c.restore();
-            smallText(
-              b.progress >= 1 ? "LISTO" : Math.floor(b.progress * 100) + "%",
-              x + 13,
-              177,
-            );
-          } else smallText("LIBRE", x + 13, 145);
-        } else {
-          const deviceX = x + 17,
-            deviceW = 56;
-          box(deviceX, y + 27, deviceW, 24, "#648691");
-          box(deviceX + 3, y + 30, deviceW - 6, 16, "#b3cbc8");
-          drawSterileHousingDetail(deviceX, y + 27, deviceW, 24);
-          box(deviceX + deviceW - 10, y + 40, 3, 3, b ? "#9ac7a9" : "#6f908c");
-          if (b) {
-            drawLiquidJar(x + 34, y + 1, 0.8, b.progress);
-            c.save();
-            c.translate(x + 45, y + 22);
-            c.rotate(b.progress >= 1 ? 0 : performance.now() / 150);
-            box(-4, -1, 8, 2, "#e9ead6");
-            c.restore();
-            smallText(
-              b.progress >= 1 ? "LISTO" : Math.floor(b.progress * 100) + "%",
-              x + 3,
-              y + 23,
-            );
-          } else smallText("LIBRE", x + 30, y + 21);
-        }
-      });
-      if (liquidPending.length) drawSterileShelf(14, 221, 95);
+      drawAgitationRack();
+      // Incoming tray remains inside its original generous touch target.
+      drawChemistryTray(18, 219, 96, 7);
       for (let i = 0; i < Math.min(4, liquidPending.length); i++)
-        drawLiquidJar(25 + i * 20, 200, 0.6);
-      box(14, 184, 95, 13, "#d2dfca");
-      box(123, 184, 183, 13, "#d2dfca");
-      artRect(15, 184, 93, 0.5, "#f0ecd0");
-      artRect(124, 184, 181, 0.5, "#f0ecd0");
-      smallText("ENTRADA " + liquidPending.length, 17, 194);
-      smallText("LISTOS " + matureLiquidCount(), 210, 225);
-      smallText("100%: DISPONIBLE EN CAMPANA", 126, 194);
+        drawLiquidJar(24 + i * 21, 199, 0.57, 0);
+      box(25, 187, 86, 11, "#d1dac0");
+      smallText("ENTRADA " + liquidPending.length, 29, 195);
+      box(125, 192, 163, 14, "#d1dac0");
+      smallText("LISTOS " + matureLiquidCount(), 133, 202);
+      smallText("100%: DISPONIBLE EN CAMPANA", 126, 220);
     }
+
     function drawLiquidHood() {
       drawLaminarFlowHood();
       box(15, 37, 182, 23, speciesColor("Cordyceps"));
@@ -11265,12 +11452,16 @@
         () => drawInoculationCleaning(-17, -13),
         { bare: true },
       ),
-      cordyInoculum: dragIcon("Cultivo líquido maduro", () =>
-        drawLiquidJar(-14, -18, 1, 1),
+      cordyInoculum: dragIcon(
+        "Cultivo líquido maduro",
+        () => drawLiquidJar(-14, -18, 1, 1),
+        { bare: true },
       ),
       liquidPetri: dragIcon("Placa Petri", () => drawPetri(-17, -8, 1.15)),
-      liquidJar: dragIcon("Cultivo líquido inoculado", () =>
-        drawLiquidJar(-14, -18),
+      liquidJar: dragIcon(
+        "Cultivo líquido inoculado",
+        () => drawLiquidJar(-14, -18),
+        { bare: true },
       ),
       chemRaw: dragIcon("Hongos para extracción", () =>
         drawSpeciesFruit(extractSpecies, -16, -12, 1, 0.85, 2),
