@@ -3655,12 +3655,13 @@
           return;
         let dx = (keys.has("d") ? 1 : 0) - (keys.has("a") ? 1 : 0),
           dy = (keys.has("s") ? 1 : 0) - (keys.has("w") ? 1 : 0);
-        const norm = Math.hypot(dx, dy) || 1;
+        const norm = Math.hypot(dx, dy) || 1,
+          [left, top, right, bottom] = walkBounds("shop");
         const nx = Math.max(
-            15,
-            Math.min(305, player.x + (dx / norm) * 65 * dt),
+            left,
+            Math.min(right, player.x + (dx / norm) * 65 * dt),
           ),
-          ny = Math.max(47, Math.min(207, player.y + (dy / norm) * 65 * dt));
+          ny = Math.max(top, Math.min(bottom, player.y + (dy / norm) * 65 * dt));
         if (!inside({ x: nx, y: player.y }, shopCounterRect())) player.x = nx;
         if (!inside({ x: player.x, y: ny }, shopCounterRect())) player.y = ny;
         return;
@@ -3875,7 +3876,7 @@
       mixView = false;
       drag = null;
       keys.clear();
-      player = { x: 60, y: 207 };
+      player = { x: 60, y: 224 };
       say(
         "Inventario completo sobre la mesa. Entrega una unidad al cliente o toca su pedido.",
       );
@@ -7264,7 +7265,7 @@
       return view === "sterileRoom"
         ? [8, 47, 312, 224]
         : view === "shop"
-          ? [15, 47, 305, 207]
+          ? [15, 47, 305, 230]
           : [8, 63, 312, 209];
     }
     function walkObstacles(view) {
@@ -10651,10 +10652,9 @@
       ...speciesCatalog.map((s) => ({ product: "mushroom", species: s.name })),
       ...speciesCatalog.map((s) => ({ product: "dropper", species: s.name })),
       { product: "spirulina", species: "Spirulina" },
-    ].map((card, i) => ({
+    ].map((card) => ({
       ...card,
       key: card.product + ":" + card.species,
-      r: [22 + (i % 3) * 62, 78 + Math.floor(i / 3) * 38, 58, 34],
     }));
     let salePops = [];
     function shopUnits(card) {
@@ -10668,135 +10668,234 @@
       return (Math.floor((n + 1e-9) * 10) / 10).toFixed(1).replace(/\.0$/, "");
     }
     function shopCardAt(p) {
+      const bounds = cv.getBoundingClientRect(),
+        minHalfX = (22 * 320) / bounds.width,
+        minHalfY = (22 * 240) / bounds.height;
       return (
         visibleShopCards()
-          .filter((card) => inside(p, card.r))
+          .filter(
+            ({ r }) =>
+              Math.abs(p.x - r[0] - r[2] / 2) <= Math.max(r[2] / 2, minHalfX) &&
+              Math.abs(p.y - r[1] - r[3] / 2) <= Math.max(r[3] / 2, minHalfY),
+          )
           .sort(
             (a, b) =>
-              Math.hypot(p.x - a.r[0] - 29, p.y - a.r[1] - 17) -
-              Math.hypot(p.x - b.r[0] - 29, p.y - b.r[1] - 17),
+              Math.hypot(p.x - a.r[0] - a.r[2] / 2, p.y - a.r[1] - a.r[3] / 2) -
+              Math.hypot(p.x - b.r[0] - b.r[2] / 2, p.y - b.r[1] - b.r[3] / 2),
           )[0] || null
       );
     }
+    function shopDisplayLayout(cards) {
+      let mushrooms = 0,
+        droppers = 0;
+      return cards.map((card) => {
+        const col =
+          card.product === "spirulina"
+            ? 4
+            : card.product === "dropper"
+              ? droppers++
+              : mushrooms++;
+        return {
+          ...card,
+          r: [
+            22 + col * 37,
+            120 + (card.product === "dropper" ? 31 : 0),
+            35,
+            29,
+          ],
+        };
+      });
+    }
     function shopCounterRect() {
-      const cards = visibleShopCards();
-      const bottom = cards.length
-        ? Math.max(...cards.map(({ r }) => r[1] + r[3]))
-        : 112;
-      return [18, 72, 191, Math.max(46, bottom - 72 + 6)];
+      const cards = visibleShopCards(),
+        right = Math.max(90, ...cards.map(({ r }) => r[0] + r[2] + 4)),
+        bottom = Math.max(153, ...cards.map(({ r }) => r[1] + r[3] + 4));
+      return [18, 116, right - 18, bottom - 116 + 26];
     }
     function drawShopBackdrop() {
-      // Reusable fixed architectural layer; actors and inventory are separate.
-      box(0, 0, 320, 240, "#e9dbb4");
-      for (let i = 0; i < 180; i++)
+      // Front-facing architecture like the concept: tall wall, shallow floor.
+      box(0, 0, 320, 240, "#e8d5aa");
+      for (let i = 0; i < 380; i++)
         artRect(
-          texHash(i, 9, 220) * 320,
-          texHash(i, 12, 221) * 45,
+          4 + texHash(i, 9, 220) * 312,
+          4 + texHash(i, 12, 221) * 80,
+          i % 9 ? 0.5 : 1.5,
           0.5,
-          0.5,
-          i % 3 ? "#dfcfa5" : "#f5e9c6",
+          i % 3 ? "#dcc69b" : "#f2e2bb",
         );
-      box(0, 33, 320, 14, "#9cb198");
-      for (let xx = 0; xx < 320; xx += 16) {
-        box(xx + 1, 34, 14, 11, "#b5c2a3");
-        artRect(xx + 2, 34, 12, 0.5, "#d7d9b7");
-      }
-      box(0, 46, 320, 194, "#aabb9c");
-      const lines = [46, 58, 74, 96, 124, 158, 198, 240];
+      box(0, 84, 320, 48, "#6f8b77");
+      for (let yy = 85; yy < 132; yy += 16)
+        for (let xx = 4; xx < 316; xx += 16) {
+          box(xx, yy, 15, 15, (xx + yy) % 3 ? "#9faf8e" : "#aaba98");
+          artRect(xx + 0.5, yy + 0.5, 14, 0.5, "#c4ca9f");
+          artRect(xx + 14, yy + 1, 0.5, 13, "#81967c");
+          artRect(xx + 3, yy + 4, 2, 0.5, "#b6c39c");
+        }
+      box(0, 132, 320, 108, "#a6b799");
+      const lines = [132, 147, 166, 189, 215, 240];
       for (let row = 0; row < lines.length - 1; row++)
         box(
           0,
           lines[row] + 1,
           320,
           lines[row + 1] - lines[row] - 1,
-          row % 2 ? "#b5c1a2" : "#adbc9d",
+          row % 2 ? "#a8b99a" : "#a1b293",
         );
-      for (let xx = -420; xx <= 740; xx += 62) {
-        c.strokeStyle = "#829b87";
-        c.lineWidth = 0.7;
+      for (let xx = -300; xx <= 620; xx += 48) {
+        const back = 160 + ((xx - 160) * (132 - 60)) / (240 - 60);
+        c.strokeStyle = "#81977c";
+        c.lineWidth = 0.6;
         c.beginPath();
-        c.moveTo(160 + (xx - 160) * 0.12, 46);
+        c.moveTo(back, 132);
         c.lineTo(xx, 240);
         c.stroke();
-        c.strokeStyle = "#d2d6b4";
+        c.strokeStyle = "#cbd0aa";
         c.lineWidth = 0.5;
         c.beginPath();
-        c.moveTo(161 + (xx - 160) * 0.12, 46);
+        c.moveTo(back + 1, 132);
         c.lineTo(xx + 1, 240);
         c.stroke();
       }
       for (const yy of lines) {
-        artRect(0, yy, 320, 0.7, "#829984");
-        artRect(0, yy + 1, 320, 0.5, "#d7d9b7");
+        artRect(0, yy, 320, 0.6, "#81977c");
+        artRect(0, yy + 1, 320, 0.5, "#cbd0aa");
       }
-      // Fine stable grain, without adding a second grid over the perspective floor.
-      for (let i = 0; i < 300; i++)
+      for (let i = 0; i < 250; i++)
         artRect(
-          5 + texHash(i, 9, 228) * 310,
-          48 + texHash(i, 4, 229) * 187,
+          4 + texHash(i, 9, 228) * 312,
+          134 + texHash(i, 4, 229) * 103,
           i % 7 ? 0.5 : 2,
           0.5,
-          i % 3 ? "#bdc7a8" : "#92a789",
+          i % 3 ? "#bdc6a3" : "#91a585",
         );
-      softLight(55, 92, 92, 120, "255,235,176", 0.12);
-      box(0, 0, 320, 3, "#a07c50");
-      artRect(1, 0, 318, 0.5, "#e9c693");
-      box(0, 44, 320, 3, "#b38f5d");
-      artRect(0, 44, 320, 0.6, "#ead2a0");
+      // Fixed window light; no camera movement, clock or changing palette.
+      softLight(42, 100, 83, 104, "255,230,161", 0.15);
+      drawLaminarFace(
+        [
+          [5, 137],
+          [30, 137],
+          [85, 202],
+          [61, 202],
+        ],
+        "rgba(255,235,173,.12)",
+      );
+      box(0, 0, 320, 4, "#936f45");
+      artRect(1, 1, 318, 1, "#d8b47b");
+      box(0, 81, 320, 4, "#ad8552");
+      artRect(0, 81, 320, 0.7, "#ecc88b");
+      box(0, 130, 320, 3, "#987448");
+      artRect(0, 130, 320, 0.7, "#d9b97f");
       for (const xx of [0, 316]) {
-        box(xx, 3, 4, 237, "#a58559");
-        artRect(xx + 0.5, 4, 0.7, 234, "#e2bd86");
+        box(xx, 4, 4, 236, "#a58151");
+        artRect(xx + 0.5, 4, 0.7, 234, "#dfbc84");
       }
-      drawWarmWindow(12, 4, 66, 36);
-      // Decorative right entrance; gameplay keeps the established lower exit.
-      box(287, 24, 29, 45, "#8c714d");
-      box(290, 26, 24, 42, "#436764");
-      box(293, 28, 18, 38, "#608278");
-      artRect(290, 26, 1, 40, "#d2bc8c");
-      box(286, 23, 31, 3, "#bf9d68");
-      artRect(287, 23, 29, 0.6, "#e6c995");
-      smallText("TIENDA BEEFUNGI", 93, 11, "#4b655e");
+      drawWarmWindow(12, 12, 66, 66);
+      c.save();
+      c.beginPath();
+      c.rect(15, 15, 60, 60);
+      c.clip();
+      for (let i = 0; i < 28; i++) {
+        const xx = 15 + texHash(i, 4, 231) * 58,
+          yy = 18 + texHash(i, 8, 232) * 54;
+        drawLaminarOval(
+          xx,
+          yy,
+          7 + (i % 4),
+          5 + (i % 3),
+          ["#a5bc83", "#bfd09a", "#d8dba1", "#8eae7c"][i % 4],
+        );
+        artRect(xx + 2, yy + 1, 2, 0.7, "#dce2b2");
+      }
+      c.restore();
+      box(44, 14, 2, 62, "#c5a875");
+      artRect(44, 14, 0.5, 62, "#f1d69d");
+      box(14, 43, 62, 2, "#bba174");
+      artRect(14, 43, 62, 0.5, "#ecd49d");
+      // Additional wooden mullions and recess give the window the reference's scale.
+      artRect(13, 13, 1, 63, "#6e694a");
+      box(11, 10, 68, 3, "#a27849");
+      artRect(12, 10, 66, 0.7, "#e5be82");
+      box(287, 49, 29, 84, "#547974");
+      box(290, 53, 24, 77, "#354f4c");
+      box(295, 56, 19, 72, "#537169");
+      drawLaminarFace(
+        [
+          [295, 56],
+          [300, 60],
+          [300, 127],
+          [295, 128],
+        ],
+        "#44645e",
+      );
+      box(285, 48, 31, 4, "#6d9188");
+      artRect(286, 48, 29, 0.7, "#c2cdb0");
+      artRect(287, 52, 1, 79, "#b3bda0");
+      smallText("TIENDA BEEFUNGI", 91, 12, "#516b61");
     }
-    function drawShopWallShelf(x, y, w = 65, h = 29) {
-      softShadow(x + w / 2, y + h + 1, w * 0.49, 1.5, 0.15);
-      box(x + 2, y + 2, w - 4, h - 2, "#8ea58d");
+    function drawShopWallShelf(x, y, w = 65, h = 108) {
+      softShadow(x + w / 2, y + h + 1, w * 0.5, 2, 0.18);
+      box(x + 2, y + 2, w - 4, h - 2, "#75927f");
       for (const xx of [x, x + w - 3]) {
         drawLaminarSteel(xx, y, 3, h, 223);
-        artRect(xx + 0.5, y, 0.5, h, "#d4dcc0");
+        artRect(xx + 0.5, y, 0.5, h, "#d2d5ad");
       }
-      box(x + 2, y, w - 4, 2, "#658984");
-      artRect(x + 3, y, w - 6, 0.5, "#d6dfc2");
-      for (const yy of [y + 11, y + 21]) {
-        box(x + 2, yy, w - 4, 2, "#b18a55");
-        artRect(x + 3, yy, w - 6, 0.5, "#e7c38a");
+      box(x + 2, y, w - 4, 2, "#567c78");
+      artRect(x + 3, y, w - 6, 0.5, "#cad3ae");
+      const shelves = [y + 22, y + 58, y + 82];
+      for (const yy of shelves) {
+        box(x + 2, yy, w - 4, 3, "#52746a");
+        artRect(x + 3, yy, w - 6, 0.7, "#a4b699");
       }
-      for (let i = 0; i < 5; i++) {
-        const xx = x + 6 + i * 5,
-          hh = 6 + (i % 3);
+      for (let i = 0; i < 7; i++) {
+        const xx = x + 7 + i * 6,
+          hh = 13 + (i % 3) * 2;
         box(
           xx,
-          y + 11 - hh,
-          4,
+          y + 22 - hh,
+          5,
           hh,
-          ["#6a8374", "#ba965e", "#668993", "#a97550", "#728665"][i],
+          ["#ae8249", "#b99a5b", "#507a80", "#678263"][i % 4],
         );
-        artRect(xx + 0.5, y + 12 - hh, 2, 0.5, "#d9c493");
+        artRect(xx + 1, y + 24 - hh, 3, 0.6, "#debe7e");
+        artRect(xx + 1, y + 19, 3, 0.5, "#d6bb7c");
       }
       for (let i = 0; i < 3; i++) {
-        const xx = x + 9 + i * 17;
-        drawLaminarOval(xx, y + 14, 9, 7, "#b8c8ae");
-        box(xx + 1, y + 14, 7, 6, "#b2c5ad");
-        box(xx, y + 13, 9, 2, "#b29260");
-        artRect(xx + 2, y + 16, 1, 3, "#e9e8c9");
-        artRect(xx + 4, y + 18, 3, 0.7, "#93ab91");
+        const xx = x + 7 + i * 18,
+          yy = y + 32;
+        drawLaminarOval(xx, yy, 13, 5, "#b9ccb0");
+        box(xx, yy + 3, 13, 20, "#a7bca2");
+        drawLaminarOval(xx, yy + 20, 13, 5, "#a7bca2");
+        box(xx + 2, yy + 12, 9, 9, "#c6b98c");
+        drawSpeciesFruit(
+          ["Pleurotus", "Melena de leon", "Cordyceps"][i],
+          xx + 1,
+          yy + 8,
+          1,
+          0.32,
+          2,
+        );
+        box(xx, yy - 1, 13, 3, "#b18f59");
+        artRect(xx + 1, yy - 1, 11, 0.6, "#e4c68c");
+        artRect(xx + 2, yy + 4, 1, 14, "#e7e8c9");
       }
-      box(x + 3, y + 23, w - 6, h - 23, "#af8856");
+      for (let i = 0; i < 5; i++) {
+        const xx = x + 7 + i * 7;
+        box(
+          xx,
+          y + 65 - (i % 2) * 2,
+          5,
+          16 + (i % 2) * 2,
+          ["#b08c51", "#6a8465", "#52767a"][i % 3],
+        );
+        artRect(xx + 1, y + 68, 3, 0.5, "#d9c58c");
+      }
+      box(x + 3, y + 85, w - 6, h - 85, "#54776e");
       for (const xx of [x + 5, x + w / 2 + 1]) {
-        box(xx, y + 24, w / 2 - 7, h - 25, "#c39a62");
-        artRect(xx + 1, y + 24, w / 2 - 9, 0.5, "#e0b67d");
+        box(xx, y + 87, w / 2 - 7, h - 89, "#6e8f7c");
+        artRect(xx + 1, y + 87, w / 2 - 9, 0.5, "#a9b695");
       }
-      for (const xx of [x + w / 2 - 3, x + w / 2 + 3])
-        artRect(xx, y + 26, 1, 1, "#efce91");
+      for (const xx of [x + w / 2 - 4, x + w / 2 + 4])
+        box(xx, y + 94, 1.5, 4, "#d1af6b");
     }
     function drawShopArtFrame(x, y, w = 43, h = 28) {
       softShadow(x + w / 2, y + h + 1, w * 0.5, 1, 0.12);
@@ -10865,35 +10964,39 @@
       drawLaminarOval(x + 6, y + 21, 13, 3, "#776f4b");
     }
     function drawShopWallLayer() {
-      drawShopWallShelf(94, 15);
-      drawShopArtFrame(174, 15);
-      drawShopPottedPlant(251, 14);
+      drawShopWallShelf(94, 19);
+      c.save();
+      c.translate(174, 24);
+      c.scale(1.12, 1.4);
+      drawShopArtFrame(0, 0);
+      c.restore();
+      drawShopPottedPlant(31, 53);
     }
     function drawShopCounter(x, y, w, h) {
-      const front = y + h;
-      softShadow(x + w / 2, front + 16, w * 0.51, 3, 0.2);
+      const front = y + h - 26;
+      softShadow(x + w / 2, front + 24, w * 0.51, 3, 0.2);
       for (const xx of [x + 5, x + w / 2 - 3, x + w - 11]) {
-        box(xx, front + 12, 7, 5, "#895f3f");
-        artRect(xx + 1, front + 12, 5, 0.5, "#c39960");
+        box(xx, front + 21, 7, 5, "#895f3f");
+        artRect(xx + 1, front + 21, 5, 0.5, "#c39960");
       }
-      box(x + 1, front, w - 2, 14, "#91653f");
+      box(x + 1, front, w - 2, 23, "#91653f");
       const pw = (w - 10) / 3;
       for (let i = 0; i < 3; i++) {
         const px = x + 4 + i * pw;
-        box(px, front + 2, pw - 2, 10, "#bd8e53");
-        box(px + 2, front + 3, pw - 6, 7, "#b3834e");
+        box(px, front + 2, pw - 2, 19, "#bd8e53");
+        box(px + 2, front + 3, pw - 6, 16, "#b3834e");
         artRect(px + 1, front + 2, pw - 4, 0.5, "#e2b67b");
-        artRect(px + 2, front + 10, pw - 5, 0.5, "#795538");
+        artRect(px + 2, front + 19, pw - 5, 0.5, "#795538");
         for (let j = 0; j < 8; j++)
           artRect(
             px + 3 + texHash(j, i, 224) * (pw - 10),
-            front + 4 + texHash(j, i, 225) * 5,
+            front + 4 + texHash(j, i, 225) * 13,
             3,
             0.5,
             j % 2 ? "#d2a36a" : "#9a7044",
           );
       }
-      artRect(x + 2, front + 13, w - 4, 1, "#6f5138");
+      artRect(x + 2, front + 22, w - 4, 1, "#6f5138");
       drawLaminarFace(
         [
           [x + 3, y],
@@ -10915,29 +11018,30 @@
       artRect(x, front, w, 1, "#f5e9c9");
       artRect(x + 1, front + 1, w - 2, 1, "#bfae8b");
     }
-    function drawShopInventoryTray(card, selected) {
-      const [x, y, w, h] = card.r;
-      box(x + 1, y + h - 2, w - 1, 2, "#a48456");
-      drawLaminarFace(
-        [
-          [x + 2, y + 2],
-          [x + w - 2, y + 2],
-          [x + w, y + h - 3],
-          [x, y + h - 3],
-        ],
-        selected ? "#f4dfa2" : "#e8ddbd",
-      );
-      artRect(x + 2, y + 2, w - 4, 0.6, "#f9edce");
-      artRect(x + 1, y + h - 4, w - 2, 0.5, "#c3b18b");
-      const accent =
-        card.product === "spirulina" ? "#8fb28b" : speciesColor(card.species);
-      box(x + 2, y + 3, 2, 6, accent);
+    function drawShopDisplayProduct(card, selected) {
+      const [x, y, w, h] = card.r,
+        scale = card.product === "mushroom" ? 0.82 : 0.85,
+        spriteWidth =
+          (card.product === "dropper"
+            ? 16
+            : card.product === "spirulina"
+              ? 23
+              : 30) * scale,
+        px = x + (w - spriteWidth) / 2,
+        py = y + 1;
+      softShadow(x + w / 2, y + h - 5, spriteWidth * 0.49, 1.3, 0.16);
+      // A selected item gets a small light under it, never a tile or label.
+      if (selected) softLight(x + w / 2, y + h / 2, 17, 15, "255,226,144", 0.3);
+      drawShopProduct(card.product, card.species, px, py, scale);
+      const missing =
+          feedbackFlash?.cardKey === card.key &&
+          feedbackFlash.until > feedbackTime,
+        quantity = stockUnitsText(shopUnits(card));
       smallText(
-        card.product === "spirulina"
-          ? "ESPIRU"
-          : speciesShort(card.species).slice(0, 6),
-        x + 6,
-        y + 9,
+        quantity,
+        x + w - 8,
+        y + h - 1,
+        missing ? "#c54442" : "#344e48",
       );
     }
     function drawShopCharacterLayer(includePlayer = true) {
@@ -11011,28 +11115,17 @@
       if (behindCounter) drawPlayer();
       drawShopCounter(...counter);
       for (const card of visibleShopCards()) {
-        const [x, y, w, h] = card.r,
-          selected =
-            drag?.kind === "shopInventory" && drag.card.key === card.key;
-        drawShopInventoryTray(card, selected);
-        drawShopProduct(card.product, card.species, x + 5, y + 11, 0.6);
-        const missing =
-          feedbackFlash?.cardKey === card.key &&
-          feedbackFlash.until > feedbackTime;
-        smallText(
-          stockUnitsText(shopUnits(card)),
-          x + 34,
-          y + 28,
-          missing ? "#c54442" : "#243b49",
-        );
+        const selected =
+          drag?.kind === "shopInventory" && drag.card.key === card.key;
+        drawShopDisplayProduct(card, selected);
       }
       if (!shopGuideDone) {
         const card = visibleShopCards().find((item) => shopUnits(item) >= 1);
         if (card) {
           const [x, y] = card.r,
             bounce = (Math.floor(performance.now() / 300) % 2) * 2;
-          box(x + 42, y - 8 + bounce, 3, 7, "#ffe16a");
-          box(x + 39, y - 3 + bounce, 9, 2, "#ffe16a");
+          box(x + 16, y - 8 + bounce, 3, 7, "#ffe16a");
+          box(x + 13, y - 3 + bounce, 9, 2, "#ffe16a");
         }
       }
       drawShopCharacterLayer(!behindCounter);
@@ -11622,19 +11715,16 @@
       );
     }
     function visibleShopCards() {
-      if (progressionBypass) return shopInventoryCards;
-      return shopInventoryCards
-        .filter((card) =>
+      if (progressionBypass) return shopDisplayLayout(shopInventoryCards);
+      return shopDisplayLayout(
+        shopInventoryCards.filter((card) =>
           card.product === "mushroom"
             ? speciesAvailable(card.species)
             : card.product === "spirulina"
               ? chemistryStationAvailable("spirulina")
               : chemistryAvailable(),
-        )
-        .map((card, i) => ({
-          ...card,
-          r: [22 + (i % 3) * 62, 78 + Math.floor(i / 3) * 38, 58, 34],
-        }));
+        ),
+      );
     }
     function orderAvailable(id) {
       if (id === "nutrientes") return sterileAvailable();
@@ -12471,7 +12561,7 @@
       } else if (destination === "shop") {
         const card = visibleShopCards().find((card) => shopUnits(card) >= 1);
         if (card && shopQueue.some(customerReady))
-          p = [card.r[0] + 29, card.r[1] - 19];
+          p = [card.r[0] + card.r[2] / 2, card.r[1] - 19];
       } else if (destination === "woodPrep") {
         if (prepMode === "wood" && woodPrepGuideStep()) return null;
         p = woodPrepExit

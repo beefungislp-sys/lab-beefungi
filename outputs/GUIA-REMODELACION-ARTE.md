@@ -90,8 +90,10 @@ Probar en escritorio y en marcos de celular horizontal y vertical. Comprobar sep
 | Llenadora de sustrato | En la continuación se adapta a la referencia: tolvas, cámara, paleta y plataforma abiertas. |
 | Agitación | Estante único de dos niveles, con agitadores magnéticos y frascos de CL compartidos con todo su circuito. |
 | Incubación y fructificación | Bastidor y entrepaños abiertos, carritos, bolsas que blanquean y frutos diferenciados para cuatro especies; conservan sus fondos. |
-| Tienda | Fondo fijo, mostrador, estante, cuadro y planta separados; bandejas y personajes compuestos por profundidad. |
+| Tienda | Pared alta y piso proporcionado a la referencia; mostrador, estante, cuadro y planta separados; productos sin tarjetas y personajes compuestos por profundidad. |
 
 En la tienda se generaron referencias por pieza antes de dibujarlas en código. El pulido de personajes se delegó sin tocar ventas ni controles. El orden de dibujo permite pasar detrás del mostrador; la profundidad se calcula en una lista auxiliar, conservando intacta la fila y sus zonas táctiles. Esta separación facilita remodelar el mobiliario sin alterar las entregas.
+
+En la revisión siguiente se corrigieron proporciones al comparar el juego con el concepto general, antes de validar en celular. Los productos pasan a dos filas sin tarjetas. Cuando cambia su posición, actualizar el acomodo compartido y las pruebas de interacción; conservar zonas táctiles amplias aunque el sprite sea pequeño. La colisión debe incluir el frente del mueble y la entrada del personaje debe quedar en suelo libre.
 
 La mesa de sustrato se delegó con límites claros: dibujantes propios y composición de esa estación, sin tocar recetas ni funciones de inoculación. La integración final unificó iconos, ambiente y validación. En futuras delegaciones conviene separar funciones y zonas de edición del mismo modo.

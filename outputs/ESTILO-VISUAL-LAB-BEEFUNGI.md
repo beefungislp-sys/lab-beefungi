@@ -89,6 +89,6 @@ Pleurotus usa medios píxeles lógicos, sombras gris salvia, borde ondulado crem
 
 ## Tienda por capas
 
-Separar arquitectura y piso fijo, decoración de pared, mostrador, bandejas de producto y personajes. Reutilizar estante, cuadro y planta como piezas independientes. La madera cálida y la cubierta crema distinguen la tienda del acero de producción. Una sola cuadrícula en perspectiva evita que el piso se vea duplicado.
+Separar arquitectura y piso fijo, decoración de pared, mostrador, productos y personajes. Reutilizar estante, cuadro y planta como piezas independientes. La madera cálida y la cubierta crema distinguen la tienda del acero de producción. La pared ocupa aproximadamente el 55 % de la escena, con ventana alta y estante vertical; el piso usa una sola cuadrícula en perspectiva moderada.
 
-Dibujar al personaje detrás del mostrador antes del mueble, y ordenar los demás cuerpos por profundidad usando una lista local. Burbujas y monedas van encima. El arte nunca cambia el orden de la fila ni las zonas de entrega. Los clientes usan siluetas diferenciadas, pelo, ropa y accesorios; el protagonista comparte una bata detallada entre salas.
+Dibujar al personaje detrás del mostrador antes del mueble, y ordenar los demás cuerpos por profundidad usando una lista local. Burbujas y monedas van encima. Los productos aparecen directamente como sprites sobre la cubierta, sin tarjetas, bandejas, nombres ni marcos permanentes; sólo mantienen cantidades. Setas y espirulina van delante de la pared, y goteros en una segunda fila. Selección y dibujo comparten el acomodo, con zonas invisibles de al menos 44 píxeles de pantalla. Los clientes usan siluetas diferenciadas, pelo, ropa y accesorios; el protagonista comparte una bata detallada entre salas.

@@ -137,3 +137,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Muestra detallada de Pleurotus](outputs/TANDA-PLEUROTUS-DETALLE-ANCLAJE.md): sombreros con bordes y láminas más finos, tallos con raíz común y composición ajustada dentro de la bolsa durante todo el crecimiento.
 
 [Tienda por capas y personajes](outputs/TANDA-TIENDA-CAPAS-PERSONAJES.md): fondo fijo, mobiliario independiente y personajes pulidos, con profundidad respecto al mostrador y entregas conservadas.
+
+[Tienda: proporciones y productos](outputs/TANDA-TIENDA-PROPORCIONES-PRODUCTOS.md): pared y muebles ajustados a la referencia, sprites directamente sobre el mostrador y selección táctil sin tarjetas.
