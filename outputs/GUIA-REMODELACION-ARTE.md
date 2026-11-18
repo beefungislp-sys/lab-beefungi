@@ -87,5 +87,6 @@ Probar en escritorio y en marcos de celular horizontal y vertical. Comprobar sep
 | Esterilizador | En la continuación se adapta a la referencia: cilindro, tapa abatible, canastilla y manómetro; conserva su escala por capacidad. |
 | Llenadora de sustrato | En la continuación se adapta a la referencia: tolvas, cámara, paleta y plataforma abiertas. |
 | Agitación | Estante único de dos niveles, con agitadores magnéticos y frascos de CL compartidos con todo su circuito. |
+| Incubación y fructificación | Bastidor y entrepaños abiertos, carritos, bolsas que blanquean y frutos diferenciados para cuatro especies; conservan sus fondos. |
 
 La mesa de sustrato se delegó con límites claros: dibujantes propios y composición de esa estación, sin tocar recetas ni funciones de inoculación. La integración final unificó iconos, ambiente y validación. En futuras delegaciones conviene separar funciones y zonas de edición del mismo modo.

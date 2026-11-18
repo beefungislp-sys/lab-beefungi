@@ -26,6 +26,18 @@ Se conserva el fondo ya aprobado del juego. Las imágenes sirven para proporcion
 
 Adaptados a dibujantes compartidos en código. [Prompts de generación](PROMPTS-ESTANTE-AGITACION.md).
 
+## Cámaras y especies
+
+- `INCUBACION-ESTANTES-CONCEPTO.png`: estantes abiertos, colonización y carritos.
+- `FRUCTIFICACION-ESTANTES-CONCEPTO.png`: bloques de cuatro especies y carritos de entrada, cosecha y composta.
+- `BOLSAS-COLONIZACION-CONCEPTO.png`: filtro, cierre, textura y blanqueamiento progresivo; transparente.
+- `PLEUROTUS-SPRITE-CONCEPTO.png`: abanicos de ostra; transparente.
+- `MELENA-SPRITE-CONCEPTO.png`: lóbulos con hebras colgantes; transparente.
+- `REISHI-SPRITE-CONCEPTO.png`: abanicos rojos con bandas; transparente.
+- `CORDYCEPS-FRASCO-CONCEPTO.png`: arroz colonizado y frutos naranjas; transparente.
+
+Adaptadas al juego en código, conservando los fondos de las cámaras. [Prompts de las siete imágenes](PROMPTS-CAMARAS-ESPECIES.md).
+
 ## Prompt final del esterilizador
 
 ```text

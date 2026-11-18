@@ -2245,26 +2245,54 @@
       text(title, 62, 20);
     }
     function drawChamberRack(r, overview = false) {
-      const [x, y, w, h] = r;
-      softShadow(x + w / 2, y + h + 2, w * 0.56, 4, 0.24);
-      box(x + 2, y + 2, w - 2, h, "#819780");
-      box(x, y, w, h, "#698d87");
-      box(x + 4, y + 4, w - 8, h - 8, "#a9bca3");
-      for (let yy = y + 7; yy < y + h - 14; yy += 7)
-        artRect(x + 5, yy, w - 10, 0.5, "#9aaf98");
-      box(x, y, w, 3, "#bdd0bb");
-      artRect(x + 1, y, w - 2, 0.5, "#edf0d2");
-      box(x, y + 3, 3, h - 3, "#8eafa1");
-      box(x + w - 3, y + 3, 3, h - 3, "#426b70");
-      artRect(x + 1, y + 4, 0.5, h - 5, "#d6dfc5");
-      const footer = overview ? 5 : 13;
-      box(x + 3, y + h - footer, w - 6, footer - 2, "#d6c79d");
-      artRect(x + 4, y + h - footer, w - 8, 1, "#f2dfb1");
-      artRect(x + 3, y + h - 2, w - 6, 1, "#6e7058");
-      for (const xx of [x + 1, x + w - 2])
-        for (const yy of [y + 5, y + h - 5]) artRect(xx, yy, 1, 1, "#e9e4c6");
-      if (!overview) softShadow(x + w / 2, y + h - 15, w * 0.32, 2, 0.14);
+      const [x, y, w, h] = r,
+        base = y + h - (overview ? 9 : 14);
+      if (overview) {
+        softShadow(x + w / 2, y + h + 2, w * 0.5, 2, 0.16);
+        for (const xx of [x, x + w - 3]) {
+          drawLaminarSteel(xx, y, 3, h + 4, 192);
+          box(xx - 1, y + h + 3, 5, 2, "#3d6067");
+        }
+        drawLaminarSteel(x + 2, y, w - 4, 2, 191);
+      }
+      drawLaminarFace(
+        [
+          [x + 2, base - 4],
+          [x + w - 2, base - 4],
+          [x + w, base + 1],
+          [x, base + 1],
+        ],
+        "#a9b9a9",
+      );
+      box(x, base + 1, w, 4, "#597d7c");
+      artRect(x + 1, base + 1, w - 2, 0.7, "#e0e3c8");
+      artRect(x + 1, base + 4, w - 2, 0.5, "#355b65");
+      if (!overview) {
+        box(x + 1, base + 6, w - 2, 8, "#d1d9be");
+        artRect(x + 2, base + 6, w - 4, 0.5, "#e8e6c9");
+      }
+      for (const xx of [x + 2, x + w - 4])
+        artRect(xx, base + 2, 1, 1, "#d6dfc1");
     }
+    function drawChamberFrame(capacity) {
+      const last = incSlots[capacity - 1],
+        bottom = last[1] + last[3] + (capacity === 4 ? 15 : 5),
+        top = 60;
+      softShadow(160, bottom + 2, 148, 2, 0.18);
+      for (const xx of [19, 298]) {
+        drawLaminarSteel(xx, top + 3, 3, bottom - top - 7, 193);
+      }
+      box(20, bottom - 9, 281, 3, "#587d78");
+      artRect(21, bottom - 9, 279, 0.5, "#c2d0b6");
+      for (const xx of [12, 304]) {
+        drawLaminarSteel(xx, top, 4, bottom - top, 194);
+        artRect(xx + 0.5, top + 1, 0.6, bottom - top - 2, "#d9dfc3");
+        drawLaminarOval(xx - 1, bottom, 7, 2, "#385762");
+      }
+      drawLaminarSteel(16, top, 288, 3, 195);
+      artRect(17, top, 286, 0.5, "#e9e5c8");
+    }
+
     function drawClimatePanel(view) {
       const label =
         view === "incubation"
@@ -2317,7 +2345,6 @@
         drawChamberRack(r, true);
         for (let j = 0; j < count; j++) {
           if (side) {
-            box(x + 5 + j * 27, y + 6, 20, 30, "#889b90");
             const b = fruitShelves[row * 4 + j];
             if (b)
               drawFruitBag(
@@ -2330,7 +2357,6 @@
               );
           } else {
             const bag = incubation[row * 4 + j];
-            box(x + 5 + j * 27, y + 6, 20, 30, "#889b90");
             if (bag) {
               drawIncubationContainer(bag, x + 6 + j * 27, y + 9, 0.65);
               if (bag.contaminated) drawBacteria(x + 10 + j * 27, y + 19, j);
@@ -2445,56 +2471,122 @@
         "Bolsa lista en el carrito para fructificación. Espacio de incubación libre.",
       );
     }
-    function drawGrowBag(x, y, progress = 0, scale = 1) {
+    function drawGrowBag(x, y, progress = 0, scale = 1, species = "Pleurotus") {
       c.save();
       c.translate(Math.round(x), Math.round(y));
       c.scale(scale, scale);
-      progress = Math.max(0, Math.min(1, progress));
-      box(4, 7, 22, 27, "#748d89");
-      box(2, 11, 26, 20, "#748d89");
-      box(5, 5, 20, 29, "#d7d7bb");
-      box(3, 11, 24, 20, "#c9cdb1");
-      box(6, 10, 18, 22, "#b99b59");
-      box(5, 14, 20, 15, "#b99b59");
-      // Fixed scattered patches spread across the whole straw bag, never a rising fill.
-      for (let row = 0; row < 11; row++)
-        for (let col = 0; col < 9; col++) {
-          const xx = 6 + col * 2,
-            yy = 10 + row * 2,
-            seed = (col * 37 + row * 53 + col * row * 11) % 101;
-          const white = progress >= 1 || seed / 101 < progress;
-          box(
-            xx,
-            yy,
-            2,
-            2,
-            white
-              ? seed % 3
-                ? "#f4f0db"
-                : "#e0e6cf"
-              : seed % 3
-                ? "#bd9d60"
-                : "#e2c37b",
-          );
-          if (!white && seed % 4 === 0) box(xx, yy, 3, 1, "#8f773f");
-        }
-      box(10, 2, 10, 6, "#d7e3ce");
-      box(9, 6, 12, 3, "#729a97");
-      box(12, 0, 3, 4, "#edf0dd");
-      box(18, 1, 3, 3, "#c9d9ce");
-      box(5, 12, 2, 16, "#eef0dc");
-      box(23, 14, 1, 12, "#e5ead8");
-      box(7, 32, 16, 2, "#e0dfc7");
-      artRect(4, 13, 0.5, 15, "#a4b49f");
-      artRect(25, 13, 0.5, 15, "#879f95");
-      artRect(7, 8, 3, 0.5, "#fff2d5");
-      artRect(8, 30, 12, 0.5, "#fff0cf");
-      artRect(6, 28, 2, 0.5, "#b8c8b1");
-      artRect(21, 29, 2, 0.5, "#a8baa9");
-      artRect(11, 3, 7, 0.5, "#f6f1d8");
-      artRect(10, 7, 10, 0.5, "#b8d1bd");
+      const p = Math.max(0, Math.min(1, progress)),
+        straw = species === "Pleurotus" || !species;
+      const outline = [
+        [9, 5],
+        [21, 5],
+        [25, 10],
+        [28, 27],
+        [26, 34],
+        [4, 34],
+        [2, 28],
+        [5, 11],
+      ];
+      softShadow(15, 35, 14, 1.5, 0.16);
+      c.save();
+      c.globalAlpha = 0.23;
+      drawLaminarFace(outline, "#d8e1c8");
+      c.restore();
+      c.save();
+      drawLaminarFace(outline);
+      c.clip();
+      for (let row = 0; row < 22; row++)
+        artRect(
+          3,
+          12 + row,
+          25,
+          1,
+          `rgb(${Math.round((198 - row * 0.9) * (1 - Math.pow(p, 1.35)) + 234 * Math.pow(p, 1.35))},${Math.round((161 - row * 0.8) * (1 - Math.pow(p, 1.35)) + 232 * Math.pow(p, 1.35))},${Math.round((99 - row * 0.55) * (1 - Math.pow(p, 1.35)) + 212 * Math.pow(p, 1.35))})`,
+        );
+      drawLaminarOval(4, 11, 22, 5, p > 0.8 ? "#ebe7ce" : "#d4b27b");
+      for (let i = 0; i < 145; i++) {
+        const xx = 4 + texHash(i, 7, 196) * 22,
+          yy = 13 + texHash(i, 4, 197) * 20,
+          white = texHash(i, 9, 198) < p;
+        artRect(
+          xx,
+          yy,
+          straw ? 1.5 + texHash(i, 1, 199) * 2.2 : 0.7,
+          0.6,
+          white
+            ? i % 3
+              ? "#f0ecd4"
+              : "#d9dfc9"
+            : i % 3
+              ? "#e2bd7d"
+              : "#98784b",
+        );
+      }
+      for (let i = 0; i < Math.floor(p * 42); i++) {
+        const xx = 5 + texHash(i, 6, 200) * 20,
+          yy = 14 + texHash(i, 3, 201) * 18;
+        c.globalAlpha = 0.45 + p * 0.45;
+        drawLaminarOval(
+          xx - 1.5,
+          yy - 1,
+          3 + texHash(i, 2, 202) * 2,
+          2,
+          "#f4efd6",
+        );
+        c.strokeStyle = "#f8f1d7";
+        c.lineWidth = 0.45;
+        c.beginPath();
+        c.moveTo(xx - 2, yy + 1);
+        c.lineTo(xx, yy - 1);
+        c.lineTo(xx + 2.5, yy);
+        c.stroke();
+      }
+      c.restore();
+      c.strokeStyle = "#edf0d3";
+      c.lineWidth = 0.65;
+      drawLaminarFace(outline);
+      c.stroke();
+      drawLaminarFace(
+        [
+          [9, 5],
+          [5, 0],
+          [13, 2],
+          [18, 1],
+          [25, 0],
+          [21, 5],
+        ],
+        "#bacbb6",
+      );
+      artRect(7, 1, 3, 0.5, "#f4efd0");
+      artRect(19, 1, 4, 0.5, "#f4efd0");
+      box(9, 5, 12, 2, "#88a79b");
+      artRect(10, 5, 10, 0.5, "#e7e6c8");
+      box(12, 9, 7, 5, "#e9dfbf");
+      artRect(13, 9, 5, 0.5, "#fff0ce");
+      for (let i = 0; i < 10; i++)
+        artRect(
+          13 + texHash(i, 2, 203) * 5,
+          10 + texHash(i, 1, 204) * 3,
+          0.5,
+          0.5,
+          "#c9bd9b",
+        );
+      c.strokeStyle = "#ebedcf";
+      c.lineWidth = 0.5;
+      c.beginPath();
+      c.moveTo(7, 12);
+      c.lineTo(5, 27);
+      c.lineTo(9, 32);
+      c.moveTo(22, 12);
+      c.lineTo(26, 28);
+      c.lineTo(22, 33);
+      c.stroke();
+      artRect(5, 17, 0.7, 12, "#f9f0d3");
+      artRect(24, 19, 0.5, 9, "#b9cbb3");
+      artRect(8, 33, 14, 0.5, "#e5e6c7");
       c.restore();
     }
+
     function drawBagCart(x, n, label, ready) {
       text(label + " " + n, x + 1, 198);
       box(x, 203, 127, 22, "#8aabb0");
@@ -2510,6 +2602,7 @@
     function drawIncubation() {
       drawChamberRoom("CAMARA DE INCUBACION");
       drawClimatePanel("incubation");
+      drawChamberFrame(incubationCapacity);
       incSlots.forEach((r, i) => {
         const [x, y, w, h] = r,
           b = incubation[i];
@@ -2620,23 +2713,37 @@
       fruitShelves[i] = null;
       say("Bloque retirado a composta. Espacio libre.");
     }
+    function drawChamberCart(x, kind) {
+      softShadow(x + 45, 234, 46, 2, 0.19);
+      // The shallow open tray leaves the bags and harvested fruits visible.
+      drawLaminarFace(
+        [
+          [x + 4, 216],
+          [x + 83, 216],
+          [x + 90, 222],
+          [x, 222],
+        ],
+        kind === "compost" ? "#b7a27a" : "#a7b9a7",
+      );
+      box(x, 222, 90, 4, "#597d7c");
+      artRect(x + 1, 222, 88, 0.7, "#e3e5c9");
+      artRect(x + 1, 225, 88, 0.5, "#355e68");
+      for (const xx of [x + 2, x + 83]) {
+        drawLaminarSteel(xx, 201, 3, 27, 205);
+        artRect(xx + 0.5, 202, 0.6, 24, "#dae2c4");
+      }
+      box(x + 79, 199, 9, 2, "#a9bfb0");
+      artRect(x + 80, 199, 7, 0.5, "#f0e9cc");
+      for (const xx of [x + 10, x + 72]) {
+        box(xx + 2, 226, 2, 3, "#7c9a8e");
+        drawLaminarOval(xx, 228, 8, 7, "#304d59");
+        drawLaminarOval(xx + 2, 230, 4, 3, "#9db19d");
+        artRect(xx + 3, 230, 1, 1, "#e7e5c7");
+      }
+    }
     function drawFruitCart(x, n, label, kind, progress = 1) {
       text(label, x + 2, 198);
-      softShadow(x + 45, 231, 46, 4, 0.25);
-      box(x, 205, 90, 20, "#70938f");
-      box(x + 3, 207, 84, 15, kind === "compost" ? "#79664c" : "#4d707c");
-      box(x, 205, 90, 2, "#d3ddc3");
-      artRect(x + 1, 205, 88, 0.5, "#f5ebcf");
-      box(x + 83, 200, 3, 26, "#a9c2b0");
-      box(x + 79, 199, 8, 2, "#dce3c9");
-      artRect(x + 84, 202, 0.5, 20, "#eff0d5");
-      for (const xx of [x + 10, x + 70]) {
-        box(xx, 227, 8, 6, "#304554");
-        artRect(xx + 2, 228, 4, 1, "#77918a");
-        artRect(xx + 3, 230, 2, 1, "#c9d2b8");
-      }
-      box(x + 1, 223, 88, 2, "#426970");
-      artRect(x + 2, 222, 80, 0.5, "#b5cbb7");
+      drawChamberCart(x, kind);
       for (let i = 0; i < Math.min(n, 4); i++) {
         if (kind === "input") {
           const source =
@@ -2669,70 +2776,123 @@
         238,
       );
     }
+    function drawMushroomFan(cx, cy, w, h, reishi = false) {
+      // Scalloped fan with a contrasting lower rim and fixed growth rings.
+      for (let row = 0; row < h; row++) {
+        const t = row / Math.max(1, h - 1),
+          span =
+            w * Math.sqrt(Math.max(0.02, 1 - Math.pow((t - 0.55) / 0.62, 2))),
+          wave = Math.sin(t * 13) * 0.7;
+        const shade = reishi
+          ? ["#d8a763", "#bc5436", "#963c30", "#c15a36", "#7f3431", "#e3ba7a"][
+              Math.min(5, Math.floor(t * 6))
+            ]
+          : t < 0.23
+            ? "#e2dac2"
+            : t < 0.6
+              ? "#a9afa1"
+              : t < 0.84
+                ? "#c7c6af"
+                : "#eee5c9";
+        artRect(cx - span / 2 + wave, cy + row, span, 1, shade);
+      }
+      if (!reishi) {
+        c.strokeStyle = "#f0e5c7";
+        c.lineWidth = 0.5;
+        for (let g = -3; g <= 3; g++) {
+          c.beginPath();
+          c.moveTo(cx, cy + h + 2);
+          c.lineTo(cx + g * w * 0.11, cy + h * 0.66);
+          c.stroke();
+        }
+      } else {
+        artRect(cx - w * 0.2, cy + h * 0.25, w * 0.25, 0.6, "#ecb37b");
+        artRect(cx - w * 0.25, cy + h * 0.4, w * 0.12, 0.6, "#ffe2aa");
+      }
+      artRect(
+        cx - w * 0.2,
+        cy + 1,
+        w * 0.32,
+        0.6,
+        reishi ? "#f1bf80" : "#faf0d4",
+      );
+    }
     function drawOysterCluster(x, y, progress = 1, scale = 1, count = 3) {
       if (progress <= 0.05) return;
       c.save();
       c.translate(Math.round(x), Math.round(y));
       c.scale(scale, scale);
-      const caps = [
-        { x: 8, y: 16, w: 19, h: 8, lean: -1 },
-        { x: 28, y: 15, w: 22, h: 9, lean: 1 },
-        { x: 18, y: 8, w: 26, h: 11, lean: 0 },
-      ];
-      for (let i = 0; i < Math.min(count, 3); i++) {
-        const cap = caps[i],
-          growth = 0.2 + 0.8 * progress,
-          w = Math.max(4, Math.round(cap.w * growth)),
-          h = Math.max(3, Math.round(cap.h * growth)),
-          cy = cap.y + Math.round((1 - progress) * 7);
-        // Short lateral attachment; broad scalloped oyster fan with layered rim.
-        box(cap.x - 1, cy + h - 2, 4, 5, "#dad3bd");
-        box(cap.x, cy + h, 2, 4, "#f3ead4");
-        for (let row = 0; row < h; row++) {
-          const t = row / Math.max(1, h - 1),
-            fan = Math.sin((0.22 + 0.72 * t) * Math.PI),
-            rw = Math.max(3, Math.round(w * fan)),
-            shift = Math.round(cap.lean * (1 - t) * 2);
-          box(
-            cap.x - Math.floor(rw / 2) + shift,
-            cy + row,
-            rw,
-            1,
-            row === 0
-              ? "#f2ead6"
-              : t < 0.3
-                ? "#cac7b8"
-                : t < 0.65
-                  ? "#a9aea6"
-                  : t < 0.85
-                    ? "#b9b9aa"
-                    : "#e7dfc7",
-          );
-        }
-        // Fine pale gills converge toward the attachment point.
-        if (progress > 0.35) {
-          for (let g = -2; g <= 2; g++) {
-            for (let k = 0; k < 3; k++)
-              box(
-                cap.x + Math.round(g * (3 - k) * growth),
-                cy + h - 4 + k,
-                1,
-                1,
-                g % 2 ? "#dcd8c3" : "#f0e7cf",
-              );
-          }
-        }
-        const rim = Math.max(3, Math.round(w * 0.78));
-        box(cap.x - Math.floor(rim / 2) + cap.lean, cy + 1, rim, 1, "#e6e0ca");
-        box(
-          cap.x - Math.floor(rim / 2) + 2,
-          cy + 2,
-          Math.max(2, Math.round(rim * 0.35)),
-          1,
-          "#f7eed8",
+      const g = 0.2 + 0.8 * progress;
+      for (const cap of [
+        { x: 8, y: 15, w: 19, h: 9 },
+        { x: 28, y: 14, w: 21, h: 10 },
+        { x: 18, y: 6, w: 26, h: 12 },
+      ].slice(0, Math.min(3, count))) {
+        const cy = cap.y + (1 - progress) * 7;
+        drawLaminarFace(
+          [
+            [cap.x - 2, cy + cap.h * g - 1],
+            [cap.x + 3, cy + cap.h * g - 1],
+            [cap.x + 2, cy + cap.h * g + 5],
+            [cap.x - 1, cy + cap.h * g + 4],
+          ],
+          "#c9c9b3",
+        );
+        drawMushroomFan(
+          cap.x,
+          cy,
+          cap.w * g,
+          Math.max(3, Math.round(cap.h * g)),
         );
       }
       c.restore();
+    }
+    function drawLionsMane(progress, count) {
+      const g = 0.2 + 0.8 * progress;
+      for (let k = 0; k < Math.min(count, 3); k++) {
+        const cx = 7 + k * 8,
+          cy = 6 + (k % 2) * 7,
+          w = 16 * g,
+          h = 17 * g;
+        drawLaminarOval(cx - w / 2, cy, w, h, "#c6cbb3");
+        drawLaminarOval(cx - w / 2 + 1, cy, w - 2, h - 2, "#f1e8cd");
+        for (let i = 0; i < 19; i++) {
+          const u = texHash(i, k, 206),
+            v = texHash(i, k, 207),
+            xx = cx - w * 0.42 + u * w * 0.84,
+            yy = cy + v * h * 0.65,
+            len = (3 + texHash(i, k, 208) * 6) * g;
+          artRect(xx, yy, 0.7, len, i % 3 ? "#fff1d1" : "#d5cbb0");
+        }
+      }
+    }
+    function drawReishiFruit(progress, count) {
+      const g = 0.2 + 0.8 * progress;
+      for (let k = 0; k < Math.min(count, 3); k++) {
+        const cx = 7 + k * 9,
+          cy = 16 - (k % 2) * 8;
+        box(cx - 1, cy, 3, 12 * g, "#8d4934");
+        artRect(cx, cy, 1, 9 * g, "#ca8252");
+        drawMushroomFan(
+          cx,
+          cy - 7,
+          21 * g,
+          Math.max(4, Math.round(10 * g)),
+          true,
+        );
+      }
+    }
+    function drawCordyFruit(progress, count) {
+      const g = 0.2 + 0.8 * progress;
+      for (let k = 0; k < Math.min(count * 3, 9); k++) {
+        const height = (9 + texHash(k, 3, 209) * 17) * g,
+          cx = 3 + k * 3.2,
+          cy = 29 - (k % 2);
+        artRect(cx, cy - height, 1.4, height, "#cb7634");
+        artRect(cx, cy - height, 0.5, height, "#f5b85a");
+        drawLaminarOval(cx - 1, cy - height - 3 * g, 3.5, 6 * g, "#eb9d3b");
+        artRect(cx - 0.3, cy - height - 2 * g, 0.7, 3 * g, "#ffd37d");
+      }
     }
     const speciesPrices = {
       Pleurotus: 1,
@@ -2772,62 +2932,9 @@
       c.save();
       c.translate(Math.round(x), Math.round(y));
       c.scale(scale, scale);
-      const g = 0.2 + 0.8 * progress;
-      if (name === "Melena de leon") {
-        for (let k = 0; k < Math.min(count, 3); k++) {
-          const cx = 7 + k * 8,
-            cy = 8 + (k % 2) * 7,
-            w = Math.round(15 * g),
-            h = Math.round(14 * g);
-          box(cx - w / 2, cy, w, h, "#eee9ce");
-          box(cx - w / 2 + 2, cy - 2, w - 4, h + 4, "#fff4d7");
-          for (let j = 0; j < 5; j++) {
-            const strand = Math.max(2, Math.round((6 + (j % 3)) * g));
-            box(
-              cx - w / 2 + 1 + j * 2,
-              cy + h - 1,
-              1,
-              strand,
-              j % 2 ? "#d5ccb0" : "#f8efd3",
-            );
-          }
-          box(cx - w / 2 + 2, cy + 2, 3, 2, "#fffbea");
-        }
-      } else if (name === "Reishi") {
-        for (let k = 0; k < Math.min(count, 3); k++) {
-          const cx = 7 + k * 9,
-            cy = 18 - (k % 2) * 9,
-            w = Math.max(5, Math.round(20 * g));
-          box(cx, cy, 3, 10 * g, "#93512f");
-          for (let row = 0; row < 7; row++) {
-            const rw = Math.max(
-              3,
-              Math.round(w * Math.sin((0.16 + row * 0.11) * Math.PI)),
-            );
-            box(
-              cx - rw / 2,
-              cy - 7 + row,
-              rw,
-              1,
-              row === 0 || row === 6
-                ? "#f2d5a0"
-                : row < 3
-                  ? "#cc6247"
-                  : "#923e36",
-            );
-          }
-          box(cx - w * 0.25, cy - 5, Math.max(2, w * 0.4), 1, "#e58b5d");
-        }
-      } else if (name === "Cordyceps") {
-        for (let k = 0; k < Math.min(count * 2, 6); k++) {
-          const h = (11 + ((k * 5) % 13)) * g,
-            cx = 3 + k * 5,
-            cy = 29 - (k % 2) * 2;
-          box(cx, cy - h, 2, h, "#d7772e");
-          box(cx - 1, cy - h - 5 * g, 4, 7 * g, "#ef9b3b");
-          box(cx, cy - h - 4 * g, 1, 4 * g, "#ffd27b");
-        }
-      }
+      if (name === "Melena de leon") drawLionsMane(progress, count);
+      else if (name === "Reishi") drawReishiFruit(progress, count);
+      else if (name === "Cordyceps") drawCordyFruit(progress, count);
       c.restore();
     }
 
@@ -2839,12 +2946,12 @@
       count = 3,
       species = "Pleurotus",
     ) {
-      if (species === "Cordyceps") drawCordyJar(x, y, scale, 1);
-      else drawGrowBag(x, y, 1, scale);
+      if (species === "Cordyceps") drawCordyJar(x, y, scale, 1, true);
+      else drawGrowBag(x, y, 1, scale, species);
       drawSpeciesFruit(
         species,
         x + 3 * scale,
-        y + 7 * scale,
+        y + (species === "Cordyceps" ? -3 : 7) * scale,
         progress,
         scale,
         count,
@@ -2853,6 +2960,7 @@
     function drawFruiting() {
       drawChamberRoom("CAMARA DE FRUCTIFICACION", "fruiting");
       drawClimatePanel("fruiting");
+      drawChamberFrame(fruitingCapacity);
       incSlots.forEach((r, i) => {
         const [x, y, w, h] = r,
           b = fruitShelves[i];
@@ -8286,25 +8394,44 @@
       box(14, 0, 4, 2, "#eff2df");
       c.restore();
     }
-    function drawCordyJar(x, y, scale = 1, progress = 0) {
-      drawEmptyJar(x, y, scale);
+    function drawCordyJar(x, y, scale = 1, progress = 0, fruiting = false) {
+      drawSubstrateEmptyJar(x, y, scale);
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(5, 15, 18, 16, "#b7985d");
-      for (let i = 0; i < 22; i++)
-        box(
-          6 + ((i * 7) % 16),
-          16 + ((i * 5) % 14),
-          2,
-          1,
-          i % 2 ? "#e3cc8b" : "#907b4f",
+      box(5, 16, 18, 16, progress > 0.8 ? "#dedfc4" : "#bf9c60");
+      drawLaminarOval(5, 14, 18, 4, progress > 0.8 ? "#eee8ca" : "#d9ba7d");
+      for (let i = 0; i < 72; i++) {
+        const xx = 6 + texHash(i, 17, 210) * 16,
+          yy = 17 + texHash(i, 13, 211) * 14,
+          white = texHash(i, 11, 212) < progress;
+        artRect(
+          xx,
+          yy,
+          1.6,
+          0.7,
+          white
+            ? i % 3
+              ? "#ece8cb"
+              : "#d6d9be"
+            : i % 3
+              ? "#e5c883"
+              : "#9d814f",
         );
-      for (let i = 0; i < Math.floor(progress * 23); i++)
-        box(7 + ((i * 5) % 14), 16 + ((i * 7) % 14), 2, 2, "#ecebd3");
-      box(4, 0, 20, 4, "#c9b083");
+      }
+      artRect(5, 11, 1, 18, "#edf0d2");
+      artRect(22, 11, 0.5, 19, "#d7e2c4");
+      if (!fruiting) {
+        box(4, 0, 20, 4, "#d9caa2");
+        for (let xx = 6; xx < 23; xx += 2) artRect(xx, 1, 0.5, 3, "#a79873");
+        artRect(5, 0, 18, 0.5, "#f7e8c4");
+      } else {
+        drawLaminarOval(5, 0, 18, 5, "#a6c0ac");
+        drawLaminarOval(7, 0.5, 14, 3, "#d8e0c1");
+      }
       c.restore();
     }
+
     function drawPreparedContainer(mode, x, y, scale = 1) {
       if (mode === "wood") drawPreparedSubstrateBag(x, y, scale);
       else if (mode === "liquid") drawLiquidJar(x, y, scale);
@@ -8312,7 +8439,7 @@
     }
     function drawIncubationContainer(b, x, y, scale = 1) {
       if (b.species === "Cordyceps") drawCordyJar(x, y, scale, b.progress);
-      else drawGrowBag(x, y, b.progress, scale);
+      else drawGrowBag(x, y, b.progress, scale, b.species || "Pleurotus");
     }
     function drawSpecialPrep() {
       const prep = woodPrepState,
@@ -11382,24 +11509,39 @@
         { bare: true },
       ),
       cleaning: dragIcon("Spray y trapo", () => drawCleaningKit(-17, -13)),
-      incbag: dragIcon("Bolsa sin incubar", () =>
-        drawIncubationContainer(
-          { ...waitingBagData[0], progress: 0 },
-          -14,
-          -18,
-        ),
+      incbag: dragIcon(
+        "Bolsa sin incubar",
+        () =>
+          drawIncubationContainer(
+            { ...waitingBagData[0], progress: 0 },
+            -14,
+            -18,
+          ),
+        { bare: true },
       ),
-      readybag: dragIcon("Bolsa de incubación", (d) =>
-        drawIncubationContainer(
-          incubation[d.slot] || { progress: 0 },
-          -14,
-          -18,
-        ),
+      readybag: dragIcon(
+        "Bolsa de incubación",
+        (d) =>
+          drawIncubationContainer(
+            incubation[d.slot] || { progress: 0 },
+            -14,
+            -18,
+          ),
+        { bare: true },
       ),
-      fruitbag: dragIcon("Bloque para fructificar", () =>
-        drawIncubationContainer({ ...fruitingCart[0], progress: 1 }, -14, -18),
+      fruitbag: dragIcon(
+        "Bloque para fructificar",
+        () =>
+          drawIncubationContainer(
+            { ...fruitingCart[0], progress: 1 },
+            -14,
+            -18,
+          ),
+        { bare: true },
       ),
-      harvestbag: dragIcon("Hongos o bloque para composta", drawDragHarvest),
+      harvestbag: dragIcon("Hongos o bloque para composta", drawDragHarvest, {
+        bare: true,
+      }),
       woodRaw: dragIcon(
         "Aserrín o arroz",
         () => drawSubstratePile(-18, -12, 36, 24, prepMode === "cordy"),
