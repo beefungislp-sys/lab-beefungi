@@ -2817,34 +2817,107 @@
         reishi ? "#f1bf80" : "#faf0d4",
       );
     }
+    function oysterClusterGeometry(progress = 1, count = 3) {
+      const p = Math.max(0, Math.min(1, progress)),
+        g = 0.15 + 0.85 * p,
+        root = { x: 18, y: 29 };
+      const caps = [
+        { x: 21, y: 4, w: 29, h: 11, lean: 1 },
+        { x: 11, y: 13, w: 20, h: 9, lean: -1 },
+        { x: 28, y: 16, w: 20, h: 8, lean: 1 },
+      ]
+        .slice(0, Math.max(0, Math.min(3, count)))
+        .map((cap) => ({
+          x: root.x + (cap.x - root.x) * g,
+          y: root.y + (cap.y - root.y) * g,
+          w: cap.w * g,
+          h: cap.h * g,
+          lean: cap.lean,
+        }));
+      return { root, caps };
+    }
+    function drawDetailedOysterFan(cap) {
+      const { x: cx, y: cy, w, h, lean } = cap,
+        q = (v) => Math.round(v * 2) / 2;
+      // Fine gills converge on the lateral attachment beneath the cap.
+      const under = [
+        [cx - w * 0.47, cy + h * 0.58],
+        [cx + w * 0.48, cy + h * 0.58],
+        [cx + lean * 1.5 + 1, cy + h + 1.5],
+        [cx + lean * 1.5 - 2, cy + h + 1.5],
+      ];
+      drawLaminarFace(under, "#9a9a87");
+      c.save();
+      drawLaminarFace(under);
+      c.clip();
+      for (let i = -6; i <= 6; i++) {
+        c.strokeStyle = i % 2 ? "#e1d6b9" : "#b8b59e";
+        c.lineWidth = 0.5;
+        c.beginPath();
+        c.moveTo(q(cx + lean * 1.5), q(cy + h + 1.5));
+        c.lineTo(q(cx + i * w * 0.052), q(cy + h * 0.82));
+        c.lineTo(q(cx + i * w * 0.078), q(cy + h * 0.55));
+        c.stroke();
+      }
+      c.restore();
+      // Half-unit steps use the existing double-resolution canvas for finer edges.
+      for (let row = 0; row < h * 0.68; row += 0.5) {
+        const t = row / Math.max(0.5, h * 0.68),
+          span =
+            w * Math.sqrt(Math.max(0.02, 1 - Math.pow((t - 0.67) / 0.94, 2)));
+        for (let xx = -span / 2; xx < span / 2; xx += 0.5) {
+          const u = xx / Math.max(1, w),
+            shine = Math.exp(-Math.pow((u + 0.18) / 0.23, 2));
+          const shade = t < 0.22 ? 12 : t < 0.65 ? 0 : 9;
+          artRect(
+            q(cx + xx + lean * (1 - t) * 0.6),
+            q(cy + row),
+            0.5,
+            0.5,
+            `rgb(${Math.round(143 + shine * 27 + shade)},${Math.round(153 + shine * 23 + shade)},${Math.round(141 + shine * 17 + shade)})`,
+          );
+        }
+      }
+      // Slightly scalloped ivory rim separates the grey cap from its pale gills.
+      for (let xx = -w * 0.48; xx <= w * 0.48; xx += 0.5) {
+        const u = xx / Math.max(1, w),
+          yy =
+            cy +
+            h * 0.61 +
+            Math.cos(u * Math.PI) * h * 0.1 +
+            Math.sin(u * 19) * 0.23;
+        artRect(q(cx + xx), q(yy), 0.5, 0.7, "#ede2c4");
+        if (xx < 0) artRect(q(cx + xx), q(yy) - 0.5, 0.5, 0.5, "#fff0d1");
+      }
+      artRect(q(cx - w * 0.2), q(cy + h * 0.18), q(w * 0.22), 0.5, "#d3d0b9");
+    }
     function drawOysterCluster(x, y, progress = 1, scale = 1, count = 3) {
       if (progress <= 0.05) return;
       c.save();
-      c.translate(Math.round(x), Math.round(y));
+      c.translate(x, y);
       c.scale(scale, scale);
-      const g = 0.2 + 0.8 * progress;
-      for (const cap of [
-        { x: 8, y: 15, w: 19, h: 9 },
-        { x: 28, y: 14, w: 21, h: 10 },
-        { x: 18, y: 6, w: 26, h: 12 },
-      ].slice(0, Math.min(3, count))) {
-        const cy = cap.y + (1 - progress) * 7;
+      const { root, caps } = oysterClusterGeometry(progress, count),
+        width = 1.3 + Math.max(0, Math.min(1, progress)) * 0.7;
+      // All stems share an origin inside the substrate, including the rear cap.
+      for (const cap of caps) {
+        const tip = { x: cap.x + cap.lean * 0.7, y: cap.y + cap.h * 0.85 };
         drawLaminarFace(
           [
-            [cap.x - 2, cy + cap.h * g - 1],
-            [cap.x + 3, cy + cap.h * g - 1],
-            [cap.x + 2, cy + cap.h * g + 5],
-            [cap.x - 1, cy + cap.h * g + 4],
+            [root.x - width, root.y],
+            [root.x + width, root.y],
+            [tip.x + 1, tip.y],
+            [tip.x - 1.5, tip.y],
           ],
-          "#c9c9b3",
+          "#b6b8a1",
         );
-        drawMushroomFan(
-          cap.x,
-          cy,
-          cap.w * g,
-          Math.max(3, Math.round(cap.h * g)),
-        );
+        c.strokeStyle = "#e5ddbf";
+        c.lineWidth = 0.7;
+        c.beginPath();
+        c.moveTo(root.x - 0.5, root.y);
+        c.lineTo(tip.x - 0.5, tip.y);
+        c.stroke();
       }
+      for (const cap of caps) drawDetailedOysterFan(cap);
       c.restore();
     }
     function drawLionsMane(progress, count) {
@@ -2948,12 +3021,13 @@
     ) {
       if (species === "Cordyceps") drawCordyJar(x, y, scale, 1, true);
       else drawGrowBag(x, y, 1, scale, species);
+      const oyster = species === "Pleurotus" || !species;
       drawSpeciesFruit(
         species,
-        x + 3 * scale,
-        y + (species === "Cordyceps" ? -3 : 7) * scale,
+        x + (oyster ? 4.4 : 3) * scale,
+        y + (oyster ? 8.5 : species === "Cordyceps" ? -3 : 7) * scale,
         progress,
-        scale,
+        scale * (oyster ? 0.57 : 1),
         count,
       );
     }

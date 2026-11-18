@@ -82,3 +82,7 @@ Agitadores compactos con plato circular, perilla crema e indicador pequeño. Fra
 Incubación y fructificación conservan su ambiente y comparten bastidor y entrepaños abiertos de acero. No usar una caja opaca por recipiente. Sólo se dibujan los puestos comprados: cuatro en la primera fila, luego dos o cuatro adicionales en la segunda.
 
 Las bolsas tienen filtro, pliegues y cierre; el sustrato se blanquea por toda la superficie. Distinguir fibras de paja de textura fina de madera. Los frutos comparten dibujantes entre módulo, miniatura, cosecha, tienda e iconos: abanicos de ostra, hebras de Melena, bandas rojas de Reishi y estromas naranjas de Cordyceps. Los carritos usan acero, bandeja abierta, asas y ruedas; sus zonas táctiles siguen separadas.
+
+## Muestra de Pleurotus más detallado
+
+Pleurotus usa medios píxeles lógicos, sombras gris salvia, borde ondulado crema y láminas radiales. Los sombreros comparten raíz y crecen desde ella, para evitar frutos suspendidos. Dentro de la bolsa se adapta la composición a su silueta; el racimo cosechado usa su escala propia. Las otras especies esperan aprobación de esta muestra antes de recibir el mismo nivel de pulido.

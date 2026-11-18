@@ -60,6 +60,8 @@ Reutilizar el dibujante del objeto en `dragIconCatalog`, la mesa y las animacion
 - Respetar el estado: bolsa vacía al arrastrar una vacía, especie correcta, sólo hongos durante la cosecha.
 - Revisar origen, recorrido, destino, cancelación y retorno a la sala. Mejorar el dibujo no debe desplazar la zona que recibe el objeto.
 
+En frutos compuestos, definir un origen de crecimiento dentro del bloque y conectar todas las piezas antes de dibujar los sombreros. Comprobar los extremos de la composición en brote, crecimiento intermedio, madurez y cada flush; no basta con revisar el sprite aislado. Pleurotus conserva esta geometría en `oysterClusterGeometry`.
+
 ## 6. Revisar estados y tamaños
 
 Usar fixtures locales con botones visibles para abrir estados reproducibles, sin modificar la partida del jugador. Las cantidades de prueba deben respetar la capacidad del nivel mostrado.
