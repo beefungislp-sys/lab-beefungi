@@ -135,3 +135,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Incubación y fructificación desde referencias](outputs/TANDA-CAMARAS-SPRITES-REFERENCIAS.md): estantes abiertos, bolsas por estados de colonización, frutos de cuatro especies y carritos, con siete referencias conservadas y sprites recreados en código.
 
 [Muestra detallada de Pleurotus](outputs/TANDA-PLEUROTUS-DETALLE-ANCLAJE.md): sombreros con bordes y láminas más finos, tallos con raíz común y composición ajustada dentro de la bolsa durante todo el crecimiento.
+
+[Tienda por capas y personajes](outputs/TANDA-TIENDA-CAPAS-PERSONAJES.md): fondo fijo, mobiliario independiente y personajes pulidos, con profundidad respecto al mostrador y entregas conservadas.

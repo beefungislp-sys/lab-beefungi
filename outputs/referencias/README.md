@@ -38,6 +38,18 @@ Adaptados a dibujantes compartidos en código. [Prompts de generación](PROMPTS-
 
 Adaptadas al juego en código, conservando los fondos de las cámaras. [Prompts de las siete imágenes](PROMPTS-CAMARAS-ESPECIES.md).
 
+## Tienda por capas
+
+- `TIENDA-MOSTRADOR-CONCEPTO.png`: composición general aprobada; [prompt](PROMPT-TIENDA-MOSTRADOR.md).
+- `TIENDA-FONDO-CAPA-CONCEPTO.png`: arquitectura y ambiente vacío.
+- `TIENDA-MOSTRADOR-CAPA-CONCEPTO.png`: mostrador de madera con cubierta clara.
+- `TIENDA-ESTANTE-CAPA-CONCEPTO.png`: estante compacto.
+- `TIENDA-CUADRO-CAPA-CONCEPTO.png`: lámina enmarcada de cuatro especies.
+- `TIENDA-PLANTA-CAPA-CONCEPTO.png`: planta decorativa.
+- `TIENDA-PERSONAJES-CAPA-CONCEPTO.png`: protagonista y tres clientes.
+
+Recreadas con dibujantes separados en el canvas. [Prompts de las seis capas](PROMPTS-TIENDA-CAPAS.md).
+
 ## Prompt final del esterilizador
 
 ```text

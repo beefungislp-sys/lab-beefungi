@@ -86,3 +86,9 @@ Las bolsas tienen filtro, pliegues y cierre; el sustrato se blanquea por toda la
 ## Muestra de Pleurotus más detallado
 
 Pleurotus usa medios píxeles lógicos, sombras gris salvia, borde ondulado crema y láminas radiales. Los sombreros comparten raíz y crecen desde ella, para evitar frutos suspendidos. Dentro de la bolsa se adapta la composición a su silueta; el racimo cosechado usa su escala propia. Las otras especies esperan aprobación de esta muestra antes de recibir el mismo nivel de pulido.
+
+## Tienda por capas
+
+Separar arquitectura y piso fijo, decoración de pared, mostrador, bandejas de producto y personajes. Reutilizar estante, cuadro y planta como piezas independientes. La madera cálida y la cubierta crema distinguen la tienda del acero de producción. Una sola cuadrícula en perspectiva evita que el piso se vea duplicado.
+
+Dibujar al personaje detrás del mostrador antes del mueble, y ordenar los demás cuerpos por profundidad usando una lista local. Burbujas y monedas van encima. El arte nunca cambia el orden de la fila ni las zonas de entrega. Los clientes usan siluetas diferenciadas, pelo, ropa y accesorios; el protagonista comparte una bata detallada entre salas.
