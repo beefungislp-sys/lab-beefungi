@@ -1758,17 +1758,239 @@
       box(x + 8 + pulse, y + 3, 2, 1, "#496c4d");
     }
     function drawCleaningKit(x, y) {
-      box(x, y, 16, 25, "#79bfc8");
-      box(x + 3, y - 5, 15, 6, "#456b7b");
-      box(x + 15, y - 2, 8, 3, "#d7e6d3");
-      box(x + 8, y + 15, 26, 16, "#f1e4bd");
-      box(x + 12, y + 19, 17, 2, "#bdad83");
-      box(x + 12, y + 23, 12, 2, "#d3c79e");
-      artRect(x + 2, y + 3, 2, 13, "#cce7d9");
-      artRect(x + 5, y + 9, 8, 5, "#eef0d2");
-      artRect(x + 7, y + 10, 4, 2, "#7ba59b");
-      artRect(x + 10, y + 16, 22, 1, "#fff1cb");
-      artRect(x + 30, y + 18, 1, 11, "#ad9d78");
+      c.save();
+      c.translate(x, y);
+      // Shared object from KIT-LIMPIEZA-CONCEPTO: curved glass and folded cloth.
+      // The silhouette stays inside the former kit footprint; no backing panel.
+      softShadow(18, 31, 17, 1.4, 0.16);
+      drawLaminarFace(
+        [
+          [6, 0],
+          [12, 0],
+          [12, 3],
+          [15, 6],
+          [17, 8],
+          [18, 11],
+          [18, 25],
+          [16, 27.5],
+          [3, 27.5],
+          [1, 25],
+          [1, 10],
+          [2, 7],
+          [5, 4],
+          [6, 3],
+        ],
+        "#658e8b",
+      );
+      drawLaminarFace(
+        [
+          [7, 1],
+          [11, 1],
+          [11, 4],
+          [14, 7],
+          [16.5, 10],
+          [16.5, 24.5],
+          [15, 26],
+          [4, 26],
+          [2.5, 24.5],
+          [2.5, 10],
+          [4, 7],
+          [7, 4],
+        ],
+        "rgba(198,222,206,0.77)",
+      );
+      box(2.5, 13, 14, 11.5, "#75b7a7");
+      artRect(3, 14, 2.5, 10, "#97ceba");
+      artRect(14, 14, 2, 10, "#5c9f98");
+      drawLaminarOval(2.5, 11, 14, 4, "#afd5bd");
+      drawLaminarOval(3.5, 11.5, 12, 2.5, "#8ec6ae");
+      artRect(4, 12, 9, 0.5, "#d5e5c8");
+      drawLaminarOval(1.5, 24, 16, 4, "#739f95");
+      drawLaminarOval(3, 24.5, 12.5, 2.5, "#a2ceba");
+      artRect(4, 25.5, 8, 0.5, "#d4e3c4");
+      // Narrow light strips describe glass rather than an opaque white border.
+      drawLaminarFace(
+        [
+          [7, 4],
+          [8, 4],
+          [5, 8],
+          [3.5, 10],
+          [3.5, 22],
+          [2.5, 22],
+          [2.5, 10],
+          [4, 7],
+        ],
+        "#e6edcf",
+      );
+      artRect(14.5, 8, 0.5, 3, "#e2ebd0");
+      artRect(15.5, 15, 0.5, 6, "#badbc5");
+      drawLaminarFace(
+        [
+          [6, 16],
+          [13, 16],
+          [14, 17],
+          [14, 21],
+          [13, 22],
+          [6, 22],
+          [5, 21],
+          [5, 17],
+        ],
+        "#b8ad89",
+      );
+      drawLaminarFace(
+        [
+          [6, 16.5],
+          [13, 16.5],
+          [13.5, 17],
+          [13.5, 20.5],
+          [12.5, 21.5],
+          [6, 21.5],
+          [5.5, 20.5],
+          [5.5, 17],
+        ],
+        "#eee3bf",
+      );
+      artRect(6, 17, 1, 3.5, "#fff0cf");
+      for (const [bx, by] of [
+        [6, 23],
+        [14, 13],
+        [11, 24],
+      ]) {
+        artRect(bx, by, 1, 1, "#c6e1ca");
+        artRect(bx, by, 0.5, 0.5, "#eef2d6");
+      }
+      // Cream trigger head, short nozzle to the left, ribbed collar and lever.
+      drawLaminarFace(
+        [
+          [4, -5],
+          [14, -5],
+          [18, -3],
+          [18, -1],
+          [13, -1],
+          [11, 1],
+          [7, 1],
+          [5, -1],
+          [1, -1],
+          [1, -4],
+        ],
+        "#a58f6a",
+      );
+      drawLaminarFace(
+        [
+          [4, -4.5],
+          [13.5, -4.5],
+          [17, -2.5],
+          [17, -1.5],
+          [12, -1.5],
+          [10.5, 0.5],
+          [7.5, 0.5],
+          [5.5, -1.5],
+          [2, -1.5],
+          [2, -3.5],
+        ],
+        "#e9dbb6",
+      );
+      artRect(4.5, -4.5, 9, 0.5, "#fff0cd");
+      box(0, -4, 3.5, 3.5, "#b29a70");
+      box(0.5, -3.5, 2.5, 2.5, "#f1dfb9");
+      artRect(0.5, -3.5, 0.5, 2, "#fff0cc");
+      drawLaminarFace(
+        [
+          [5, -1],
+          [7, -1],
+          [6, 2],
+          [3, 5],
+          [2, 5],
+          [3.5, 2],
+        ],
+        "#b3a17d",
+      );
+      drawLaminarFace(
+        [
+          [5, -1],
+          [6, -1],
+          [5, 2],
+          [2.5, 4.5],
+          [3.5, 1.5],
+        ],
+        "#f2e2bd",
+      );
+      box(6, 0.5, 7, 3, "#c7b58d");
+      artRect(6, 0.5, 7, 0.5, "#f9eac4");
+      for (const xx of [7, 9, 11]) artRect(xx, 1, 0.5, 2, "#fff0cd");
+      // The folded towel is a separate soft object sitting in front of the bottle.
+      drawLaminarFace(
+        [
+          [12, 20],
+          [26, 18],
+          [34, 21],
+          [34, 27.5],
+          [31, 31],
+          [15, 31],
+          [10, 28],
+          [10, 24],
+        ],
+        "#aa9670",
+      );
+      drawLaminarFace(
+        [
+          [12, 20],
+          [26, 18],
+          [33, 21],
+          [19, 25],
+          [11, 23.5],
+        ],
+        "#efe1b9",
+      );
+      drawLaminarFace(
+        [
+          [13, 20.5],
+          [25.5, 18.5],
+          [31, 20.5],
+          [19, 23.5],
+          [12, 22.5],
+        ],
+        "#fff0cd",
+      );
+      drawLaminarFace(
+        [
+          [19, 25],
+          [33, 21],
+          [33, 24.5],
+          [20, 28],
+          [12, 26],
+          [11, 24],
+        ],
+        "#d5c49c",
+      );
+      drawLaminarFace(
+        [
+          [12, 25.5],
+          [20, 27],
+          [32.5, 24],
+          [32.5, 27],
+          [30.5, 29.5],
+          [16, 29.5],
+          [11, 27.5],
+        ],
+        "#eddfb8",
+      );
+      drawLaminarFace(
+        [
+          [13, 26.5],
+          [20, 28],
+          [30, 25.5],
+          [30, 27],
+          [20, 29],
+          [13, 28],
+        ],
+        "#bca982",
+      );
+      artRect(13, 25.5, 5, 0.5, "#fff0cd");
+      for (let i = 0; i < 7; i++)
+        artRect(13 + i * 2, 22.5 + Math.max(0, 3 - i) * 0.5, 1, 0.5, "#c0aa7d");
+      artRect(18, 30, 11, 0.5, "#d2bc92");
+      c.restore();
     }
     function cleanMix() {
       if (!dirt && !bagsSinceClean) {
@@ -6306,19 +6528,7 @@
       artRect(100, 163, 1, 4, "#eef0c9");
     }
     function drawInoculationCleaning(x, y) {
-      softShadow(x + 17, y + 31, 20, 2, 0.15);
-      box(x, y + 2, 16, 23, "#92bbb5");
-      box(x + 2, y + 3, 12, 20, "#c1d8c5");
-      box(x + 3, y - 5, 15, 6, "#658b8f");
-      box(x + 15, y - 3, 8, 3, "#dee3c5");
-      box(x + 12, y + 1, 3, 5, "#678a8a");
-      artRect(x + 3, y + 4, 1, 13, "#eef0d1");
-      box(x + 4, y + 11, 8, 5, "#eee7c7");
-      artRect(x + 5, y + 12, 6, 0.5, "#aac0ab");
-      for (let i = 0; i < 3; i++) {
-        box(x + 9 + i, y + 17 + i * 4, 24, 5, i % 2 ? "#d7cba6" : "#ebdfb8");
-        artRect(x + 10 + i, y + 17 + i * 4, 22, 0.5, "#fff0ca");
-      }
+      drawCleaningKit(x, y);
     }
     function drawGloveStation() {
       if (isCordyBlockHood()) {
@@ -8051,12 +8261,68 @@
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(0, 4, 29, 10, "#90b3b8");
-      box(2, 2, 25, 10, "#d9e6dc");
-      box(4, 5, 21, 5, "#e8ba79");
-      for (let i = 0; i < 8; i++)
-        box(10 + ((i * 3) % 10), 5 + ((i * 7) % 5), 2, 1, "#fbf4df");
-      box(2, 12, 25, 2, "#638d9b");
+      // Placa baja: vidrio con espesor, agar y colonia radial, como la referencia.
+      drawLaminarOval(1, 11.5, 27, 2.5, "rgba(62,88,79,.18)");
+      drawLaminarOval(0, 3, 29, 10.5, "#729390");
+      drawLaminarOval(1, 3.5, 27, 9, "#b5c2a7");
+      drawLaminarOval(2, 4, 25, 7.5, "#c9a66a");
+      drawLaminarOval(3, 5, 23, 5.5, "#ddbd7f");
+      artRect(6, 12, 17, 0.5, "#d3d3af");
+      artRect(9, 13, 11, 0.5, "#577f7d");
+      // Tapa y doble labio elíptico, sin un rectángulo opaco alrededor.
+      drawLaminarOval(0, 0, 29, 10.5, "#648886");
+      drawLaminarOval(0.5, 0.5, 28, 9.5, "#e0dcb9");
+      drawLaminarOval(1.5, 1, 26, 8.5, "#a2b7a4");
+      drawLaminarOval(2.5, 2, 24, 7.5, "#c8a86b");
+      drawLaminarOval(3, 2.5, 23, 6.5, "#dec38a");
+      const line = (ax, ay, bx, by, color) => {
+        const steps = Math.max(
+          1,
+          Math.ceil(Math.max(Math.abs(bx - ax), Math.abs(by - ay)) * 2),
+        );
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          artRect(
+            Math.round((ax + (bx - ax) * t) * 2) / 2,
+            Math.round((ay + (by - ay) * t) * 2) / 2,
+            0.5,
+            0.5,
+            color,
+          );
+        }
+      };
+      const cx = 14.5,
+        cy = 5.75;
+      for (let i = 0; i < 18; i++) {
+        const angle = (i * Math.PI) / 9,
+          radius = 8.3 + (i % 4) * 0.55,
+          tipX = cx + Math.cos(angle) * radius,
+          tipY = cy + Math.sin(angle) * radius * 0.29;
+        line(cx, cy, tipX, tipY, i % 3 ? "#f8edcd" : "#efe2bc");
+        for (const t of [0.48, 0.73]) {
+          const bx = cx + (tipX - cx) * t,
+            by = cy + (tipY - cy) * t;
+          for (const side of [-1, 1]) {
+            const branch = angle + side * 0.6;
+            line(
+              bx,
+              by,
+              bx + Math.cos(branch) * 1.7,
+              by + Math.sin(branch) * 0.65,
+              "#f4e8c6",
+            );
+          }
+        }
+      }
+      drawLaminarOval(13, 5, 3, 1.5, "#fcf2d4");
+      line(1, 5, 3, 7, "#f4e8c8");
+      line(3, 7, 8, 9, "#f4e8c8");
+      line(8, 9, 19, 9.5, "#f4e8c8");
+      line(20, 9, 25, 7.5, "#c4c9aa");
+      line(1.5, 3.5, 7, 1, "#fbefcf");
+      line(3, 3, 8, 1.5, "#fff4d9");
+      artRect(2, 8.5, 0.5, 1.5, "#e5e3bc");
+      artRect(26.5, 7.5, 0.5, 2, "#f1ddb0");
       c.restore();
     }
     function drawLiquidJar(x, y, scale = 1, progress = 0, stirAngle = null) {
@@ -12116,6 +12382,8 @@
     const dragIcon = (label, draw, options = {}) => ({
       label,
       draw,
+      // Every material is a free-standing sprite, including newly added kinds.
+      bare: true,
       ...options,
     });
     function drawLooseStraw(mixed = false) {
@@ -12358,11 +12626,6 @@
       }
       c.translate(layout.x, layout.y);
       c.scale(layout.scale, layout.scale);
-      if (!icon.bare) {
-        c.globalAlpha = 0.94;
-        box(-24, -24, 48, 48, "#e2e5ce");
-        box(-23, -23, 46, 46, "#3b5968");
-      }
       c.globalAlpha = 1;
       icon.draw(drag);
       c.restore();

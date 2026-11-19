@@ -55,7 +55,7 @@ Reutilizar el dibujante del objeto en `dragIconCatalog`, la mesa y las animacion
 
 - Mouse: icono centrado en el cursor y sin salto inicial.
 - Táctil/lápiz: conservar la separación para verlo por encima del dedo; el destino real sigue siendo el punto de contacto.
-- Los objetos remodelados del área estéril usan `bare: true`: sin tarjeta opaca detrás del cristal. No cambiar de golpe el fondo de los iconos de otras áreas.
+- Todos los arrastres usan ahora sprites libres: `bare: true` es la política común y el renderizador ya no añade tarjeta opaca. Conservar las superficies físicas del objeto, etiquetas y sombras pequeñas; revisar contraste sobre fondos claros y oscuros.
 - Mantener tamaño legible y centro visual coherente con los límites declarados del icono.
 - Respetar el estado: bolsa vacía al arrastrar una vacía, especie correcta, sólo hongos durante la cosecha.
 - Revisar origen, recorrido, destino, cancelación y retorno a la sala. Mejorar el dibujo no debe desplazar la zona que recibe el objeto.
@@ -99,3 +99,7 @@ En la revisión siguiente se corrigieron proporciones al comparar el juego con e
 La tienda ahora oculta al protagonista y aumenta los clientes al 150 %. El orden de profundidad se aplica a clientes esperando y saliendo. Al cambiar la escala, revisar a la vez separación de la fila, capacidad visible, burbujas, zonas táctiles y bolsa de compra; no agrandar sólo el dibujo.
 
 La mesa de sustrato se delegó con límites claros: dibujantes propios y composición de esa estación, sin tocar recetas ni funciones de inoculación. La integración final unificó iconos, ambiente y validación. En futuras delegaciones conviene separar funciones y zonas de edición del mismo modo.
+
+## Auditoría y seguimiento de familias
+
+[AUDITORIA-ASSETS-REMODELACION.md](AUDITORIA-ASSETS-REMODELACION.md) conserva los 32 tipos y su estado previo (17 tarjetas pendientes, 15 retiradas), separa módulos de arrastres y organiza las próximas familias. En esta continuación se retiran las tarjetas restantes y se redibujan Petri y limpieza desde referencias propias. Un kit compartido evita diferencias entre mezcla y cabina; la placa comparte dibujo en reserva, arrastre y animación. No marcar una familia como remodelada sólo por quitar su tarjeta.

@@ -92,3 +92,9 @@ Pleurotus usa medios píxeles lógicos, sombras gris salvia, borde ondulado crem
 Separar arquitectura y piso fijo, decoración de pared, mostrador, productos y personajes. Reutilizar estante, cuadro y planta como piezas independientes. La madera cálida y la cubierta crema distinguen la tienda del acero de producción. La pared ocupa aproximadamente el 55 % de la escena, con ventana alta y estante vertical; el piso usa una sola cuadrícula en perspectiva moderada.
 
 La tienda omite al personaje del jugador. Ordenar a los clientes por profundidad usando una lista local; dibujarlos al 150 %, con tres puestos separados por 44 píxeles lógicos. Burbujas, zonas de selección e indicador se adaptan al tamaño del cuerpo. Burbujas y monedas van encima. Los productos aparecen directamente como sprites sobre la cubierta, sin tarjetas, bandejas, nombres ni marcos permanentes; sólo mantienen cantidades. Setas y espirulina van delante de la pared, y goteros en una segunda fila. Selección y dibujo comparten el acomodo, con zonas invisibles de al menos 44 píxeles de pantalla. Los clientes usan siluetas diferenciadas, pelo, ropa y accesorios; el protagonista conserva su bata detallada en las demás salas.
+
+## Materiales libres y Petri
+
+Los 32 tipos de arrastre se dibujan sin tarjeta adicional. Mantener centro del mouse, separación del dedo y marcador real. Los fondos de cuarto, repisas y superficies de los recipientes se conservan.
+
+Petri usa una silueta oval baja, tapa de doble borde, espesor de vidrio verde azulado, agar ámbar y colonia radial blanca. Mantener 29 × 14 píxeles lógicos para reutilizarlo en reserva, arrastre y animación. Limpieza combina spray transparente aqua con gatillo crema y paño plegado, con el mismo dibujante en mezcla y cabina. Las referencias quedan en `referencias/PETRI-MICELIO-CONCEPTO.png` y `referencias/KIT-LIMPIEZA-CONCEPTO.png`.

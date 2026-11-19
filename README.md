@@ -141,3 +141,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Tienda: proporciones y productos](outputs/TANDA-TIENDA-PROPORCIONES-PRODUCTOS.md): pared y muebles ajustados a la referencia, sprites directamente sobre el mostrador y selección táctil sin tarjetas.
 
 [Clientes grandes en tienda](outputs/TANDA-TIENDA-CLIENTES-GRANDES.md): clientes al 150 %, fila y pedidos espaciados, sin personaje del jugador visible en esta sala.
+
+[Auditoría de assets y próximas tandas](outputs/AUDITORIA-ASSETS-REMODELACION.md): inventario previo de 32 arrastres, referencias y familias pendientes. La [pasada de Petri y limpieza](outputs/TANDA-AUDITORIA-ASSETS-PETRI-LIMPIEZA.md) retira las tarjetas restantes y aplica el método de imagen a código a ambos objetos.

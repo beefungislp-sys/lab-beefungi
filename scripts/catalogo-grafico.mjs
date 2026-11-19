@@ -90,13 +90,13 @@ Geometrías a revisar junto al dibujo: \`mixBasket\`, \`jarCase\`, \`mixTray\`, 
 
 ## Iconos de cada tipo de arrastre
 
-${dragIcons.length} tipos explícitos en un único catálogo. Render común: ${locate('drawDragPreview')}; tamaño, centro del mouse y separación/límites para dedo: ${locate('dragPreviewLayout')}. Los frascos de micelio declaran \`bare: true\` para dibujarse sin tarjeta. Los módulos ya no dibujan vistas previas por separado.
+${dragIcons.length} tipos explícitos en un único catálogo. Render común: ${locate('drawDragPreview')}; tamaño, centro del mouse y separación/límites para dedo: ${locate('dragPreviewLayout')}. Todos los tipos dibujan sólo el objeto, sin tarjeta opaca ni marco adicional; \`bare: true\` es la política por defecto. Los módulos ya no dibujan vistas previas por separado. El inventario previo y las familias pendientes están en [AUDITORIA-ASSETS-REMODELACION.md](AUDITORIA-ASSETS-REMODELACION.md).
 
-| Tipo de arrastre | Icono | Código |
-|---|---|---|
-${dragIcons.map(match => `| \`${match[1]}\` | ${match[2]} | ${link(match[1], match.index)} |`).join('\n')}
+| Tipo de arrastre | Icono | Fondo adicional | Código |
+|---|---|---|---|
+${dragIcons.map(match => `| \`${match[1]}\` | ${match[2]} | Ninguno | ${link(match[1], match.index)} |`).join('\n')}
 
-En celular/lápiz la tarjeta intenta medir 76 píxeles CSS y queda separada 52 píxeles del dedo; si falta espacio arriba, pasa al lado y se mantiene dentro del canvas. Se conserva un mínimo de escala para que los sprites aumenten respecto al dibujo anterior. El marcador amarillo pequeño sigue la posición real de entrega. La bolsa vacía sigue vacía, y la cosecha mueve hongos; al llevar a composta se ve el bloque.
+En celular/lápiz el encuadre del icono intenta medir 76 píxeles CSS y queda separado 52 píxeles del dedo; si falta espacio arriba, pasa al lado y se mantiene dentro del canvas. Se conserva un mínimo de escala para que los sprites aumenten respecto al dibujo anterior. El marcador amarillo pequeño sigue la posición real de entrega. La bolsa vacía sigue vacía, y la cosecha mueve hongos; al llevar a composta se ve el bloque.
 
 ## Asistentes: planificación y avisos
 
