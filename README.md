@@ -139,3 +139,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Tienda por capas y personajes](outputs/TANDA-TIENDA-CAPAS-PERSONAJES.md): fondo fijo, mobiliario independiente y personajes pulidos, con profundidad respecto al mostrador y entregas conservadas.
 
 [Tienda: proporciones y productos](outputs/TANDA-TIENDA-PROPORCIONES-PRODUCTOS.md): pared y muebles ajustados a la referencia, sprites directamente sobre el mostrador y selección táctil sin tarjetas.
+
+[Clientes grandes en tienda](outputs/TANDA-TIENDA-CLIENTES-GRANDES.md): clientes al 150 %, fila y pedidos espaciados, sin personaje del jugador visible en esta sala.

@@ -3661,7 +3661,10 @@
             left,
             Math.min(right, player.x + (dx / norm) * 65 * dt),
           ),
-          ny = Math.max(top, Math.min(bottom, player.y + (dy / norm) * 65 * dt));
+          ny = Math.max(
+            top,
+            Math.min(bottom, player.y + (dy / norm) * 65 * dt),
+          );
         if (!inside({ x: nx, y: player.y }, shopCounterRect())) player.x = nx;
         if (!inside({ x: player.x, y: ny }, shopCounterRect())) player.y = ny;
         return;
@@ -3952,9 +3955,16 @@
       if (c.id == null) c.id = ++customerSerial;
       return c.id;
     }
+    const shopCustomerStyle = { scale: 1.5, firstY: 130, gap: 44, capacity: 3 };
+    function shopQueueY(index) {
+      return shopCustomerStyle.firstY + index * shopCustomerStyle.gap;
+    }
+    function shopOrderRect(customer) {
+      return [277, customer.y - 33, 35, 23];
+    }
     function customerReady(c) {
       const i = shopQueue.indexOf(c);
-      return i >= 0 && c.y <= 143 + i * 25 + 2;
+      return i >= 0 && c.y <= shopQueueY(i) + 2;
     }
     function chooseCustomer(id = null) {
       if (id != null)
@@ -3993,7 +4003,7 @@
       customer.purchaseSpecies = name;
       customer.remaining--;
       if (customer.remaining <= 0) {
-        customer.x = 228;
+        customer.x = 258;
         shopDeparting.push(customer);
         shopQueue.splice(shopQueue.indexOf(customer), 1);
         if (selectedCustomerId === customerId(customer))
@@ -4011,7 +4021,7 @@
       if (shopWait >= shopNextArrival) {
         shopWait = 0;
         shopNextArrival = 20 + Math.random() * 10;
-        if (shopQueue.length < 4) {
+        if (shopQueue.length < shopCustomerStyle.capacity) {
           const requested = Math.random() < 0.5 ? 1 : 2,
             available = speciesCatalog.filter(
               (s) => shopInventoryGrams(s.name) >= 250,
@@ -4037,7 +4047,7 @@
         // El cliente de bienvenida espera su primera entrega; los demás conservan su paciencia.
         if (!customer.firstCustomer) customer.wait += dt;
         if (customer.wait >= 60) {
-          customer.x = 228;
+          customer.x = 258;
           shopDeparting.push(customer);
           if (selectedCustomerId === customerId(customer))
             selectedCustomerId = null;
@@ -4045,7 +4055,7 @@
       }
       shopQueue = staying;
       shopQueue.forEach(
-        (c, i) => (c.y = Math.max(143 + i * 25, c.y - dt * 38)),
+        (c, i) => (c.y = Math.max(shopQueueY(i), c.y - dt * 38)),
       );
       for (const c of shopDeparting) {
         c.x += dt * 35;
@@ -4365,7 +4375,19 @@
       }
       c.restore();
     }
-    function drawShopPerson(x, y, color, bought = 0, species = "Pleurotus") {
+    function drawShopPerson(
+      x,
+      y,
+      color,
+      bought = 0,
+      species = "Pleurotus",
+      scale = 1,
+    ) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      x = 0;
+      y = 0;
       const variant = color === "#6d9aa5" ? 1 : color === "#a687ad" ? 2 : 0;
       drawPixelShopAvatar(x, y, color, variant);
       if (bought) {
@@ -4378,6 +4400,7 @@
         c.strokeRect(x + 12, y - 4, 5, 4);
         drawSpeciesFruit(species, x + 9, y - 5, 1, 0.35);
       }
+      c.restore();
     }
     function drawCustomerOrder(customer) {
       const remaining = Math.max(0, Math.min(2, customer.remaining || 0));
@@ -9669,7 +9692,7 @@
       customer.purchaseSpecies = name;
       customer.remaining--;
       if (!customer.remaining) {
-        customer.x = 228;
+        customer.x = 258;
         shopDeparting.push(customer);
         shopQueue.splice(shopQueue.indexOf(customer), 1);
         if (selectedCustomerId === customerId(customer))
@@ -10342,7 +10365,7 @@
         customer.bought = (customer.bought || 0) + 1;
         customer.remaining--;
         if (!customer.remaining) {
-          customer.x = 228;
+          customer.x = 258;
           shopDeparting.push(customer);
           shopQueue.splice(shopQueue.indexOf(customer), 1);
           if (selectedCustomerId === customerId(customer))
@@ -11044,34 +11067,20 @@
         missing ? "#c54442" : "#344e48",
       );
     }
-    function drawShopCharacterLayer(includePlayer = true) {
+    function drawShopCharacterLayer() {
       const figures = [
-        ...(includePlayer ? [{ type: "player", y: player.y }] : []),
-        ...shopQueue.map((customer) => ({
-          type: "customer",
-          y: customer.y,
-          customer,
-        })),
-        ...shopDeparting.map((customer) => ({
-          type: "departing",
-          y: customer.y,
-          customer,
-        })),
-      ];
-      figures.sort((a, b) => a.y - b.y);
-      for (const figure of figures) {
-        if (figure.type === "player") drawPlayer();
-        else {
-          const cst = figure.customer;
-          drawShopPerson(
-            figure.type === "departing" ? cst.x : 258,
-            cst.y,
-            cst.color,
-            figure.type === "departing" ? cst.bought : 0,
-            cst.purchaseSpecies,
-          );
-        }
-      }
+        ...shopQueue.map((customer) => ({ customer, departing: false })),
+        ...shopDeparting.map((customer) => ({ customer, departing: true })),
+      ].sort((a, b) => a.customer.y - b.customer.y);
+      for (const { customer, departing } of figures)
+        drawShopPerson(
+          departing ? customer.x : 258,
+          customer.y,
+          customer.color,
+          departing ? customer.bought : 0,
+          customer.purchaseSpecies,
+          shopCustomerStyle.scale,
+        );
     }
     function drawWarmShopRoom() {
       drawShopBackdrop();
@@ -11110,10 +11119,7 @@
       box(235, 4, 72, 23, "#e4d7b5");
       drawCoin(241, 9);
       smallText(Number(saleCoins.toFixed(2)).toString(), 258, 20);
-      const counter = shopCounterRect(),
-        behindCounter = player.y < counter[1];
-      if (behindCounter) drawPlayer();
-      drawShopCounter(...counter);
+      drawShopCounter(...shopCounterRect());
       for (const card of visibleShopCards()) {
         const selected =
           drag?.kind === "shopInventory" && drag.card.key === card.key;
@@ -11128,12 +11134,12 @@
           box(x + 13, y - 3 + bounce, 9, 2, "#ffe16a");
         }
       }
-      drawShopCharacterLayer(!behindCounter);
+      drawShopCharacterLayer();
       for (const customer of shopQueue) {
         if (customerId(customer) === selectedCustomerId) {
-          box(245, customer.y - 21, 26, 1, "#ffe16a");
-          box(244, customer.y - 21, 1, 35, "#ffe16a");
-          box(271, customer.y - 21, 1, 35, "#ffe16a");
+          box(244, customer.y - 32, 29, 1, "#ffe16a");
+          box(243, customer.y - 32, 1, 53, "#ffe16a");
+          box(273, customer.y - 32, 1, 53, "#ffe16a");
         }
         drawCustomerOrder(customer);
       }
@@ -11153,8 +11159,7 @@
     drawCustomerOrder = function (customer) {
       const count = Math.max(0, Math.min(2, customer.remaining || 0));
       if (!count) return;
-      const x = 277,
-        y = customer.y - 35,
+      const [x, y] = shopOrderRect(customer),
         name = customer.species || "Pleurotus",
         product = customer.product || "mushroom";
       box(
@@ -11184,12 +11189,13 @@
     shopCustomerAt = function (p) {
       const bounds = cv.getBoundingClientRect(),
         halfX = Math.max(23, (28 * 320) / bounds.width),
-        halfY = Math.max(15, (28 * 240) / bounds.height);
+        halfY = Math.max(25, (28 * 240) / bounds.height);
       return (
         shopQueue
           .filter(customerReady)
           .map((customer) => {
-            const bubble = inside(p, [274, customer.y - 35, 39, 25]),
+            const [bx, by, bw, bh] = shopOrderRect(customer),
+              bubble = inside(p, [bx - 3, by - 1, bw + 6, bh + 4]),
               body =
                 Math.abs(p.x - 258) <= halfX &&
                 Math.abs(p.y - (customer.y - 4)) <= halfY;
@@ -11197,7 +11203,7 @@
               customer,
               hit: bubble || body,
               score: bubble
-                ? Math.abs(p.y - (customer.y - 23))
+                ? Math.abs(p.y - (by + bh / 2))
                 : Math.hypot(p.x - 258, p.y - (customer.y - 4)),
             };
           })
@@ -11770,7 +11776,7 @@
         shopQueue.unshift({
           id: ++customerSerial,
           species: "Pleurotus",
-          y: 143,
+          y: shopQueueY(0),
           bought: 0,
           requested: 1,
           remaining: 1,

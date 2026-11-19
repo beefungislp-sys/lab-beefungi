@@ -96,4 +96,6 @@ En la tienda se generaron referencias por pieza antes de dibujarlas en código. 
 
 En la revisión siguiente se corrigieron proporciones al comparar el juego con el concepto general, antes de validar en celular. Los productos pasan a dos filas sin tarjetas. Cuando cambia su posición, actualizar el acomodo compartido y las pruebas de interacción; conservar zonas táctiles amplias aunque el sprite sea pequeño. La colisión debe incluir el frente del mueble y la entrada del personaje debe quedar en suelo libre.
 
+La tienda ahora oculta al protagonista y aumenta los clientes al 150 %. El orden de profundidad se aplica a clientes esperando y saliendo. Al cambiar la escala, revisar a la vez separación de la fila, capacidad visible, burbujas, zonas táctiles y bolsa de compra; no agrandar sólo el dibujo.
+
 La mesa de sustrato se delegó con límites claros: dibujantes propios y composición de esa estación, sin tocar recetas ni funciones de inoculación. La integración final unificó iconos, ambiente y validación. En futuras delegaciones conviene separar funciones y zonas de edición del mismo modo.
