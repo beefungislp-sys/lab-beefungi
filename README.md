@@ -147,3 +147,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Materiales principales](outputs/TANDA-MATERIALES-PRINCIPALES.md): micelio compartido, paja fibrosa y cal reutilizada. [Plan de cierre por tandas](outputs/PLAN-CIERRE-REMODELACION.md).
 
 [Aparatos principales](outputs/TANDA-APARATOS-PRINCIPALES.md): triturador, cuba con llave y llenadora desde referencias, compartidos con sus miniaturas.
+
+[Extracción y envasado renovados](outputs/TANDA-EXTRACCION-ENVASADO-ARTE.md): equipo conectado, cristalería por estados, molido compartido y miniaturas coherentes.

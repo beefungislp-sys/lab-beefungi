@@ -10070,11 +10070,7 @@
         );
         if (i === 0) {
           drawDistiller(x + 14, y - 1, 0.35);
-          box(x + 74, y + 7, 16, 20, "#688995");
-          box(x + 77, y + 9, 10, 7, "#c2d6c9");
-          box(x + 78, y + 17, 8, 8, "#3d626c");
-          artRect(x + 75, y + 7, 14, 0.5, "#e7e9c9");
-          box(x + 72, y + 27, 20, 2, "#7faaa2");
+          drawExtractMill(x + 72, y + 3, 0.36);
         } else if (i === 1) {
           drawSalt(x + 10, y + 3, "A", "#d4c28a", 0.55);
           drawSalt(x + 83, y + 3, "B", "#93babd", 0.55);
@@ -10082,14 +10078,15 @@
           box(x + 46, y + 7, 19, 18, "#c9d7b5");
         } else if (i === 2) {
           drawExtractFlask(
-            x + 10,
-            y + 1,
+            x + 5,
+            y + 2,
             "#be9b64",
-            0.8,
+            0.65,
             extractInventory.length ? 1 : 0,
           );
+          drawBottlingMachine(x + 31, y, 0.28);
           for (let k = 0; k < 4; k++)
-            drawDropper(x + 45 + k * 14, y + 2, speciesCatalog[k].name, 0.6);
+            drawDropper(x + 66 + k * 10, y + 8, speciesCatalog[k].name, 0.48);
         } else {
           drawSpirulinaFlask(x + 7, y + 8, spirulinaMother, 0.46);
           drawSpirulinaFlask(x + 89, y + 8, spirulinaInoculum, 0.46);
@@ -10255,80 +10252,484 @@
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(8, 0, 8, 14, "#7397a5");
-      box(10, 2, 4, 14, "#c5e4df");
-      for (let i = 0; i < 13; i++)
-        box(
-          7 - Math.floor(i / 2),
-          13 + i,
-          10 + Math.floor(i / 2) * 2,
-          1,
-          "#b7dcd8",
-        );
-      if (fill > 0) {
-        const h = Math.max(1, Math.round(10 * fill));
-        box(4, 25 - h, 16, h, color);
-        box(7, 25 - h, 10, 1, "#e6e9c8");
+      // EXTRACCION/ENVASADO references: flared lip, thin neck, curved cone,
+      // dense glass base. All pieces stay inside the original 24 x 27 footprint.
+      const amount = Math.max(0, Math.min(1, Number(fill) || 0)),
+        outer = [
+          [8, 2],
+          [16, 2],
+          [16, 11.5],
+          [18, 14.5],
+          [22, 21.5],
+          [23, 23.5],
+          [22, 25],
+          [19, 26.5],
+          [5, 26.5],
+          [2, 25],
+          [1, 23.5],
+          [2, 21.5],
+          [6, 14.5],
+          [8, 11.5],
+        ],
+        inner = [
+          [9, 3],
+          [15, 3],
+          [15, 11.8],
+          [17.2, 15],
+          [21.6, 22.5],
+          [21.6, 24],
+          [19, 25.3],
+          [5, 25.3],
+          [2.4, 24],
+          [2.4, 22.5],
+          [6.8, 15],
+          [9, 11.8],
+        ];
+      drawLaminarFace(outer, "rgba(171,198,180,.58)");
+      c.strokeStyle = "#73968f";
+      c.lineWidth = 0.7;
+      c.stroke();
+      c.save();
+      drawLaminarFace(inner, null);
+      c.clip();
+      if (amount > 0) {
+        const top = 25.3 - amount * 11.8,
+          half = Math.min(10, 3 + (top - 12) * 0.72);
+        for (let yy = top; yy < 25.3; yy += 0.5) {
+          artRect(1, yy, 22, Math.min(0.5, 25.3 - yy), color || "#bf944d");
+        }
+        c.globalAlpha = 0.2;
+        artRect(16.5, top, 5, 25.3 - top, "#5d704f");
+        c.globalAlpha = 1;
+        drawLaminarOval(12 - half, top - 0.2, half * 2, 1.4, "#e9d6a1");
+        artRect(6, 24.4, 12, 0.7, "rgba(106,99,63,.28)");
       }
-      artRect(10, 1, 1, 12, "#f0f3da");
-      box(9, 16, 2, 6, "#e7f6e9");
-      artRect(3, 25, 18, 1, "#698d91");
-      artRect(17, 19, 2, 4, "#92b9b4");
+      // Light crosses both the empty chamber and the extract, not its exterior.
+      drawLaminarFace(
+        [
+          [7.8, 13],
+          [9.2, 13],
+          [6.1, 19.5],
+          [4.8, 23],
+          [4.1, 22.2],
+          [5.3, 17.8],
+        ],
+        "#f0edcf",
+      );
+      drawLaminarFace(
+        [
+          [17.4, 15],
+          [18.1, 15.6],
+          [21, 22.6],
+          [20, 23.5],
+        ],
+        "#bed1b6",
+      );
+      artRect(9, 3, 1, 8.5, "#f0edcf");
+      artRect(14.5, 3, 0.5, 8.7, "#8aada1");
+      c.restore();
+      drawLaminarOval(2, 24.2, 20, 2.4, "rgba(116,151,139,.5)");
+      artRect(5, 25.8, 14, 0.5, "#d8dfc3");
+      drawLaminarOval(7, 0, 10, 3, "#8eaaa0");
+      drawLaminarOval(7.5, 0, 9, 1.8, "#d9dfbf");
+      drawLaminarOval(9, 0.5, 6, 1.1, "#668b83");
+      artRect(8, 2, 8, 0.7, "#e8e4c2");
+      artRect(8, 3, 0.5, 8, "#dce4c8");
+      c.restore();
+    }
+    function drawExtractGround(x, y, species, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      const colors =
+        species === "Melena de leon"
+          ? ["#d5bd87", "#f0dfae", "#ae976d"]
+          : species === "Reishi"
+            ? ["#ac7f50", "#d2a46a", "#7d5d40"]
+            : species === "Cordyceps"
+              ? ["#c39a56", "#ebc481", "#946f3e"]
+              : ["#b49b70", "#e0c99b", "#8c7756"];
+      // Fragmentos irregulares: el montón conserva su silueta al arrastrarlo.
+      drawLaminarFace(
+        [
+          [1, 22],
+          [6, 17],
+          [11, 15],
+          [15, 7],
+          [20, 3],
+          [25, 9],
+          [28, 15],
+          [34, 20],
+          [35, 23],
+        ],
+        colors[2],
+      );
+      for (let i = 0; i < 52; i++) {
+        const v = texHash(i, 7, 351),
+          spread = 0.08 + 0.92 * Math.sin((v * Math.PI) / 2),
+          xx =
+            Math.round((18 + (texHash(i, 9, 352) - 0.5) * 31 * spread) * 2) / 2,
+          yy = Math.round((3 + v * 19) * 2) / 2;
+        artRect(xx, yy, 1.5 + (i % 3) * 0.5, 1 + (i % 2) * 0.5, colors[i % 3]);
+        if (i % 3 === 0) artRect(xx, yy, 0.5, 0.5, "#f2e0ae");
+      }
+      c.restore();
+    }
+    function drawExtractMill(x, y, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      const grinding = extraction.phase === "grinding",
+        crank = grinding ? Math.floor(performance.now() / 90) % 3 : 0;
+      // Molino de banco: cuerpo, pie y cuenco apoyados; sin segunda mesa.
+      drawLaminarFace(
+        [
+          [23, 13],
+          [39, 13],
+          [40, 48],
+          [44, 51],
+          [43, 56],
+          [18, 56],
+          [18, 52],
+          [22, 49],
+        ],
+        "#3f6266",
+      );
+      drawLaminarSteel(24, 15, 13, 36, 354, 5);
+      box(19, 52, 24, 5, "#587d79");
+      artRect(20, 52, 22, 0.7, "#d8d8b8");
+      artRect(19, 57, 24, 1, "#304f53");
+      drawLaminarOval(27, 24, 19, 23, "#3d5d61");
+      drawLaminarOval(28, 24, 17, 21, "#adba9e");
+      drawLaminarOval(30, 26, 13, 17, "#587d7a");
+      drawLaminarOval(34, 33, 4, 4, "#ddce9c");
+      for (const [sx, sy] of [
+        [35, 26],
+        [29, 34],
+        [42, 34],
+        [35, 42],
+      ])
+        artRect(sx, sy, 1.5, 1.5, "#d7d2ac");
+      // Manivela visible: sólo cambia mientras se está moliendo.
+      drawLaminarFace(
+        [
+          [11, 23 + crank],
+          [15, 24 + crank],
+          [20, 32],
+          [25, 32],
+          [25, 36],
+          [17, 35],
+        ],
+        "#4c6e6e",
+      );
+      artRect(15, 26 + crank, 1, 5, "#d4ceb0");
+      drawLaminarOval(20, 30, 7, 8, "#748f83");
+      drawLaminarOval(22, 32, 3, 3, "#d3c99f");
+      drawLaminarOval(0, 21 + crank, 13, 6, "#8e633f");
+      box(2, 21 + crank, 9, 5, "#b88a51");
+      artRect(2, 21 + crank, 9, 0.7, "#e2b66f");
+      // Tolva cónica, boca oscura y labio de acero.
+      drawLaminarFace(
+        [
+          [19, 3],
+          [49, 3],
+          [40, 15],
+          [27, 15],
+        ],
+        "#78918a",
+      );
+      drawLaminarFace(
+        [
+          [21, 4],
+          [28, 5],
+          [32, 14],
+          [27, 14],
+        ],
+        "#c6c7a5",
+      );
+      drawLaminarFace(
+        [
+          [46, 4],
+          [49, 4],
+          [40, 15],
+          [36, 15],
+        ],
+        "#42676a",
+      );
+      drawLaminarOval(19, 0, 30, 7, "#b8c2a6");
+      drawLaminarOval(20, 1, 28, 5, "#dcd9b8");
+      drawLaminarOval(22, 2, 24, 3, "#344f51");
+      if (grinding) drawExtractGround(25, 1, extraction.species, 0.44);
+      artRect(28, 15, 11, 1, "#d9d7b6");
+      // Salida del molino orientada hacia su cuenco colector.
+      drawLaminarFace(
+        [
+          [37, 36],
+          [46, 36],
+          [56, 41],
+          [56, 46],
+          [46, 44],
+          [37, 39],
+        ],
+        "#6a8d86",
+      );
+      drawLaminarFace(
+        [
+          [38, 36],
+          [46, 36],
+          [56, 41],
+          [48, 41],
+        ],
+        "#cfceb0",
+      );
+      box(49, 41, 7, 4, "#314f54");
+      artRect(48, 41, 0.7, 4, "#d0d1ad");
+      drawLaminarOval(36, 47, 21, 10, "#567873");
+      drawLaminarFace(
+        [
+          [36, 50],
+          [57, 50],
+          [54, 57],
+          [40, 57],
+        ],
+        "#819e90",
+      );
+      drawLaminarOval(36, 46, 21, 6, "#c1c8aa");
+      drawLaminarOval(38, 47, 17, 4, "#385a5c");
+      if (grinding || extraction.phase === "ground")
+        drawExtractGround(37, 43, extraction.species, 0.52);
+      artRect(41, 56, 12, 0.5, "#c8ccac");
       c.restore();
     }
     function drawDistiller(x, y, scale = 1) {
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      softShadow(38, 82, 43, 4, 0.2);
-      box(7, 0, 4, 77, "#587b81");
-      artRect(7, 1, 1, 74, "#c9dccc");
-      box(0, 76, 65, 4, "#567b7e");
-      artRect(1, 76, 63, 1, "#b9cdc1");
-      box(10, 13, 34, 3, "#8fa9af");
-      box(6, 10, 7, 9, "#779694");
-      artRect(7, 11, 5, 1, "#e5e8cb");
-      box(49, 51, 2, 25, "#6c8d8c");
-      box(43, 74, 16, 3, "#779a94");
-      box(46, 47, 8, 6, "#a7c5ba");
-      drawExtractFlask(
-        13,
-        25,
-        speciesColor(extraction.species || extractSpecies),
-        1,
-        extraction.phase === "loaded" || extraction.phase === "running" ? 1 : 0,
-      );
-      box(34, 29, 7, 3, "#b5e0dc");
-      for (let k = 0; k < 29; k++) {
-        box(40 + k, 30 + k / 2, 2, 5, "#7fb7be");
-        if (k % 5 === 0) box(40 + k, 29 + k / 2, 2, 8, "#c2e3dc");
-      }
-      artRect(42, 29, 27, 1, "#e4efda");
-      box(67, 44, 2, 23, "#b3d9d7");
-      artRect(68, 46, 0.5, 19, "#e7f1db");
-      drawExtractFlask(
-        59,
-        64,
-        "#bd9b58",
-        0.8,
-        extraction.phase === "running" ? Math.min(1, extraction.t / 12) : 0,
-      );
-      box(17, 73, 22, 4, "#364e5c");
-      box(25, 65, 7, 9, "#b27652");
-      if (extraction.phase === "running") {
-        const n = Math.floor(performance.now() / 130) % 3;
-        box(25, 57 - n, 7, 9 + n, "#ef9461");
-        box(27, 60 - n, 3, 6 + n, "#ffe6a3");
-        box(26, 65, 5, 2, "#8fc8df");
-        for (let k = 0; k < 3; k++)
-          box(
-            26 + k * 4,
-            21 - ((performance.now() / 160 + k * 5) % 15),
-            3,
-            2,
-            "#dce9d7",
+      const running = extraction.phase === "running",
+        loaded = running || extraction.phase === "loaded",
+        now = running ? performance.now() : 0,
+        tube = (points, width, color) => {
+          c.beginPath();
+          points.forEach(([px, py], i) =>
+            i ? c.lineTo(px, py) : c.moveTo(px, py),
           );
+          c.strokeStyle = color;
+          c.lineWidth = width;
+          c.lineCap = "round";
+          c.lineJoin = "round";
+          c.stroke();
+        },
+        boiler = [
+          [17, 23],
+          [24, 23],
+          [24, 28],
+          [31, 33],
+          [36, 42],
+          [36, 53],
+          [31, 61],
+          [26, 65],
+          [14, 65],
+          [8, 61],
+          [3, 53],
+          [3, 42],
+          [9, 33],
+          [16, 28],
+          [16, 23],
+        ];
+      softShadow(40, 81, 38, 3, 0.18);
+      // Bastidor compartido: sujeta condensador y receptor sin muebles añadidos.
+      box(33, 19, 3, 61, "#4f7378");
+      artRect(33.5, 20, 0.7, 59, "#ccd4b9");
+      box(63, 20, 3, 60, "#577d7c");
+      artRect(63.5, 22, 0.7, 57, "#c3cfb3");
+      box(31, 79, 48, 4, "#486d72");
+      artRect(32, 79, 46, 0.7, "#bdcdb5");
+      for (const xx of [1, 31]) {
+        drawLaminarFace(
+          [
+            [xx + 5, 61],
+            [xx + 8, 62],
+            [xx + 5, 82],
+            [xx, 82],
+          ],
+          "#567b78",
+        );
+        artRect(xx + 2, 78, 4, 1, "#bfccb1");
       }
+      // Vidrio continuo: cuello curvo, condensador horizontal y salida al receptor.
+      const inlet = [
+          [20, 28],
+          [20, 9],
+          [22, 5],
+          [25, 3],
+          [28, 4],
+          [36, 13],
+          [39, 16],
+        ],
+        outlet = [
+          [62, 17],
+          [67, 17],
+          [70, 20],
+          [70, 25],
+          [69, 29],
+          [69, 58],
+        ];
+      for (const points of [inlet, outlet]) {
+        tube(points, 6, "#688b86");
+        tube(points, 4, "#c4cfb0");
+        tube(points, 1.3, "#eee5bd");
+      }
+      drawLaminarFace(
+        [
+          [35, 9],
+          [62, 9],
+          [66, 12],
+          [66, 23],
+          [62, 26],
+          [35, 26],
+          [32, 23],
+          [32, 12],
+        ],
+        "#4a7c7b",
+      );
+      drawLaminarFace(
+        [
+          [36, 11],
+          [61, 11],
+          [64, 13],
+          [64, 22],
+          [61, 24],
+          [36, 24],
+          [34, 22],
+          [34, 13],
+        ],
+        "#86b8a5",
+      );
+      for (let i = 0; i < 5; i++) {
+        const xx = 36 + i * 5;
+        tube(
+          [
+            [xx, 21],
+            [xx + 1, 15],
+            [xx + 2, 13],
+            [xx + 3, 14],
+            [xx + 4, 21],
+          ],
+          1.4,
+          "#dce0b6",
+        );
+        artRect(xx + 1, 15, 0.5, 4, "#f6edc8");
+      }
+      artRect(37, 10.5, 24, 0.7, "#dce2bf");
+      artRect(37, 24, 24, 0.7, "#b8d1b0");
+      for (const xx of [33, 62]) {
+        box(xx, 8, 3, 19, "#527878");
+        artRect(xx + 0.5, 9, 0.5, 17, "#b8c8ad");
+        box(xx - 0.5, 7, 4, 2, "#385e66");
+        artRect(xx + 0.5, 7, 1.5, 1, "#d8d9b8");
+        artRect(xx + 0.5, 24, 1.5, 1, "#d8d9b8");
+      }
+      // Matraz de ebullición redondo, contenido dentro de la silueta del vidrio.
+      drawLaminarFace(boiler, "#84a69a");
+      drawLaminarFace(
+        [
+          [18, 24],
+          [23, 24],
+          [23, 29],
+          [30, 34],
+          [34, 43],
+          [34, 52],
+          [29, 60],
+          [25, 63],
+          [15, 63],
+          [10, 59],
+          [5, 52],
+          [5, 43],
+          [11, 34],
+          [18, 29],
+        ],
+        "#d4d8b8",
+      );
+      if (loaded) {
+        c.save();
+        c.beginPath();
+        boiler.forEach(([px, py], i) =>
+          i ? c.lineTo(px, py) : c.moveTo(px, py),
+        );
+        c.closePath();
+        c.clip();
+        box(4, 47, 32, 18, "#bd9857");
+        artRect(5, 47, 29, 1, "#f1d294");
+        drawExtractGround(8, 48, extraction.species, 0.62);
+        if (running)
+          for (let i = 0; i < 3; i++)
+            drawLaminarOval(
+              13 + i * 6,
+              57 - ((now / 160 + i * 4) % 10),
+              2,
+              2,
+              "#eddfb3",
+            );
+        c.restore();
+      }
+      drawLaminarFace(
+        [
+          [8, 41],
+          [12, 36],
+          [14, 36],
+          [11, 44],
+          [10, 51],
+          [8, 50],
+        ],
+        "#f5ebc8",
+      );
+      artRect(18, 25, 0.8, 6, "#fff1cb");
+      artRect(31, 45, 0.6, 7, "#e6e4c1");
+      box(15, 22, 11, 3, "#6d8e83");
+      artRect(16, 22, 9, 0.7, "#e1d4a5");
+      // Anillo bajo el matraz; la llama ilumina sólo durante la extracción.
+      drawLaminarOval(2, 62, 35, 6, "#446a6b");
+      drawLaminarOval(4, 62, 31, 4, "#bac7ab");
+      artRect(6, 64, 27, 1, "#567b70");
+      box(12, 77, 19, 5, "#4c7071");
+      artRect(13, 77, 17, 0.7, "#c5cdb1");
+      drawLaminarOval(17, 72, 10, 7, "#7e9380");
+      if (running) {
+        const n = Math.floor(now / 120) % 3;
+        drawLaminarFace(
+          [
+            [17, 73],
+            [18, 69],
+            [21, 65 - n],
+            [25, 69],
+            [26, 73],
+          ],
+          "#e6a04c",
+        );
+        drawLaminarFace(
+          [
+            [19, 73],
+            [20, 69],
+            [22, 68 - n],
+            [24, 73],
+          ],
+          "#fff0a6",
+        );
+        artRect(19, 73, 6, 0.8, "#8fbccc");
+      }
+      // El mismo matraz del inventario recibe el extracto, con su soporte visible.
+      for (const xx of [58, 76]) {
+        box(xx, 76, 2, 7, "#557b77");
+        artRect(xx, 80, 2, 0.7, "#c5cdb1");
+      }
+      drawExtractFlask(
+        58,
+        56,
+        "#bd9b58",
+        0.9,
+        running ? Math.min(1, extraction.t / 12) : 0,
+      );
+      artRect(58, 81, 21, 1, "#b7c9ad");
       c.restore();
     }
     function drawExtraction() {
@@ -10343,33 +10744,11 @@
       drawChemistryTray(...extractionRects.stock);
       drawSpeciesFruit(extractSpecies, 29, 74, 1, 1.2, 3);
       smallText(shopInventoryGrams(extractSpecies) + " g", 22, 119);
-      box(96, 117, 57, 58, "#638591");
-      box(103, 123, 43, 19, "#c1d6cb");
-      box(116, 143, 17, 29, "#3c5b69");
-      box(108, 170, 34, 5, "#adc6bd");
-      drawSterileHousingDetail(96, 117, 57, 58);
-      artRect(105, 125, 39, 1, "#edf0d2");
-      box(
-        100,
-        158,
-        5,
-        4,
-        extraction.phase === "grinding" ? "#b8d69d" : "#769991",
-      );
+      drawExtractMill(96, 117);
       drawSterileShelf(18, 129, 70);
       drawSterileShelf(254, 168, 43);
-      if (extraction.phase === "ground" || extraction.phase === "grinding") {
-        for (let i = 0; i < 18; i++)
-          box(
-            105 + ((i * 13) % 35),
-            151 + ((i * 7) % 16),
-            3,
-            2,
-            speciesColor(extraction.species),
-          );
-        if (extraction.phase === "grinding")
-          drawProcessClock(124, 132, 9, extraction.t / 1.5);
-      }
+      if (extraction.phase === "grinding")
+        drawProcessClock(124, 132, 9, extraction.t / 1.5);
       smallText("MOLINO", 103, 191);
       drawDistiller(174, 65);
       drawCanvasButton(
@@ -10520,20 +10899,252 @@
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(4, 0, 8, 6, "#344655");
-      box(6, 6, 4, 5, "#6b7e83");
-      box(2, 10, 12, 17, "#966e42");
-      box(4, 12, 8, 12, "#d2d6bb");
-      if (fill > 0)
-        box(
-          4,
-          24 - Math.round(12 * Math.min(1, fill)),
-          8,
-          Math.round(12 * Math.min(1, fill)),
-          "#b49055",
-        );
-      box(3, 17, 10, 6, speciesColor(name));
-      box(4, 11, 2, 5, "#d4bd85");
+      // Rounded amber bottle and charcoal bulb from ENVASADO-APARATOS.
+      // The narrow 16 x 27 footprint still fits four bottling places and shop icons.
+      const amount = Math.max(0, Math.min(1, Number(fill) || 0)),
+        bottle = [
+          [4.5, 10.8],
+          [11.5, 10.8],
+          [13.4, 13],
+          [14.2, 15],
+          [14.2, 24],
+          [13.2, 25.5],
+          [11.5, 26.5],
+          [4.5, 26.5],
+          [2.8, 25.5],
+          [1.8, 24],
+          [1.8, 15],
+          [2.6, 13],
+        ],
+        inner = [
+          [5, 12],
+          [11, 12],
+          [12.5, 14],
+          [13.1, 16],
+          [13.1, 23.8],
+          [12.2, 25],
+          [3.8, 25],
+          [2.9, 23.8],
+          [2.9, 16],
+          [3.5, 14],
+        ];
+      drawLaminarFace(bottle, "#82633d");
+      drawLaminarFace(inner, "#bc9b64");
+      c.save();
+      c.clip();
+      if (amount > 0) {
+        const top = 25 - amount * 10.4;
+        artRect(2.8, top, 10.4, 25 - top, "#b8843e");
+        artRect(10.5, top, 2.6, 25 - top, "#926f36");
+        drawLaminarOval(3, top - 0.2, 10, 1.3, "#e2ba6b");
+        artRect(4.2, 24.2, 7.6, 0.6, "#ca9a49");
+      }
+      artRect(3.5, 15, 1, 9, "#ddbf7d");
+      artRect(12, 16, 0.5, 8, "#8c723f");
+      c.restore();
+      drawLaminarFace(
+        [
+          [4.8, 12],
+          [6.8, 12],
+          [5, 14.1],
+          [3.7, 15.2],
+          [3.6, 13.9],
+        ],
+        "#f1d49a",
+      );
+      artRect(10.7, 12.7, 1, 1.5, "#d8b677");
+      drawLaminarOval(2.6, 25, 10.8, 1.5, "#967540");
+      artRect(4, 26, 8, 0.5, "#c4a363");
+      // Cream paper edge; the species color remains the main label cue.
+      drawLaminarFace(
+        [
+          [3.3, 17],
+          [12.7, 17],
+          [12.7, 22.8],
+          [3.3, 22.8],
+        ],
+        "#e2d3aa",
+      );
+      artRect(4, 18.2, 8, 3.8, speciesColor(name));
+      artRect(4, 17.2, 7.5, 0.5, "#f1e4bf");
+      artRect(12.1, 17.7, 0.5, 4.5, "#ad9a70");
+      // Carbon bulb, subtly rounded shoulders and ridged cream collar.
+      drawLaminarFace(
+        [
+          [7, 0],
+          [9, 0],
+          [10.5, 1.3],
+          [11.1, 3],
+          [11.1, 6.3],
+          [10.5, 8],
+          [5.5, 8],
+          [4.9, 6.3],
+          [4.9, 3],
+          [5.5, 1.3],
+        ],
+        "#34413e",
+      );
+      artRect(6, 2, 1, 3.5, "#65736a");
+      artRect(10, 2.5, 0.6, 3.7, "#243a39");
+      drawLaminarOval(4, 6.8, 8, 2, "#b4ad88");
+      box(4, 7.3, 8, 3.5, "#d5c59a");
+      for (const xx of [5, 7, 9, 11]) artRect(xx, 7.8, 0.5, 2.3, "#a69d78");
+      artRect(4.5, 7.2, 7, 0.6, "#eee0b7");
+      artRect(4.5, 10.3, 7, 0.5, "#998762");
+      c.restore();
+    }
+    function drawBottlingMachine(x, y, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      // ENVASADO-APARATOS-CONCEPTO: dosing column, amber glass chamber and rail.
+      // Local footprint 110 x 121; bottles are composed by the caller.
+      const active = !!bottlingJob,
+        remaining = active ? Math.max(0, 1 - bottlingJob.t / 2) : 0;
+      softShadow(55, 120, 53, 1.6, 0.16);
+      drawLaminarFace(
+        [
+          [3, 114],
+          [107, 114],
+          [110, 117],
+          [110, 121],
+          [0, 121],
+          [0, 117],
+        ],
+        "#52777a",
+      );
+      drawLaminarFace(
+        [
+          [3, 114],
+          [107, 114],
+          [109, 116],
+          [1, 116],
+        ],
+        "#b9c9b5",
+      );
+      artRect(2, 116, 106, 0.8, "#e5e4c5");
+      artRect(2, 120, 106, 0.5, "#345c65");
+      for (const xx of [2, 105]) {
+        drawLaminarOval(xx, 117, 3, 3, "#a4baab");
+        artRect(xx + 1, 117.5, 1, 0.5, "#f3e7c5");
+      }
+      drawLaminarFace(
+        [
+          [10, 110],
+          [24, 110],
+          [27, 114],
+          [9, 114],
+        ],
+        "#688d8b",
+      );
+      artRect(12, 111, 10, 0.5, "#c8d4bb");
+      box(12, 13, 9, 97, "#557c80");
+      artRect(13, 14, 2, 95, "#d9dcc0");
+      artRect(15, 14, 2, 95, "#a7bcb0");
+      artRect(19, 15, 1, 94, "#416b74");
+      for (const yy of [15, 62, 107]) {
+        box(10, yy, 13, 3, "#7a9b95");
+        artRect(11, yy, 11, 0.7, "#dedfc1");
+      }
+      // Side inlet and short metal arm keep the chamber fixed to the column.
+      box(1, 28, 33, 5, "#527c80");
+      artRect(2, 28, 31, 1, "#d6dcc0");
+      artRect(3, 30, 29, 1, "#a5bdb0");
+      box(0, 26, 5, 9, "#72968f");
+      artRect(0.5, 27, 1, 6, "#dedfc0");
+      box(20, 15, 17, 5, "#7a9b94");
+      artRect(21, 15, 15, 0.8, "#dedfc1");
+      drawLaminarOval(34, 19, 33, 8, "#91aaa0");
+      box(34, 23, 33, 35, "#8fa99e");
+      box(36, 23, 29, 35, "rgba(208,219,187,0.8)");
+      drawLaminarOval(35, 53, 31, 8, "#aabdab");
+      if (remaining > 0) {
+        const liquidH = 27 * remaining,
+          top = 57 - liquidH;
+        box(38, top, 25, liquidH, "#b67d2c");
+        artRect(39, top + 1, 3, Math.max(0, liquidH - 2), "#dda23f");
+        artRect(60, top + 1, 2, Math.max(0, liquidH - 2), "#8f652b");
+        drawLaminarOval(38, top - 1, 25, 3, "#edbd5b");
+        artRect(43, top, 15, 0.5, "#f6d581");
+      }
+      artRect(39, 24, 1.5, 30, "#edf0d0");
+      artRect(42, 25, 0.5, 29, "#d7e5c3");
+      artRect(62, 25, 0.5, 29, "#c3d9b7");
+      box(31, 15, 39, 5, "#658b87");
+      drawLaminarOval(31, 13, 39, 6, "#9fb5a7");
+      artRect(34, 14, 11, 0.7, "#e9e0ba");
+      artRect(59, 15, 8, 0.7, "#c5d0b3");
+      box(44, 9, 13, 5, "#6a928d");
+      drawLaminarOval(44, 7, 13, 4, "#c2cbb0");
+      artRect(46, 8, 5, 0.5, "#f4e8c3");
+      box(31, 58, 39, 6, "#5f8584");
+      artRect(32, 58, 37, 1, "#d3d9ba");
+      artRect(34, 63, 33, 0.5, "#3f6a73");
+      // A cream grip and pivot echo the reference without adding a new control.
+      drawLaminarFace(
+        [
+          [66, 44],
+          [73, 38],
+          [91, 12],
+          [96, 15],
+          [80, 43],
+          [74, 49],
+        ],
+        "#567c7c",
+      );
+      drawLaminarFace(
+        [
+          [74, 38],
+          [90, 14],
+          [92, 15],
+          [77, 40],
+        ],
+        "#bfccaf",
+      );
+      drawLaminarFace(
+        [
+          [88, 16],
+          [86, 13],
+          [87, 10],
+          [98, 0],
+          [102, 0],
+          [105, 3],
+          [105, 6],
+          [94, 18],
+          [91, 19],
+        ],
+        "#a89570",
+      );
+      drawLaminarFace(
+        [
+          [89, 15],
+          [88, 12],
+          [99, 1],
+          [102, 1],
+          [104, 4],
+          [93, 16],
+          [91, 17],
+        ],
+        "#eadbb4",
+      );
+      artRect(98, 2, 3, 0.7, "#fff0c8");
+      drawLaminarOval(65, 38, 17, 17, "#496f73");
+      drawLaminarOval(67, 39, 13, 14, "#a2b7a6");
+      drawLaminarOval(70, 42, 7, 8, "#637f73");
+      drawLaminarOval(71, 43, 5, 5, "#e3d6ad");
+      box(48, 64, 6, 12, "#638d88");
+      artRect(49, 64, 1, 11, "#d3d9b8");
+      box(3, 75, 103, 5, "#6f9690");
+      artRect(4, 75, 101, 0.8, "#d7dec0");
+      artRect(4, 79, 101, 0.7, "#4e777c");
+      for (let i = 0; i < 4; i++) {
+        const xx = 6.8 + i * 30;
+        box(xx - 2, 80, 4, 8, "#7faaa0");
+        artRect(xx - 1.5, 80, 1, 7, "#dce3c4");
+        box(xx - 1, 88, 2, 3, "#426c73");
+        box(xx - 4, 113, 8, 2, "#5d8480");
+        artRect(xx - 3, 113, 6, 0.5, "#c9d5ba");
+      }
       c.restore();
     }
     function drawBottling() {
@@ -10545,26 +11156,13 @@
       drawSterileShelf(15, 133, 79);
       drawExtractFlask(
         40,
-        81,
+        93,
         speciesColor(item?.species || "Pleurotus"),
         1.5,
         item ? 1 : 0,
       );
-      if (item) smallText(speciesShort(item.species), 20, 125);
-      box(115, 89, 91, 67, "#73929a");
-      box(124, 94, 73, 20, "#c5d9d0");
-      box(153, 114, 12, 45, "#a5c4bc");
-      box(149, 155, 20, 5, "#405f6b");
-      drawSterileHousingDetail(115, 89, 91, 67);
-      artRect(126, 97, 69, 1, "#edf0d2");
-      box(180, 119, 8, 4, bottlingJob ? "#b5d39f" : "#71948a");
-      box(114, 161, 94, 3, "#86aba6");
-      artRect(115, 161, 92, 0.5, "#e4e9ca");
-      for (let i = 0; i < 4; i++) {
-        box(113 + i * 30, 164, 4, 5, "#8fb6b0");
-        artRect(114 + i * 30, 164, 1, 4, "#d8e4cc");
-      }
-      drawChemistryTray(105, 169, 116, 36);
+      if (item) smallText(speciesShort(item.species), 20, 60);
+      drawBottlingMachine(108, 78);
       for (let i = 0; i < 4; i++)
         drawDropper(
           108 + i * 30,
@@ -13247,16 +13845,9 @@
       chemRaw: dragIcon("Hongos para extracción", () =>
         drawSpeciesFruit(extractSpecies, -16, -12, 1, 0.85, 2),
       ),
-      chemGround: dragIcon("Hongos molidos", () => {
-        for (let i = 0; i < 25; i++)
-          box(
-            -16 + ((i * 7) % 30),
-            -9 + ((i * 5) % 20),
-            4,
-            3,
-            speciesColor(extraction.species),
-          );
-      }),
+      chemGround: dragIcon("Hongos molidos", () =>
+        drawExtractGround(-16, -12, extraction.species, 0.85),
+      ),
       chemFlask: dragIcon("Matraz de extracto", () =>
         drawExtractFlask(-12, -17, speciesColor(extractInventory[0]?.species)),
       ),

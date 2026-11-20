@@ -106,3 +106,7 @@ Mezcla reutiliza el frasco redondeado de campana con Pleurotus fijo. Paja de pac
 ## Aparatos principales
 
 Triturador, tanque con llave y llenadora usan dibujantes compartidos entre miniatura y módulo. El tanque es acero opaco con agua visible por la apertura superior, borde redondeado y marcas; la mesa sostiene sus pies. La llenadora tiene tolvas, ventana con contenido recortado, paleta, boquilla y seis indicadores; no pintar fibras de bandeja por fuera de ella. Mantener el tamaño variable del tanque y las zonas de control.
+
+## Extracción y envasado
+
+Matraces de vidrio con cuello y labio elíptico, base densa y líquido recortado a su silueta; goteros de vidrio ámbar, hombros redondeados, bulbo carbón, collar crema y marca de especie. Vacío no tiene líquido. Compartir cristalería entre módulo, arrastre y tienda. Molino/molido y envasadora comparten sus dibujantes con las miniaturas; condensador, soporte y receptor se conectan sin tubos flotantes.

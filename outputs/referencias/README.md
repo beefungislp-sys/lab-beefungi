@@ -71,3 +71,7 @@ Ambas se recrean en código compartido para módulo y arrastre. [Prompts de las 
 ## Aparatos principales
 
 `TRITURADOR-APARATO-CONCEPTO.png`, `PASTEURIZADOR-APARATO-CONCEPTO.png` y `LLENADORA-MEZCLA-CONCEPTO.png`: referencias de equipo aislado para el código compartido de sala y estación. [Prompts](PROMPTS-APARATOS-PRINCIPALES.md).
+
+## Extracción y envasado
+
+`EXTRACCION-APARATOS-CONCEPTO.png` y `ENVASADO-APARATOS-CONCEPTO.png`: molino, destilador, cristalería y cuatro goteros; recreados en código compartido. [Prompts](PROMPTS-EXTRACCION-ENVASADO.md).
