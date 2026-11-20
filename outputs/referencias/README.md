@@ -75,3 +75,5 @@ Ambas se recrean en código compartido para módulo y arrastre. [Prompts de las 
 ## Extracción y envasado
 
 `EXTRACCION-APARATOS-CONCEPTO.png` y `ENVASADO-APARATOS-CONCEPTO.png`: molino, destilador, cristalería y cuatro goteros; recreados en código compartido. [Prompts](PROMPTS-EXTRACCION-ENVASADO.md).
+
+Nutrientes y espirulina: [recipientes](NUTRIENTES-RECIPIENTES-CONCEPTO.png), [matraces y reactor](ESPIRULINA-CULTIVO-CONCEPTO.png), [prompts](PROMPTS-NUTRIENTES-ESPIRULINA.md). Recreadas en canvas compartido; las referencias no son sprites cargados por el juego.

@@ -103,3 +103,10 @@ La mesa de sustrato se delegó con límites claros: dibujantes propios y composi
 ## Auditoría y seguimiento de familias
 
 [AUDITORIA-ASSETS-REMODELACION.md](AUDITORIA-ASSETS-REMODELACION.md) conserva los 32 tipos y su estado previo (17 tarjetas pendientes, 15 retiradas), separa módulos de arrastres y organiza las próximas familias. En esta continuación se retiran las tarjetas restantes y se redibujan Petri y limpieza desde referencias propias. Un kit compartido evita diferencias entre mezcla y cabina; la placa comparte dibujo en reserva, arrastre y animación. No marcar una familia como remodelada sólo por quitar su tarjeta.
+
+
+## Continuación: materiales, máquinas y química
+
+El [plan de cierre por familias](PLAN-CIERRE-REMODELACION.md) enlaza las notas posteriores. En cada familia se generó referencia sólo para las piezas nuevas y se tradujo a dibujantes nativos; la referencia no se pega como fondo dentro del juego. Origen, arrastre, animación, tienda y miniatura llaman al mismo dibujante cuando representan el mismo objeto.
+
+Para cristalería se recorta el líquido al interior y se diferencian vacío, parcial, lleno y madurez. Los polvos y la solución N tienen una lectura distinta. Los equipos se reducen proporcionalmente en la vista de sala; se comprueba que su base quede en la superficie de acero y no sobre el faldón o las patas. Las pruebas visuales incluyen recorrido real y galería de los 32 arrastres sobre crema/azul, además de horizontal y vertical.

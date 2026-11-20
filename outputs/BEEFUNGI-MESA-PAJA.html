@@ -10074,8 +10074,7 @@
         } else if (i === 1) {
           drawSalt(x + 10, y + 3, "A", "#d4c28a", 0.55);
           drawSalt(x + 83, y + 3, "B", "#93babd", 0.55);
-          box(x + 43, y + 4, 25, 24, "#87a6ac");
-          box(x + 46, y + 7, 19, 18, "#c9d7b5");
+          drawNutrientMixer(x + 43, y + 3, 0.245);
         } else if (i === 2) {
           drawExtractFlask(
             x + 5,
@@ -10084,26 +10083,13 @@
             0.65,
             extractInventory.length ? 1 : 0,
           );
-          drawBottlingMachine(x + 31, y, 0.28);
+          drawBottlingMachine(x + 31, y, 0.22);
           for (let k = 0; k < 4; k++)
             drawDropper(x + 66 + k * 10, y + 8, speciesCatalog[k].name, 0.48);
         } else {
           drawSpirulinaFlask(x + 7, y + 8, spirulinaMother, 0.46);
           drawSpirulinaFlask(x + 89, y + 8, spirulinaInoculum, 0.46);
-          box(x + 50, y + 1, 12, 7, "#85ada9");
-          box(x + 35, y + 8, 43, 21, "#6d9698");
-          box(
-            x + 38,
-            y + 10,
-            37,
-            16,
-            spirulina.inoculated
-              ? spirulinaGreen(0.2 + 0.8 * spirulina.progress)
-              : "#c4d8b9",
-          );
-          artRect(x + 39, y + 11, 1, 13, "#e5edce");
-          box(x + 33, y + 1, 47, 2, spirulina.light ? "#fff1ab" : "#a8bbae");
-          box(x + 33, y + 28, 47, 2, "#527d80");
+          drawSpirulinaCarboy(x + 44, y - 2, 0.1986);
         }
       });
       drawWalkTarget();
@@ -11355,17 +11341,327 @@
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(3, 5, 25, 33, "#b2d3cc");
-      box(2, 0, 27, 7, "#6d8794");
-      box(6, 19, 19, 16, color);
-      box(6, 10, 19, 11, "#f0e9ce");
-      artRect(4, 1, 23, 1, "#d7dfca");
-      artRect(4, 8, 1, 25, "#eff1d8");
-      artRect(26, 8, 1, 27, "#749b99");
-      artRect(4, 37, 23, 1, "#638b8b");
-      for (let i = 0; i < 9; i++)
-        artRect(8 + ((i * 7) % 15), 23 + ((i * 5) % 10), 1, 1, "#ece6c1");
-      smallText(label, 15, 18);
+      // A/B are powders; N is a solution. The same glass follows the pointer.
+      const liquid = label === "N";
+      softShadow(15.5, 37, 14.5, 1, 0.14);
+      drawLaminarFace(
+        [
+          [6, 4],
+          [25, 4],
+          [26, 7],
+          [29, 10],
+          [30, 13],
+          [30, 33],
+          [27, 37],
+          [4, 37],
+          [1, 33],
+          [1, 13],
+          [2, 10],
+          [5, 7],
+        ],
+        "#71938d",
+      );
+      drawLaminarFace(
+        [
+          [7, 5],
+          [24, 5],
+          [25, 8],
+          [28, 11],
+          [28.5, 14],
+          [28.5, 32.5],
+          [26, 35.5],
+          [5, 35.5],
+          [2.5, 32.5],
+          [2.5, 14],
+          [3, 11],
+          [6, 8],
+        ],
+        "rgba(202,221,202,0.8)",
+      );
+      c.save();
+      drawLaminarFace([
+        [3, 13],
+        [28, 13],
+        [28, 33],
+        [26, 35],
+        [5, 35],
+        [3, 33],
+      ]);
+      c.clip();
+      if (liquid) {
+        box(3, 20, 25, 15, "#80baa5");
+        artRect(4, 22, 3, 11, "#a2d1b5");
+        artRect(25, 22, 2, 11, "#649d91");
+        drawLaminarOval(3, 17.5, 25, 5, "#b5dbc0");
+        drawLaminarOval(4, 18.5, 23, 3, "#8dc4aa");
+        artRect(6, 19, 13, 0.5, "#dce8c7");
+        for (const [bx, by] of [
+          [23, 26],
+          [10, 31],
+          [21, 33],
+        ])
+          artRect(bx, by, 0.7, 0.7, "#c9e4c5");
+      } else {
+        const grains =
+          label === "B"
+            ? ["#abc7d0", "#dce5d2", "#8bafbc"]
+            : ["#dfc185", "#f2ddb0", "#c6a46b"];
+        drawLaminarFace(
+          [
+            [3, 20],
+            [8, 17],
+            [12, 19],
+            [17, 14],
+            [22, 17],
+            [28, 18],
+            [28, 35],
+            [3, 35],
+          ],
+          color,
+        );
+        for (let i = 0; i < 52; i++) {
+          const gx = 3.5 + ((i * 7) % 24),
+            gy = 18 + ((i * 11) % 17);
+          artRect(gx, gy, 1.5, 1, grains[i % 3]);
+          if (i % 5 === 0) artRect(gx + 0.5, gy - 0.5, 1, 0.5, grains[1]);
+        }
+        artRect(16, 15, 2, 0.5, grains[1]);
+      }
+      c.restore();
+      drawLaminarOval(2, 32, 27, 6, "#8eafa0");
+      drawLaminarOval(3.5, 33, 24, 4, liquid ? "#9ccbb0" : "#c8d5b9");
+      artRect(6, 36, 15, 0.5, "#dce3c2");
+      drawLaminarFace(
+        [
+          [6, 9],
+          [7, 9],
+          [4.5, 13],
+          [4.5, 31],
+          [3.5, 31],
+          [3.5, 13],
+        ],
+        "#edf0d2",
+      );
+      artRect(26.5, 12, 0.7, 19, "#bbd4ba");
+      drawLaminarFace(
+        [
+          [9, 16],
+          [22, 16],
+          [24, 18],
+          [24, 24],
+          [22, 26],
+          [9, 26],
+          [7, 24],
+          [7, 18],
+        ],
+        "#ac9d78",
+      );
+      drawLaminarFace(
+        [
+          [9, 16.5],
+          [22, 16.5],
+          [23.5, 18],
+          [23.5, 23.5],
+          [22, 25.5],
+          [9, 25.5],
+          [7.5, 23.5],
+          [7.5, 18],
+        ],
+        "#eee1ba",
+      );
+      artRect(9, 17, 11, 0.5, "#fff0cd");
+      smallText(label, 12, 24, "#59684f");
+      box(2, 2.5, 27, 5, "#7c8e78");
+      drawLaminarOval(2, 0, 27, 5, "#b6bfa0");
+      drawLaminarOval(3, 0.5, 25, 3, "#d8d4b0");
+      artRect(6, 1, 9, 0.5, "#f9e9c0");
+      for (let xx = 4; xx < 28; xx += 2) {
+        artRect(xx, 3.5, 0.7, 3, "#d5d1ab");
+        artRect(xx + 0.7, 4, 0.5, 2.5, "#657f70");
+      }
+      c.restore();
+    }
+    function drawNutrientStirPlate(x, y, scale = 1, running = false) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      softShadow(47.5, 17, 46, 1.5, 0.15);
+      for (const xx of [5, 82]) {
+        box(xx, 15, 8, 3, "#496d70");
+        artRect(xx + 1, 15, 5, 0.5, "#a6baa8");
+      }
+      drawLaminarFace(
+        [
+          [5, 0],
+          [90, 0],
+          [95, 5],
+          [95, 14],
+          [91, 17],
+          [4, 17],
+          [0, 14],
+          [0, 5],
+        ],
+        "#5a7c79",
+      );
+      drawLaminarFace(
+        [
+          [5, 1],
+          [90, 1],
+          [93, 5],
+          [2, 5],
+        ],
+        "#bbc8ae",
+      );
+      box(2, 6, 91, 8, "#8ea48d");
+      artRect(4, 6, 89, 0.7, "#dddcc0");
+      artRect(5, 15, 84, 0.5, "#4b7172");
+      for (let i = 0; i < 13; i++)
+        artRect(4 + i * 7, 7 + (i % 3), 3, 0.4, i % 2 ? "#b8c3a9" : "#7a9684");
+      drawLaminarOval(8, -1, 78, 9, "#607e70");
+      drawLaminarOval(10, -0.5, 74, 7, "#abb9a1");
+      drawLaminarOval(13, 0, 68, 5, "#c9cdb0");
+      drawLaminarOval(80, 8, 7, 7, "#536d5c");
+      drawLaminarOval(81, 8.5, 5, 5, running ? "#e7ac4d" : "#8caa8d");
+      artRect(82, 9, 2, 1, running ? "#fff0aa" : "#c6d8b7");
+      c.restore();
+    }
+    function drawNutrientBeaker(
+      x,
+      y,
+      scale = 1,
+      state = nutrientMix,
+      recipe = nutrientRecipe,
+    ) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      const active = !!state.running,
+        progress = active ? Math.max(0, Math.min(1, state.t / 8)) : 0,
+        surface = 36,
+        phase = active ? performance.now() / 210 : 0;
+      drawLaminarFace(
+        [
+          [5, 6],
+          [71, 6],
+          [71, 69],
+          [68, 76],
+          [10, 76],
+          [5, 70],
+        ],
+        "#71958e",
+      );
+      drawLaminarFace(
+        [
+          [7, 7],
+          [69, 7],
+          [69, 69],
+          [66, 74],
+          [11, 74],
+          [7, 69],
+        ],
+        "rgba(203,222,202,0.74)",
+      );
+      c.save();
+      drawLaminarFace([
+        [8, 8],
+        [68, 8],
+        [68, 68],
+        [65, 73],
+        [12, 73],
+        [8, 68],
+      ]);
+      c.clip();
+      box(8, surface + 3, 60, 34, recipe === "fungi" ? "#a4c4ac" : "#80bca9");
+      artRect(9, surface + 5, 5, 27, "#b9ddbf");
+      artRect(64, surface + 5, 3, 27, "#679e91");
+      drawLaminarOval(8, surface, 60, 8, "#c2e0c2");
+      drawLaminarOval(
+        9,
+        surface + 1,
+        58,
+        6,
+        recipe === "fungi" ? "#a6cdb1" : "#94d0b5",
+      );
+      artRect(16, surface + 1.5, 33, 0.5, "#e1edca");
+      if (active) {
+        for (let ring = 0; ring < 2; ring++) {
+          c.strokeStyle = ring ? "#d8e9c7" : "#b5ddbf";
+          c.lineWidth = 0.8;
+          c.beginPath();
+          for (let i = 0; i <= 16; i++) {
+            const angle = phase + i * 0.3 + ring * 1.2,
+              radius = (ring ? 10 : 20) * (0.55 + i / 32),
+              sx = Math.round((38 + Math.cos(angle) * radius) * 2) / 2,
+              sy =
+                Math.round(
+                  (surface + 4 + Math.sin(angle) * radius * 0.14) * 2,
+                ) / 2;
+            i ? c.lineTo(sx, sy) : c.moveTo(sx, sy);
+          }
+          c.stroke();
+        }
+        for (let i = 0; i < 6; i++) {
+          const bx = 18 + ((i * 13) % 38),
+            by = 68 - ((phase * 3 + i * 7) % 24);
+          drawLaminarOval(bx, by, 1.5, 2, "#d2e7c7");
+        }
+      }
+      for (const [present, gx, color] of [
+        [state.a, 17, "#e6d5a5"],
+        [state.b, 48, "#c9dfe0"],
+      ])
+        if (present)
+          for (let i = 0; i < Math.ceil((1 - progress) * 8); i++)
+            artRect(gx + ((i * 3) % 12), 66 - ((i * 5) % 7), 1.5, 0.7, color);
+      c.save();
+      c.translate(38, 69);
+      c.rotate(phase);
+      drawLaminarOval(-7, -2, 14, 4, "#90aea0");
+      drawLaminarOval(-6, -2, 12, 3, "#e7edd2");
+      artRect(-3, -1.5, 5, 0.5, "#fff5da");
+      c.restore();
+      c.restore();
+      drawLaminarOval(5, 69, 66, 11, "#87aaa0");
+      drawLaminarOval(7, 70, 62, 7, "rgba(190,217,187,0.5)");
+      artRect(14, 77, 42, 0.5, "#d5e6c6");
+      artRect(9, 11, 1.5, 55, "#e8efd2");
+      artRect(12, 13, 0.5, 50, "#cadfc3");
+      artRect(66, 12, 1, 53, "#b8d6b9");
+      for (let i = 0; i < 4; i++) {
+        const yy = 25 + i * 10;
+        artRect(15, yy, i % 2 ? 6 : 9, 0.7, "#5e8b7c");
+        artRect(15, yy + 0.8, i % 2 ? 6 : 9, 0.5, "#d6e6c5");
+      }
+      drawLaminarOval(2, 0, 73, 12, "#91aaa0");
+      drawLaminarOval(4, 1, 69, 9, "#d9e3c7");
+      drawLaminarOval(6, 2, 65, 6, "rgba(151,184,170,0.65)");
+      artRect(13, 1.5, 38, 0.5, "#fff0cf");
+      drawLaminarFace(
+        [
+          [62, 2],
+          [72, 1],
+          [77, 5],
+          [73, 8],
+          [66, 8],
+          [69, 5],
+        ],
+        "#c7d8bc",
+      );
+      artRect(70, 2.5, 3, 0.5, "#f4edd0");
+      c.restore();
+    }
+    function drawNutrientMixer(
+      x,
+      y,
+      scale = 1,
+      state = nutrientMix,
+      recipe = nutrientRecipe,
+    ) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      drawNutrientStirPlate(0, 80, 1, state.running);
+      drawNutrientBeaker(9, 1, 1, state, recipe);
       c.restore();
     }
     function drawNutrients() {
@@ -11385,25 +11681,9 @@
       drawSalt(249, 84, "B", "#93babd", 1.2);
       smallText("SAL A", 33, 159);
       smallText("SAL B", 248, 159);
-      box(113, 88, 95, 98, "#76959c");
-      box(120, 95, 81, 79, "#cee2d7");
-      drawSterileHousingDetail(113, 88, 95, 98);
-      artRect(122, 97, 2, 73, "#f0f2d8");
-      box(124, 132, 73, 38, nutrientRecipe === "fungi" ? "#c4ae75" : "#6aab87");
-      artRect(125, 132, 71, 1, "#e1e6bd");
-      for (let yy = 141; yy < 168; yy += 9) artRect(189, yy, 6, 1, "#8aaf9e");
-      if (nutrientMix.a) box(130, 140, 20, 5, "#eadbb0");
-      if (nutrientMix.b) box(168, 151, 20, 5, "#b9d5d4");
+      drawNutrientMixer(113, 88);
       if (nutrientMix.running) {
-        for (let i = 0; i < 8; i++)
-          box(
-            131 + ((i * 17) % 60),
-            166 - ((performance.now() / 60 + i * 9) % 30),
-            3,
-            3,
-            "#d9e8cf",
-          );
-        drawProcessClock(161, 117, 15, nutrientMix.t / 8);
+        drawProcessClock(281, 184, 12, nutrientMix.t / 8);
       }
       smallText(
         (nutrientMix.a ? "A OK" : "A —") +
@@ -11649,25 +11929,113 @@
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(10, 0, 10, 18, "#6994a0");
-      box(12, 2, 6, 18, "#cee6dc");
-      for (let row = 0; row < 21; row++) {
-        const half = Math.min(15, 5 + Math.floor(row / 2));
-        box(15 - half, 17 + row, half * 2, 1, "#a5ccca");
+      const volume = Math.max(0, Math.min(1, Number(flask?.volume) || 0)),
+        maturity = Math.max(0, Math.min(1, Number(flask?.maturity) || 0)),
+        outer = [
+          [10, 7],
+          [20, 7],
+          [20, 17],
+          [22, 20],
+          [29, 34],
+          [29.5, 36],
+          [28.5, 38],
+          [25, 39],
+          [5, 39],
+          [1.5, 38],
+          [0.5, 36],
+          [1, 34],
+          [8, 20],
+          [10, 17],
+        ],
+        inner = [
+          [11.3, 8],
+          [18.7, 8],
+          [18.7, 17.3],
+          [20.7, 20.5],
+          [27.6, 34.2],
+          [28, 35.7],
+          [27, 37],
+          [24.5, 37.8],
+          [5.5, 37.8],
+          [3, 37],
+          [2, 35.7],
+          [2.4, 34.2],
+          [9.3, 20.5],
+          [11.3, 17.3],
+        ];
+      // Mismo lenguaje de cristal que extracción, en su huella original 30 x 40.
+      drawLaminarFace(outer, "rgba(171,198,180,.55)");
+      c.strokeStyle = "#73998f";
+      c.lineWidth = 0.7;
+      c.stroke();
+      c.save();
+      drawLaminarFace(inner, null);
+      c.clip();
+      if (volume > 0) {
+        const top = 37.8 - volume * 18,
+          half = Math.min(12.5, 3 + (top - 17) * 0.48);
+        artRect(2, top, 26, 37.8 - top, spirulinaGreen(maturity));
+        c.globalAlpha = 0.17;
+        artRect(22, top, 6, 37.8 - top, "#244e35");
+        c.globalAlpha = 0.12;
+        artRect(4, top, 4, 37.8 - top, "#e0df8f");
+        c.globalAlpha = 1;
+        drawLaminarOval(
+          15 - half,
+          top - 0.3,
+          half * 2,
+          1.9,
+          spirulinaGreen(maturity * 0.72),
+        );
+        artRect(8, 37, 14, 0.5, "rgba(70,105,55,.3)");
       }
-      if (flask.volume > 0) {
-        const h = Math.round(18 * flask.volume);
-        for (let row = 0; row < h; row++) {
-          const yy = 36 - row,
-            half = Math.min(13, 3 + Math.floor((yy - 17) / 2));
-          box(15 - half, yy, half * 2, 1, spirulinaGreen(flask.maturity));
-        }
-      }
-      box(9, 20, 2, 10, "#e4efda");
-      artRect(12, 2, 1, 12, "#f0f1d6");
-      artRect(24, 28, 2, 6, "#80aaa0");
-      box(2, 38, 26, 2, "#618a94");
-      artRect(3, 38, 24, 0.5, "#c8ddc3");
+      drawLaminarFace(
+        [
+          [9, 19],
+          [10.8, 19],
+          [7.5, 26],
+          [5.2, 33],
+          [3.8, 35],
+          [4.2, 31],
+          [7, 23],
+        ],
+        "#f0ebc8",
+      );
+      drawLaminarFace(
+        [
+          [22, 24],
+          [23, 25],
+          [26.5, 33.5],
+          [25.5, 35],
+          [24, 31],
+        ],
+        "#b8d1b3",
+      );
+      artRect(11.8, 9, 1, 8, "#f0efce");
+      artRect(18.2, 10, 0.5, 7, "#8aafa0");
+      c.restore();
+      drawLaminarOval(2, 36.5, 26, 3, "rgba(113,154,140,.55)");
+      artRect(6, 38.5, 18, 0.5, "#d8e1c0");
+      // Labio doble y tapón crema de la referencia; ninguna placa detrás del objeto.
+      drawLaminarOval(8.5, 5.5, 13, 4, "#6d9287");
+      drawLaminarOval(9, 5.5, 12, 2.5, "#d0dabe");
+      artRect(10, 8, 10, 0.5, "#f0e9c6");
+      drawLaminarFace(
+        [
+          [10, 1.5],
+          [12, 0],
+          [18, 0],
+          [20, 1.5],
+          [19, 6.5],
+          [18, 8],
+          [12, 8],
+          [11, 6.5],
+        ],
+        "#c7b78b",
+      );
+      drawLaminarOval(10, 0, 10, 3, "#efe0b2");
+      artRect(11.5, 3, 1, 3, "#eddbab");
+      artRect(18.5, 3, 0.5, 3, "#a69771");
       c.restore();
     }
     function spirulinaFlaskLabel(flask) {
@@ -11676,6 +12044,249 @@
         : spirulinaFlaskCycle
           ? "MADURANDO"
           : "LISTO";
+    }
+    function drawSpirulinaCarboy(x = 108, y = 50, scale = 1) {
+      // ESPIRULINA-CULTIVO-CONCEPTO: 120 x 146, including lamp, hose and handle.
+      // The .1986 mini fits a 43 x 29 station slot without another sprite.
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      const water = Math.max(0, Math.min(1, Number(spirulina.water) || 0)),
+        progress = Math.max(0, Math.min(1, Number(spirulina.progress) || 0)),
+        waterTop = 135.5 - 87 * water,
+        color = spirulina.inoculated
+          ? spirulinaGreen(0.2 + 0.8 * progress)
+          : spirulina.mediumReady
+            ? "#c1d8b6"
+            : spirulina.fed
+              ? "#cdd5af"
+              : "#accfd5",
+        body = [
+          [43, 15],
+          [65, 15],
+          [65, 31],
+          [68, 35],
+          [81, 41],
+          [94, 50],
+          [100, 59],
+          [102, 68],
+          [102, 132],
+          [99, 139],
+          [92, 143],
+          [17, 143],
+          [9, 139],
+          [5, 132],
+          [5, 68],
+          [7, 59],
+          [13, 50],
+          [26, 41],
+          [40, 35],
+          [43, 31],
+        ];
+      // Handle is an open ring; its hole shows the real room behind the vessel.
+      drawLaminarFace(
+        [
+          [96, 48],
+          [106, 48],
+          [115, 54],
+          [119, 63],
+          [119, 96],
+          [114, 105],
+          [103, 112],
+          [99, 104],
+          [107, 99],
+          [111, 93],
+          [111, 65],
+          [107, 59],
+          [99, 59],
+        ],
+        "#70998f",
+      );
+      artRect(115.5, 64, 1.2, 29, "#cbdcc0");
+      drawLaminarFace(
+        [
+          [103, 51],
+          [108, 52],
+          [114, 58],
+          [112, 60],
+          [107, 56],
+          [102, 55],
+        ],
+        "#c3d7bc",
+      );
+      drawLaminarFace(
+        [
+          [112, 97],
+          [115, 95],
+          [112, 103],
+          [103, 109],
+          [102, 106],
+        ],
+        "#b0c8ae",
+      );
+      // Thin transparent wall and curved shoulders, with liquid clipped inside.
+      drawLaminarFace(body, "rgba(171,201,179,.34)");
+      c.strokeStyle = "#759c93";
+      c.lineWidth = 1.2;
+      c.stroke();
+      c.save();
+      c.clip();
+      if (water > 0) {
+        box(5, waterTop, 98, 135.5 - waterTop, color);
+        c.globalAlpha = 0.14;
+        artRect(8, waterTop, 10, 135.5 - waterTop, "#3f715f");
+        artRect(86, waterTop, 15, 135.5 - waterTop, "#326b5a");
+        c.globalAlpha = 0.11;
+        artRect(21, waterTop, 5, 135.5 - waterTop, "#f0e5a4");
+        c.globalAlpha = 1;
+        drawLaminarOval(
+          8,
+          waterTop - 1,
+          92,
+          4,
+          spirulina.inoculated ? "#afca8c" : "#dbe6c5",
+        );
+        artRect(20, waterTop + 0.5, 62, 0.7, "#e7e4bc");
+      }
+      if (spirulina.fed && !spirulina.mediumReady && water > 0) {
+        const wetHeight = 135.5 - waterTop,
+          angle = performance.now() / 210;
+        c.save();
+        c.beginPath();
+        c.rect(6, waterTop + 1, 95, Math.max(0, wetHeight - 1));
+        c.clip();
+        for (let i = 0; i < 10; i++) {
+          const xx =
+              water >= 1 ? 54 + Math.sin(angle + i) * 30 : 15 + ((i * 13) % 75),
+            yy =
+              water >= 1
+                ? 96 + Math.cos(angle + i) * 23
+                : 133 - ((i * 3) % Math.max(1, wetHeight));
+          drawLaminarOval(xx, yy, 3.5, 1.5, i % 3 ? "#e8d99b" : "#cfcb95");
+        }
+        c.restore();
+      }
+      // Stable glass ribs and highlights follow the curved body.
+      for (const yy of [60, 119]) {
+        c.beginPath();
+        c.moveTo(8, yy);
+        c.lineTo(19, yy + 2);
+        c.lineTo(54, yy + 3);
+        c.lineTo(88, yy + 2);
+        c.lineTo(100, yy);
+        c.strokeStyle = "rgba(201,221,191,.45)";
+        c.lineWidth = 0.8;
+        c.stroke();
+      }
+      drawLaminarFace(
+        [
+          [17, 54],
+          [22, 50],
+          [27, 48],
+          [25, 52],
+          [20, 57],
+        ],
+        "#f0eaca",
+      );
+      drawLaminarFace(
+        [
+          [27, 43],
+          [36, 39],
+          [40, 39],
+          [36, 42],
+          [28, 47],
+        ],
+        "#e6e4c0",
+      );
+      artRect(13, 68, 2, 57, "#e4e8c7");
+      artRect(18, 72, 1, 44, "rgba(239,238,198,.65)");
+      artRect(96, 70, 1, 52, "#c3d8b5");
+      for (let yy = 79; yy < 113; yy += 11) artRect(89, yy, 6, 0.6, "#bbd2ae");
+      c.restore();
+      // The same physical hose supplies the automatic fill and later aeration.
+      c.beginPath();
+      c.moveTo(111, 18);
+      c.lineTo(95, 18);
+      c.lineTo(84, 11);
+      c.lineTo(72, 11);
+      c.lineTo(61, 15);
+      c.lineTo(55, 23);
+      c.lineTo(55, 123);
+      c.strokeStyle = spirulina.filling ? "#7baeb6" : "#5b7460";
+      c.lineWidth = 2;
+      c.stroke();
+      artRect(54, 31, 0.6, 90, "#b4c9a3");
+      box(109, 16, 6, 5, "#78998f");
+      artRect(110, 16, 4, 0.7, "#d4dbc0");
+      box(51, 123, 8, 3, "#6a9388");
+      artRect(52, 123, 6, 0.6, "#becfaf");
+      if (spirulina.filling) {
+        c.save();
+        drawLaminarFace(body, null);
+        c.clip();
+        for (let yy = 26; yy < 135; yy += 6)
+          artRect(54.5, yy + ((performance.now() / 90) % 3), 1, 3, "#bde1df");
+        c.restore();
+      }
+      if (spirulina.inoculated && spirulina.light && water > 0) {
+        c.save();
+        drawLaminarFace(body, null);
+        c.clip();
+        c.beginPath();
+        c.rect(7, waterTop + 2, 94, Math.max(0, 134 - waterTop));
+        c.clip();
+        const travelHeight = Math.max(0, 128 - waterTop - 3);
+        for (let i = 0; i < 13; i++) {
+          const travel = (performance.now() / 750 + i * 0.23) % 1,
+            xx = 54 + Math.sin(i * 1.9 + performance.now() / 850) * 5,
+            yy = 129 - travel * travelHeight,
+            size = 1.5 + (i % 3) * 0.4;
+          drawLaminarOval(xx, yy, size, size, "#d4e3b2");
+          if (size > 2)
+            drawLaminarOval(xx + 0.5, yy + 0.5, size - 1, size - 1, color);
+        }
+        c.restore();
+      }
+      // Neck rings and a thick glass foot keep the vessel visually grounded.
+      drawLaminarOval(39, 12, 30, 7, "#8aafa1");
+      drawLaminarOval(40, 12, 28, 4.5, "#e0e2bd");
+      drawLaminarOval(43, 13, 22, 3, "#698e80");
+      artRect(41, 17, 27, 1, "#c3d6b7");
+      drawLaminarOval(40, 20, 28, 4, "rgba(165,193,167,.75)");
+      artRect(43, 24, 1, 8, "#e7e8c5");
+      drawLaminarOval(6, 132, 96, 13, "rgba(107,151,137,.5)");
+      drawLaminarOval(9, 135, 90, 8, "rgba(181,206,173,.65)");
+      artRect(22, 143, 66, 1, "#dbe1b9");
+      artRect(23, 145, 64, 0.7, "#6b9585");
+      // Only the real lamp state adds the warm light; no ambient/day-night cycle.
+      for (const xx of [17, 94]) {
+        box(xx, 9, 3, 19, "#638b83");
+        artRect(xx, 10, 0.7, 16, "#c4cfb1");
+      }
+      drawLaminarFace(
+        [
+          [16, 0],
+          [95, 0],
+          [99, 3],
+          [99, 8],
+          [95, 11],
+          [16, 11],
+          [12, 8],
+          [12, 3],
+        ],
+        "#638c84",
+      );
+      artRect(17, 1, 77, 1, "#cad5b7");
+      box(18, 5, 75, 4, spirulina.light ? "#f3e3a0" : "#93aaa0");
+      if (spirulina.light) {
+        artRect(21, 5.5, 69, 1, "#fff4cf");
+        softLight(55, 28, 48, 18, "255,232,165", 0.12);
+      }
+      for (const xx of [12, 94]) {
+        box(xx, 2, 5, 7, "#7f9f90");
+        artRect(xx, 2, 1, 6, "#bfcfb2");
+      }
+      c.restore();
     }
     function drawSpirulina() {
       drawChemistryBackdrop("CULTIVO DE ESPIRULINA");
@@ -11708,72 +12319,8 @@
         }
       }
       // Garrafón con cuello, asa y líquido distinguible de los matraces.
-      box(148, 64, 26, 20, "#7297a3");
-      box(151, 66, 20, 18, "#d2e5df");
-      box(123, 79, 77, 5, "#87aeb3");
-      box(115, 84, 93, 6, "#87aeb3");
-      box(110, 90, 105, 103, "#7ea8ae");
-      box(114, 94, 97, 94, "#d3e5df");
-      box(215, 94, 10, 27, "#6f969e");
-      box(217, 98, 4, 18, "#c1c5ab");
-      const h = Math.round(87 * spirulina.water),
-        color = spirulina.inoculated
-          ? spirulinaGreen(0.2 + 0.8 * spirulina.progress)
-          : spirulina.mediumReady
-            ? "#c1d8b6"
-            : spirulina.fed
-              ? "#cdd5af"
-              : "#accfd5";
-      if (h) {
-        box(118, 186 - h, 89, h, color);
-        box(118, 186 - h, 89, 2, "#e0ebce");
-      }
-      box(121, 99, 2, 67, "#e7f1df");
-      box(203, 100, 2, 67, "#c2dfd7");
-      softShadow(164, 196, 59, 4, 0.2);
-      box(111, 190, 103, 6, "#618b8c");
-      artRect(113, 190, 99, 1, "#c8d8c1");
-      artRect(111, 94, 1, 93, "#d1e4d0");
-      artRect(212, 94, 1, 93, "#527e86");
-      for (const yy of [108, 172]) {
-        artRect(116, yy, 93, 1, "#a1c3b6");
-        artRect(118, yy + 1, 89, 0.5, "#d3e6c9");
-      }
-      for (let yy = 122; yy < 166; yy += 10) artRect(194, yy, 8, 1, "#87b3a6");
-      box(147, 62, 29, 5, "#689199");
-      artRect(149, 62, 25, 1, "#c1d7c4");
-      box(186, 39, 5, 40, "#7298a6");
-      box(169, 39, 22, 5, "#7298a6");
-      box(169, 42, 5, 19, "#7298a6");
-      box(178, 35, 5, 11, "#b4655b");
-      if (spirulina.filling) {
-        box(169, 61, 3, 117, "#8bc5d2");
-        box(166, 178, 10, 2, "#c2e2dc");
-      }
-      if (spirulina.fed && !spirulina.mediumReady) {
-        for (let i = 0; i < 10; i++) {
-          const x =
-              spirulina.water >= 1
-                ? 153 + Math.sin(performance.now() / 170 + i) * 30
-                : 125 + ((i * 13) % 75),
-            y =
-              spirulina.water >= 1
-                ? 145 + Math.cos(performance.now() / 170 + i) * 24
-                : 181 - ((i * 3) % Math.max(1, h));
-          box(x, y, 4, 2, "#e9dba4");
-        }
-      }
-      box(124, 53, 79, 4, spirulina.light ? "#fff1ab" : "#7e9995");
-      if (spirulina.light) box(131, 58, 65, 3, "#e1df9b");
+      drawSpirulinaCarboy();
       if (spirulina.inoculated) {
-        for (let i = 0; i < 13; i++)
-          box(
-            128 + ((i * 19) % 74),
-            181 - ((performance.now() / 90 + i * 11) % 75),
-            2,
-            3,
-            "#d5e6bd",
-          );
         if (spirulina.pour > 0) {
           drawSpirulinaFlask(
             131,
@@ -11813,11 +12360,79 @@
       c.save();
       c.translate(x, y);
       c.scale(scale, scale);
-      box(2, 0, 19, 5, "#6b8c86");
-      box(1, 5, 21, 24, "#b4d5be");
-      box(4, 13, 15, 14, "#558c65");
-      box(4, 7, 2, 11, "#dfebcf");
-      box(5, 18, 13, 5, "#c4d9a3");
+      const outer = [
+          [5, 4],
+          [18, 4],
+          [20.5, 6],
+          [22, 10],
+          [22, 24.5],
+          [20, 27.5],
+          [17.5, 28.5],
+          [5.5, 28.5],
+          [3, 27.5],
+          [1, 24.5],
+          [1, 10],
+          [2.5, 6],
+        ],
+        inner = [
+          [5.8, 5.5],
+          [17.2, 5.5],
+          [19.3, 7],
+          [20.5, 10.5],
+          [20.5, 24],
+          [18.8, 26.2],
+          [17, 27],
+          [6, 27],
+          [4.2, 26.2],
+          [2.5, 24],
+          [2.5, 10.5],
+          [3.7, 7],
+        ];
+      drawLaminarFace(outer, "rgba(170,199,178,.62)");
+      c.strokeStyle = "#73998c";
+      c.lineWidth = 0.7;
+      c.stroke();
+      c.save();
+      drawLaminarFace(inner, null);
+      c.clip();
+      artRect(2.5, 11, 18, 16, spirulinaGreen(1));
+      c.globalAlpha = 0.18;
+      artRect(16.5, 11, 4, 16, "#254c35");
+      c.globalAlpha = 0.14;
+      artRect(4, 11, 3, 16, "#d6df9a");
+      c.globalAlpha = 1;
+      drawLaminarOval(3, 10.5, 17, 2.3, spirulinaGreen(0.65));
+      artRect(4, 8, 1.3, 16, "#e2e8c5");
+      artRect(19, 9, 0.6, 15, "#b6d0b3");
+      c.restore();
+      drawLaminarOval(2, 25.5, 19, 3, "rgba(112,152,134,.55)");
+      artRect(5, 27.5, 13, 0.5, "#cfddba");
+      // Etiqueta del frasco cosechado: parte del envase, sin palabras ni tarjeta exterior.
+      drawLaminarFace(
+        [
+          [5, 17.5],
+          [18, 17.5],
+          [18, 23],
+          [5, 23],
+        ],
+        "#d9d7ad",
+      );
+      artRect(5.5, 18, 12, 0.5, "#f0e4bb");
+      drawLaminarFace(
+        [
+          [9, 20],
+          [11.5, 18.5],
+          [14, 20],
+          [11.5, 22],
+        ],
+        "#6b9869",
+      );
+      artRect(11.5, 20, 0.5, 2, "#496f50");
+      drawLaminarOval(2.5, 2, 18, 4, "#839a83");
+      box(3, 1, 17, 3.5, "#cdbf92");
+      drawLaminarOval(3, 0, 17, 3, "#e8dab0");
+      for (const xx of [5, 8, 11, 14, 17]) artRect(xx, 3, 0.5, 2, "#a69c74");
+      artRect(4, 1, 14, 0.6, "#f5e7bc");
       c.restore();
     }
     const spirulinaAdvance = advanceChemistry;

@@ -124,3 +124,16 @@ La nota de cierre de la tanda registrará el resultado efectivamente integrado y
 | Demás familias del apartado 4 | Registradas como propuestas posteriores, sin reconstrucción en esta auditoría. |
 
 Cierre y evidencia: [TANDA-AUDITORIA-ASSETS-PETRI-LIMPIEZA.md](TANDA-AUDITORIA-ASSETS-PETRI-LIMPIEZA.md). Las filas de prioridad «Ahora» del apartado 4 conservan el diagnóstico previo; Petri y limpieza ya quedaron completados en esta pasada.
+
+## 8. Continuación del cierre por familias
+
+El diagnóstico inicial se conserva como historial. La continuación añade estas tandas al inventario:
+
+| Familia | Nota y alcance |
+| --- | --- |
+| Materiales principales | [Micelio de mezcla, paja y cal](TANDA-MATERIALES-PRINCIPALES.md). Frasco de Pleurotus compartido; fibras y bote reutilizados en origen/arrastre/animación. |
+| Aparatos principales | [Triturador, pasteurizado y mezcla](TANDA-APARATOS-PRINCIPALES.md). Mismos equipos en miniatura y vista cercana; contenidos recortados al interior. |
+| Cristalería, extracción y envasado | [Nota de extracción y envasado](TANDA-EXTRACCION-ENVASADO-ARTE.md). Estados de vidrio compartidos y aparatos apoyados sobre la mesa. |
+| Nutrientes y espirulina | [Nota de nutrientes y espirulina](TANDA-NUTRIENTES-ESPIRULINA-ARTE.md). Sales, solución, matraces, reactor y producto de cosecha. |
+
+Se reutilizan los fondos y superficies aprobados, las cámaras, la tienda, los personajes y los equipos estériles. No se reconstruyen esas familias por retirar tarjetas: continúan con el arte ya aprobado. El [plan de cierre](PLAN-CIERRE-REMODELACION.md) identifica el estado vigente de cada tanda. Cualquier detalle estético nuevo se puede registrar aparte; este cierre no cambia el balance ni las mecánicas.

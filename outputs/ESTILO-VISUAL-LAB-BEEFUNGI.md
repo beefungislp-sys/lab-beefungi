@@ -110,3 +110,7 @@ Triturador, tanque con llave y llenadora usan dibujantes compartidos entre minia
 ## Extracción y envasado
 
 Matraces de vidrio con cuello y labio elíptico, base densa y líquido recortado a su silueta; goteros de vidrio ámbar, hombros redondeados, bulbo carbón, collar crema y marca de especie. Vacío no tiene líquido. Compartir cristalería entre módulo, arrastre y tienda. Molino/molido y envasadora comparten sus dibujantes con las miniaturas; condensador, soporte y receptor se conectan sin tubos flotantes.
+
+## Nutrientes y espirulina
+
+Cristalería con base, hombros, menisco y reflejos cálidos; solución N diferenciada del polvo A/B. El matraz cambia su verde por madurez sin relojes añadidos. El reactor comparte geometría entre miniatura y vista cercana: agua, mezcla, luz y burbujas siguen el proceso, sin movimiento del cuarto.
