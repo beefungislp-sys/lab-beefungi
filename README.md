@@ -157,3 +157,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Primera cosecha: presentaciones y goteros negros](outputs/TANDA-PRIMERAS-COSECHAS.md).
 
 [Retratos de hongos V2: referencias nuevas y reconstrucción en código](outputs/TANDA-RETRATOS-HONGOS-V2.md).
+
+[Guía de reposición y recuperación](outputs/TANDA-GUIA-RECUPERACION.md).

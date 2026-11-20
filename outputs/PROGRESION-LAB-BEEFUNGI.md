@@ -61,3 +61,7 @@ Una estación ocupada conserva su oferta deshabilitada hasta estar libre; no se 
 Las compras descuentan saldo y las ofertas muestran su costo; el dinero no cambia las condiciones de desbloqueo. La revisión gratuita anterior se conserva como fixture de regresión.
 
 [Nota de la revisión](TANDA-REVISION-FLUJO-Y-MEJORAS.md) · [Huecos adicionales anotados](PENDIENTES-REVISION-FLUJO.md)
+
+## Recuperación de la guía
+
+La guía deriva los recursos necesarios del estado actual, conserva los hitos y señala reposición o preparación de intermedios perdidos. No altera las condiciones de desbloqueo. [Detalle](TANDA-GUIA-RECUPERACION.md).

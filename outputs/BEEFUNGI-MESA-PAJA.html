@@ -178,6 +178,29 @@
       border: 1px solid #9aad9c;
       font-size: 24px;
     }
+    #route-pointer {
+      position: fixed;
+      width: 18px;
+      height: 24px;
+      background: #ffe16a;
+      pointer-events: none;
+      z-index: 30;
+      clip-path: polygon(
+        35% 0,
+        65% 0,
+        65% 52%,
+        100% 52%,
+        50% 100%,
+        0 52%,
+        35% 52%
+      );
+      filter: drop-shadow(0 1px 1px #173039);
+    }
+    #order-balance.guide-funds {
+      outline: 2px solid #c54442;
+      color: #a33031;
+      outline-offset: 3px;
+    }
     [hidden] {
       display: none !important;
     }
@@ -670,6 +693,7 @@
     ></canvas>
     <h2 id="product-reveal-name"></h2>
   </dialog>
+  <div id="route-pointer" hidden aria-hidden="true"></div>
   <script>
     // === CONFIGURACION Y ESTADO ===
     // Balance amable: los precios cambian, los hitos y recetas se conservan.
@@ -1931,7 +1955,7 @@
       box(268, 89, 46, 3, "#b58c60");
       drawCleaningKit(274, 62);
       text("LIMPIEZA", 258, 101);
-      if (cleaningGuideActive) {
+      if (cleaningGuideActive && !guideSuppressLocal("mix")) {
         const bounce = (Math.floor(performance.now() / 300) % 2) * 2;
         box(287, 36 + bounce, 4, 12, "#ffe16a");
         box(283, 44 + bounce, 12, 3, "#ffe16a");
@@ -2794,7 +2818,7 @@
         artRect(210, 64, 1, y - 61, "#4c757d");
       }
       const basin = drawPasteurBasin(x, y, w, h);
-      if (!faucetGuideDone) {
+      if (!faucetGuideDone && !guideSuppressLocal("pasteur")) {
         const bounce = (Math.floor(performance.now() / 350) % 2) * 2;
         box(187, 5 + bounce, 5, 10, "#ffe16a");
         box(183, 12 + bounce, 13, 3, "#ffe16a");
@@ -5577,6 +5601,7 @@
       return null;
     }
     function drawWoodGuide() {
+      if (guideSuppressLocal("woodPrep")) return;
       const step = woodPrepGuideStep(),
         targets = {
           bag: [279, 70],
@@ -6547,6 +6572,7 @@
       return "inoculate";
     }
     function drawGloveGuide() {
+      if (guideSuppressLocal("glovebox")) return;
       const targets = {
           species: [97, 19],
           bag: [49, 131],
@@ -14805,6 +14831,665 @@
     function currentRouteStep() {
       return currentRouteModule()?.id || null;
     }
+    // El hito histórico permanece intacto; este plan sólo deriva una ruta de recuperación.
+    function guideStep(id, extra = {}) {
+      return {
+        ...(routeModules.find((step) => step.id === id) || { id }),
+        ...extra,
+      };
+    }
+    function guideNeed(step, id, extra = {}) {
+      const order = { id, ...extra };
+      const allowed =
+        id === "micelio"
+          ? speciesAvailable(order.species || selectedSpecies)
+          : id === "paja"
+            ? availableSubstrates().includes(
+                order.substrate || selectedSubstrate,
+              )
+            : id === "frascos"
+              ? liquidUnlocked
+              : id === "nutrientes"
+                ? sterileAvailable()
+                : true;
+      return allowed ? { step, order } : { step, wait: true };
+    }
+    function guideResolveStep(step, visited = new Set()) {
+      if (!step || (step.available && !step.available())) return null;
+      const key = [step.id, step.mode, step.hood, step.species].join(":");
+      if (visited.has(key) || visited.size > 24) return { step, wait: true };
+      const branch = new Set(visited);
+      branch.add(key);
+      const next = (id, extra = {}) =>
+        guideResolveStep(guideStep(id, extra), branch) || { step, wait: true };
+      const advanced = guideAdvancedPlan(step, next);
+      if (advanced !== undefined) return advanced;
+      const cultivation = guideCultivationPlan(step, next);
+      if (cultivation !== undefined) return cultivation;
+      if (step.id === "crusher") {
+        if (loads + 2 > basketCapacity()) return next("pasteur");
+        if (job || crusherQueue > 0) return { step, wait: true };
+        return bales > 0
+          ? { step }
+          : guideNeed(step, "paja", { substrate: "paja" });
+      }
+      if (step.id === "pasteur") {
+        if (tank.left > 0) return { step, wait: true };
+        if (treatedLoads >= tankCapacity && !tank.n) return next("mix");
+        if (!tank.water)
+          return waterRunning || autoWater ? { step, wait: true } : { step };
+        if (!tank.lime) return lime > 0 ? { step } : guideNeed(step, "cal");
+        if (tank.n > 0) return { step, wait: true };
+        return loads > 0 ? { step } : next("crusher");
+      }
+      if (step.id === "mix") {
+        if (bagJob) return { step, wait: true };
+        if (!bags) return guideNeed(step, "bolsas");
+        if (!mixedStraw) return treatedLoads > 0 ? { step } : next("pasteur");
+        if (!mixedJars && !pleuroStock())
+          return guideNeed(step, "micelio", { species: "Pleurotus" });
+        if (!mixedJars) return { step };
+        if (cleaningGuideActive)
+          return cleaning > 0
+            ? { step, point: [287, 36] }
+            : guideNeed(step, "limpieza");
+        return { step };
+      }
+      return { step };
+    }
+    function routeRecoveryPlan() {
+      const base = currentRouteModule();
+      if (!base) return null;
+      const plan = guideResolveStep(base);
+      if (!plan) return null;
+      return { ...plan, recovery: !!plan.order || plan.step.id !== base.id };
+    }
+    function guideBlocked() {
+      return (
+        progressionBypass ||
+        !!drag ||
+        progression.notices.length > 0 ||
+        upgradeMenuOpen ||
+        productRevealQueue.length > 0
+      );
+    }
+    function guideSuppressLocal(view) {
+      if (
+        guideBlocked() ||
+        document.querySelector("#orders").open ||
+        document.querySelector("#mycelium-inventory").open
+      )
+        return true;
+      const plan = routeRecoveryPlan();
+      return (
+        !!plan &&
+        (!!plan.order ||
+          plan.wait ||
+          plan.point ||
+          plan.action === "selector" ||
+          (plan.step.view || plan.step.id) !== view)
+      );
+    }
+    function guideOrderPrice(order) {
+      if (progressionPreview || testMode) return 0;
+      if (order.id === "paja")
+        return gameBalance.substrates[order.substrate || selectedSubstrate];
+      if (order.id === "micelio")
+        return gameBalance.mycelium[order.species || selectedSpecies];
+      return gameBalance.supplies[order.id];
+    }
+    function guideOrderTarget(plan = routeRecoveryPlan()) {
+      if (!plan || guideBlocked()) return null;
+      if (document.querySelector("#mycelium-inventory").open)
+        return document.querySelector("#close-mycelium");
+      const orders = document.querySelector("#orders");
+      if (!orders.open)
+        return plan.order ? document.querySelector("#more") : null;
+      if (!plan.order) return document.querySelector("#close-orders");
+      const order = plan.order;
+      if (
+        order.id === "paja" &&
+        order.substrate &&
+        selectedSubstrate !== order.substrate
+      )
+        return document.querySelector("#order-items [data-substrate]");
+      if (
+        order.id === "micelio" &&
+        order.species &&
+        selectedSpecies !== order.species
+      )
+        return document.querySelector("#order-items [data-species]");
+      if (!canAfford(guideOrderPrice(order)))
+        return document.querySelector("#order-balance");
+      return document.querySelector(
+        '#order-items [data-order="' + order.id + '"]',
+      );
+    }
+    let guidePointerAnchor = null;
+    function updateGuidePointer() {
+      const pointer = document.querySelector("#route-pointer"),
+        target = guideOrderTarget(),
+        balance = document.querySelector("#order-balance");
+      balance.classList?.toggle("guide-funds", target === balance);
+      pointer.hidden = !target;
+      if (!target) return;
+      const dialog = document.querySelector("#mycelium-inventory").open
+        ? document.querySelector("#mycelium-inventory")
+        : document.querySelector("#orders").open
+          ? document.querySelector("#orders")
+          : document.querySelector(".game-frame");
+      if (pointer.parentElement !== dialog) dialog.appendChild?.(pointer);
+      const anchor =
+        target.id ||
+        (target.matches?.("[data-order]")
+          ? "order:" + target.getAttribute("data-order")
+          : target.matches?.("[data-species]")
+            ? "species"
+            : target.matches?.("[data-substrate]")
+              ? "substrate"
+              : "target");
+      let r = target.getBoundingClientRect();
+      const inDialog = dialog.open,
+        bounds = inDialog ? dialog.getBoundingClientRect() : null;
+      if (anchor !== guidePointerAnchor) {
+        guidePointerAnchor = anchor;
+        if (
+          inDialog &&
+          (r.top < bounds.top + 3 || r.bottom > bounds.bottom - 3)
+        ) {
+          target.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+          r = target.getBoundingClientRect();
+        }
+      }
+      if (inDialog && (r.bottom < bounds.top || r.top > bounds.bottom)) {
+        pointer.hidden = true;
+        return;
+      }
+      if (!r.width || !r.height) {
+        pointer.hidden = true;
+        return;
+      }
+      const below = r.top < 29;
+      let left = Math.max(
+          2,
+          Math.min((window.innerWidth || 1280) - 20, r.left + r.width / 2 - 9),
+        ),
+        top = below ? r.bottom + 3 : r.top - 27,
+        rotation = below ? "rotate(180deg)" : "none";
+      // Entrar de lado evita tapar el botón Micelio o el encabezado Pedir.
+      if (target.matches?.("[data-species],[data-substrate]")) {
+        left = r.right + 6;
+        top = r.top + r.height / 2 - 12;
+        rotation = "rotate(90deg)";
+      } else if (target.matches?.("[data-order]")) {
+        left = r.left - 25;
+        top = r.top + r.height / 2 - 12;
+        rotation = "rotate(-90deg)";
+      }
+      if (pointer.style) {
+        pointer.style.left = left + "px";
+        pointer.style.top = top + "px";
+        pointer.style.transform = rotation;
+      }
+    }
+
+    // Resolución temporal de dependencias. Nunca modifica hitos, inventarios ni selectores.
+    function guideAdvancedMode(step) {
+      if (step.mode) return step.mode;
+      if (step.hood === "liquid" || step.hood === "cordy") return step.hood;
+      if (step.id === "liquidStir" || step.id.startsWith("cordyLiquid"))
+        return "liquid";
+      if (step.id.startsWith("cordySubstrate") || step.species === "Cordyceps")
+        return "cordy";
+      return "wood";
+    }
+    function guideAdvancedSpecies(step, mode) {
+      return (
+        step.species ||
+        (mode !== "wood"
+          ? "Cordyceps"
+          : selectedSpecies === "Reishi"
+            ? "Reishi"
+            : "Melena de leon")
+      );
+    }
+    function guideAdvancedPrepType() {
+      return woodPrepState.type || "wood";
+    }
+    function guideAdvancedHopper(mode) {
+      return mode === "wood" ? woodHopper : specialHoppers[mode];
+    }
+    function guideAdvancedNextPrep(mode, species, next) {
+      return next(
+        mode === "liquid"
+          ? "cordyLiquidPrep"
+          : mode === "cordy"
+            ? "cordySubstratePrep"
+            : "woodPrep",
+        { mode, species },
+      );
+    }
+    function guideAdvancedNextPot(mode, species, next) {
+      return next(
+        mode === "liquid"
+          ? "cordyLiquidSterilize"
+          : mode === "cordy"
+            ? "cordySubstrateSterilize"
+            : "woodSterilizer",
+        { mode, species },
+      );
+    }
+    function guideAdvancedNextHood(mode, species, next) {
+      return next(
+        mode === "liquid"
+          ? "cordyLiquidInoculate"
+          : mode === "cordy"
+            ? "cordySubstrateInoculate"
+            : "glovebox",
+        { mode, species, hood: mode === "wood" ? "solid" : mode },
+      );
+    }
+    function guideAdvancedLiveCordy() {
+      const usable = (b) =>
+        b && b.species === "Cordyceps" && !b.contaminated && !b.exhausted;
+      if (fruitingCart.some(usable) || fruitShelves.some(usable))
+        return "cordyFruiting";
+      if (waitingBagData.some(usable) || incubation.some(usable))
+        return "cordyIncubation";
+      return null;
+    }
+    function guideAdvancedLiquidInFlight() {
+      return (
+        liquidPending.length > 0 ||
+        liquidStirrers.some(Boolean) ||
+        liquidHoodJob?.kind === "liquid"
+      );
+    }
+    function guideAdvancedPrepPlan(step, mode, species, next) {
+      // Un recipiente que ya llegó a una etapa posterior no debe fabricarse de nuevo.
+      if (
+        preparedFor(mode) > 0 ||
+        sterileFor(mode) > 0 ||
+        tankItemTypes().includes(mode)
+      )
+        return guideAdvancedNextPot(mode, species, next);
+      const prep = woodPrepState,
+        type = guideAdvancedPrepType(),
+        hopper = guideAdvancedHopper(mode);
+      if ((prep.bag || woodPrepExit) && type !== mode)
+        return guideAdvancedNextPrep(
+          type,
+          type === "wood" ? guideAdvancedSpecies({}, "wood") : "Cordyceps",
+          next,
+        );
+      if (woodPrepExit) return { step, wait: true };
+      if (prepMode !== mode) return { step, action: "selector" };
+      const container = mode === "wood" ? bags : liquidEmpty;
+      if (!prep.bag && container <= 0)
+        return guideNeed(step, mode === "wood" ? "bolsas" : "frascos");
+      if (!prep.bag) return { step, point: [279, 70] };
+      if (mode !== "liquid" && !prep.sawdust && !(hopper?.sawdust > 0)) {
+        const stock = mode === "wood" ? woodStock : cordySubStock;
+        if (stock <= 0)
+          return guideNeed(step, "paja", {
+            substrate: mode === "wood" ? "madera" : "cordy",
+          });
+      }
+      if (!prep.nutrients && !(hopper?.nutrients > 0) && nutrientStock <= 0)
+        return guideNeed(step, "nutrientes");
+      if (mode !== "liquid" && !prep.sawdust)
+        return hopper?.sawdust > 0 && woodPrepLevel === 2
+          ? { step, wait: true }
+          : { step, point: [50, 61] };
+      if (!prep.nutrients)
+        return hopper?.nutrients > 0 && woodPrepLevel === 2
+          ? { step, wait: true }
+          : { step, point: [39, 130] };
+      if (prep.water < 1 && woodPrepLevel < 1)
+        return { step, point: [180, 20] };
+      return { step, wait: true };
+    }
+    function guideAdvancedPotPlan(step, mode, species, next) {
+      const types = tankItemTypes(),
+        hasType = types.includes(mode);
+      if (woodTank.left > 0 || (woodTank.lid || 0) > 0.1)
+        return { step, wait: true };
+      if (hasType) {
+        if ((woodTank.water || 0) < 1)
+          return woodAutoWater
+            ? { step, wait: true }
+            : { step, point: [285, 34] };
+        return { step, point: [198, 180] };
+      }
+      if (types.length && !compatibleTankType(mode)) {
+        // La carga incompatible ya puesta se termina con su tipo original.
+        const loaded = types[0];
+        return guideAdvancedNextPot(
+          loaded,
+          loaded === "wood" ? guideAdvancedSpecies({}, "wood") : "Cordyceps",
+          next,
+        );
+      }
+      if (sterileFor(mode) > 0)
+        return guideAdvancedNextHood(mode, species, next);
+      if (preparedFor(mode) <= 0)
+        return guideAdvancedNextPrep(mode, species, next);
+      const card = visiblePreparedCards().find((card) => card.type === mode);
+      return card
+        ? { step, point: [card.r[0] + card.r[2] / 2, card.r[1] - 18] }
+        : { step, wait: true };
+    }
+    function guideAdvancedHoodPlan(step, mode, species, next) {
+      // Un trabajo en cabina ya consumió sus ingredientes: esperarlo, no volver a pedirlos.
+      if (woodBagJob || liquidHoodJob) return { step, wait: true };
+      if (gloveJar && gloveJar !== species)
+        return guideAdvancedNextHood("wood", gloveJar, next);
+      if (mode !== "wood") {
+        const live = guideAdvancedLiveCordy();
+        if (live) return next(live, { species: "Cordyceps" });
+      }
+      const needsSelector =
+        selectedSpecies !== species ||
+        hoodMode !== (mode === "wood" ? "solid" : mode);
+      if (mode === "liquid") {
+        if (matureLiquidCount() > 0)
+          return guideAdvancedNextHood("cordy", "Cordyceps", next);
+        if (guideAdvancedLiquidInFlight())
+          return next("liquidStir", { species: "Cordyceps", mode: "liquid" });
+        if (liquidSterile <= 0)
+          return guideAdvancedNextPot("liquid", "Cordyceps", next);
+        if (speciesStockTotal("Cordyceps") <= 0)
+          return guideNeed(step, "micelio", { species: "Cordyceps" });
+        if (needsSelector) return { step, action: "selector" };
+        return { step, point: [49, 47] };
+      }
+      if (mode === "cordy") {
+        if (matureLiquidCount() <= 0)
+          return guideAdvancedLiquidInFlight()
+            ? next("liquidStir", { species: "Cordyceps", mode: "liquid" })
+            : guideAdvancedNextHood("liquid", "Cordyceps", next);
+        if (sterileCordy <= 0)
+          return guideAdvancedNextPot("cordy", "Cordyceps", next);
+        if (needsSelector) return { step, action: "selector" };
+        return { step, point: [49, 47] };
+      }
+      if (!gloveWood && sterileWood <= 0)
+        return guideAdvancedNextPot("wood", species, next);
+      const inside = [gloveJar, ...gloveJarQueue].filter(
+        (name) => name === species,
+      ).length;
+      if (inside <= 0 && speciesStockTotal(species) <= 0)
+        return guideNeed(step, "micelio", { species });
+      if (needsSelector) return { step, action: "selector" };
+      if (gloveLevel < 3 && !gloveWood) return { step, point: [49, 114] };
+      if (gloveLevel < 3 && !gloveJar) return { step, point: [48, 47] };
+      if (!gloveGuideDone && gloveLevel < 3 && !gloveCleanedForLoad)
+        return cleaning > 0
+          ? { step, point: [287, 34] }
+          : guideNeed(step, "limpieza");
+      const p = glovePoint(129, 80);
+      return { step, point: [p.x, p.y] };
+    }
+    function guideAdvancedStirPlan(step, next) {
+      const live = guideAdvancedLiveCordy();
+      if (live) return next(live, { species: "Cordyceps" });
+      if (liquidHoodJob?.kind === "cordy")
+        return {
+          step: guideStep("cordySubstrateInoculate", {
+            mode: "cordy",
+            hood: "cordy",
+            species: "Cordyceps",
+          }),
+          wait: true,
+        };
+      if (matureLiquidCount() > 0)
+        return guideAdvancedNextHood("cordy", "Cordyceps", next);
+      if (liquidPending.length > 0)
+        return liquidStirrers.filter(Boolean).length < agitationCapacity
+          ? { step, point: [58, 173] }
+          : { step, wait: true };
+      if (liquidStirrers.some(Boolean)) return { step, wait: true };
+      if (liquidHoodJob?.kind === "liquid")
+        return {
+          step: guideStep("cordyLiquidInoculate", {
+            mode: "liquid",
+            hood: "liquid",
+            species: "Cordyceps",
+          }),
+          wait: true,
+        };
+      return guideAdvancedNextHood("liquid", "Cordyceps", next);
+    }
+    function guideAdvancedExtractionPlan(step, next) {
+      if (bottlingJob) return { step: guideStep("bottling"), wait: true };
+      if (extractInventory.length > 0) return next("bottling");
+      if (extraction.phase === "grinding" || extraction.phase === "running")
+        return { step, wait: true };
+      if (extraction.phase === "ground") return { step, point: [125, 113] };
+      if (extraction.phase === "loaded") return { step, point: [207, 167] };
+      let species = step.species || extractSpecies;
+      if (!step.species && shopInventoryGrams(species) < 250) {
+        const available = availableSpecies().find(
+          (s) => shopInventoryGrams(s.name) >= 250,
+        );
+        if (available) species = available.name;
+      }
+      const target = { ...step, species };
+      if (shopInventoryGrams(species) < 250)
+        return next("fruiting", { species });
+      return extractSpecies !== species
+        ? { step: target, point: [65, 21] }
+        : { step: target, point: [40, 46] };
+    }
+    function guideAdvancedNutrientPlan(step, next) {
+      if (spirulinaNutrients > 0 || spirulina.fed || spirulina.inoculated)
+        return next("spirulina");
+      if (nutrientMix.running) return { step, wait: true };
+      if (nutrientRecipe !== "spirulina" && !nutrientMix.a && !nutrientMix.b)
+        return { step, point: [95, 14] };
+      // Una receta de hongos ya empezada debe terminarse antes de poder cambiarla.
+      if (!nutrientMix.a) return { step, point: [45, 58] };
+      if (!nutrientMix.b) return { step, point: [271, 58] };
+      return { step, wait: true };
+    }
+    function guideAdvancedSpirulinaPlan(step, next) {
+      if (spirulina.inoculated && spirulina.progress >= 1)
+        return { step, point: [164, 43] };
+      if (spirulina.inoculated) {
+        if (
+          !spirulinaFlaskCycle &&
+          spirulinaInoculum.volume <= 0 &&
+          spirulinaMother.volume >= 1 &&
+          spirulinaMother.maturity >= 1
+        )
+          return { step, point: [48, 25] };
+        return { step, wait: true };
+      }
+      if (!spirulina.fed)
+        return spirulinaNutrients > 0
+          ? { step, point: [273, 35] }
+          : next("nutrients");
+      if (spirulina.water < 1 || !spirulina.mediumReady)
+        return { step, wait: true };
+      if (spirulinaFlaskCycle) return { step, wait: true };
+      if (spirulinaInoculum.volume <= 0)
+        return spirulinaMother.volume >= 1 && spirulinaMother.maturity >= 1
+          ? { step, point: [48, 25] }
+          : { step, wait: true };
+      if (spirulinaInoculum.volume < 1 || spirulinaInoculum.maturity < 1)
+        return { step, wait: true };
+      return { step, point: [48, 113] };
+    }
+    function guideAdvancedPlan(input, next) {
+      if (!input) return undefined;
+      const mode = guideAdvancedMode(input),
+        species = guideAdvancedSpecies(input, mode),
+        step = { ...input, mode, ...(input.species ? {} : { species }) },
+        view = step.view || step.id;
+      if (
+        mode !== "wood" &&
+        (view === "woodPrep" || view === "woodSterilizer")
+      ) {
+        const live = guideAdvancedLiveCordy();
+        if (live) return next(live, { species: "Cordyceps" });
+        if (liquidHoodJob?.kind === "cordy")
+          return {
+            step: guideStep("cordySubstrateInoculate", {
+              mode: "cordy",
+              hood: "cordy",
+              species: "Cordyceps",
+            }),
+            wait: true,
+          };
+        if (mode === "liquid" && matureLiquidCount() > 0)
+          return guideAdvancedNextHood("cordy", "Cordyceps", next);
+        if (mode === "liquid" && guideAdvancedLiquidInFlight())
+          return next("liquidStir", { mode: "liquid", species: "Cordyceps" });
+      }
+      if (view === "woodPrep")
+        return guideAdvancedPrepPlan(step, mode, species, next);
+      if (view === "woodSterilizer")
+        return guideAdvancedPotPlan(step, mode, species, next);
+      if (view === "glovebox") {
+        step.hood = mode === "wood" ? "solid" : mode;
+        return guideAdvancedHoodPlan(step, mode, species, next);
+      }
+      if (view === "liquidStir") return guideAdvancedStirPlan(step, next);
+      if (view === "extraction")
+        return guideAdvancedExtractionPlan(input, next);
+      if (view === "bottling") {
+        if (bottlingJob) return { step: input, wait: true };
+        return extractInventory.length > 0
+          ? { step: input, point: [51, 44] }
+          : next("extraction");
+      }
+      if (view === "nutrients") return guideAdvancedNutrientPlan(input, next);
+      if (view === "spirulina") return guideAdvancedSpirulinaPlan(input, next);
+      return undefined;
+    }
+
+    // Recovery planner: read-only, with a historical route step retained by the caller.
+    function guideCultivationPlan(step, next) {
+      const id = step.id;
+      const incubationStep = id === "incubation" || id === "cordyIncubation";
+      const fruitingStep = id === "fruiting" || id === "cordyFruiting";
+      if (!incubationStep && !fruitingStep && id !== "shop") return undefined;
+      const name =
+        step.species || (id.startsWith("cordy") ? "Cordyceps" : "Pleurotus");
+      const species = (b) => b?.species || "Pleurotus";
+      const healthy = (b) => !!b && !b.contaminated && !b.exhausted;
+      const matching = (b) => healthy(b) && species(b) === name;
+      const inc = incubation.slice(0, incubationCapacity);
+      const fruit = fruitShelves.slice(0, fruitingCapacity);
+      const inWaiting =
+        waitingBagData.slice(0, waitingIncubation).some(matching) ||
+        (name === "Pleurotus" && waitingIncubation > waitingBagData.length);
+      const inCart = fruitingCart.some(matching);
+      const cell = (view, index) => ({
+        step: guideStep(view, {
+          species: species((view === "incubation" ? inc : fruit)[index]),
+        }),
+        point: [incSlots[index][0] + 31, incSlots[index][1] - 18],
+      });
+      const wait = (view) => ({
+        step: guideStep(view, { species: name }),
+        wait: true,
+      });
+      const produce = () =>
+        name === "Pleurotus"
+          ? next("mix")
+          : name === "Cordyceps"
+            ? next("cordySubstrateInoculate", { species: name, hood: "cordy" })
+            : next("glovebox", { species: name, hood: "solid" });
+      const producing =
+        (bagJob && species(bagJob) === name) ||
+        (woodBagJob && species(woodBagJob) === name) ||
+        (liquidHoodJob?.kind === "cordy" && name === "Cordyceps");
+
+      // A full room is resolved before creating another bag. Never discard a healthy
+      // growing block: transfer/harvest ready blocks, remove unusable ones, or wait.
+      const fullIncubation = () => {
+        if (inc.some((b) => !b)) return null;
+        let i = inc.findIndex((b) => b.contaminated || b.exhausted);
+        if (i < 0) i = inc.findIndex((b) => healthy(b) && b.progress >= 1);
+        return i >= 0 ? cell("incubation", i) : wait("incubation");
+      };
+      const fullFruiting = () => {
+        if (fruit.some((b) => !b)) return null;
+        let i = fruit.findIndex((b) => b.contaminated || b.exhausted);
+        if (i < 0)
+          i = fruit.findIndex((b) => healthy(b) && b.fruitProgress >= 1);
+        return i >= 0 ? cell("fruiting", i) : wait("fruiting");
+      };
+
+      if (id === "shop") {
+        const cards = visibleShopCards().filter((card) => shopUnits(card) >= 1);
+        const card = cards.find((card) =>
+          shopQueue.some(
+            (customer) =>
+              customerReady(customer) &&
+              (customer.product || "mushroom") === card.product &&
+              (customer.species || "Pleurotus") === card.species,
+          ),
+        );
+        if (card)
+          return { step, point: [card.r[0] + card.r[2] / 2, card.r[1] - 19] };
+        // A complete portion already exists: customer arrival is the missing event,
+        // not additional production. Residual grams never count across species.
+        if (cards.length) return { step, wait: true };
+        const active =
+          fruit.find(healthy) ||
+          fruitingCart.find(healthy) ||
+          inc.find(healthy) ||
+          waitingBagData.slice(0, waitingIncubation).find(healthy);
+        return next("fruiting", { species: active ? species(active) : name });
+      }
+
+      if (incubationStep) {
+        const ready = inc.findIndex((b) => matching(b) && b.progress >= 1);
+        if (ready >= 0) return cell("incubation", ready);
+        // An assistant may have already moved the specimen past this historical
+        // milestone. Follow its product forward rather than rebuilding it forever.
+        if (fruit.some(matching) || inCart)
+          return next(name === "Cordyceps" ? "cordyFruiting" : "fruiting", {
+            species: name,
+          });
+        if (inc.some(matching)) return wait("incubation");
+        const blocked = fullIncubation();
+        if (blocked) return blocked;
+        if (inWaiting)
+          return {
+            step: guideStep("incubation", { species: name }),
+            point: [43, 181],
+          };
+        if (producing) return { step, wait: true };
+        return produce();
+      }
+
+      const ready = fruit.findIndex((b) => matching(b) && b.fruitProgress >= 1);
+      if (ready >= 0) return cell("fruiting", ready);
+      if (fruit.some(matching)) return wait("fruiting");
+      const blockedFruit = fullFruiting();
+      if (blockedFruit) return blockedFruit;
+      if (inCart)
+        return {
+          step: guideStep("fruiting", { species: name }),
+          point: [43, 181],
+        };
+      const readyInc = inc.findIndex((b) => matching(b) && b.progress >= 1);
+      if (readyInc >= 0) return cell("incubation", readyInc);
+      if (inc.some(matching)) return wait("incubation");
+      const blockedInc = fullIncubation();
+      if (blockedInc) return blockedInc;
+      if (inWaiting)
+        return {
+          step: guideStep("incubation", { species: name }),
+          point: [43, 181],
+        };
+      if (producing) return { step, wait: true };
+      return produce();
+    }
+
     function routeModeArrow() {
       const r = document.querySelector("#station-mode").getBoundingClientRect(),
         canvas = cv.getBoundingClientRect();
@@ -14821,13 +15506,14 @@
       };
     }
     function routeGuideTarget() {
-      const step = currentRouteModule();
+      const plan = routeRecoveryPlan(),
+        step = plan?.step;
       if (
         !step ||
-        progressionBypass ||
-        drag ||
-        progression.notices.length ||
-        upgradeMenuOpen
+        guideBlocked() ||
+        plan.order ||
+        document.querySelector("#orders").open ||
+        document.querySelector("#mycelium-inventory").open
       )
         return null;
       const id = step.id,
@@ -14879,6 +15565,9 @@
       }
       const view = !auxView && close ? (mixView ? "mix" : "crusher") : auxView;
       if (view !== destination) return up;
+      if (plan.wait) return null;
+      if (plan.action === "selector") return routeModeArrow();
+      if (plan.point) return { x: plan.point[0], y: plan.point[1] };
       if (step.mode && view === "woodPrep" && prepMode !== step.mode)
         return routeModeArrow();
       if (
@@ -14899,91 +15588,6 @@
             : !mixedJars
               ? [39, 24]
               : [270, 119];
-      else if (destination === "incubation" || destination === "fruiting") {
-        const list = destination === "incubation" ? incubation : fruitShelves;
-        const index = list.findIndex(
-          (b) =>
-            b &&
-            !b.contaminated &&
-            !b.exhausted &&
-            (!step.species || b.species === step.species) &&
-            (destination === "incubation"
-              ? b.progress >= 1
-              : b.fruitProgress >= 1),
-        );
-        if (index >= 0) p = [incSlots[index][0] + 31, incSlots[index][1] - 18];
-        else if (
-          destination === "incubation" ? waitingIncubation : fruitingCart.length
-        )
-          p = [43, 181];
-      } else if (destination === "shop") {
-        const card = visibleShopCards().find((card) => shopUnits(card) >= 1);
-        if (card && shopQueue.some(customerReady))
-          p = [card.r[0] + card.r[2] / 2, card.r[1] - 19];
-      } else if (destination === "woodPrep") {
-        if (prepMode === "wood" && woodPrepGuideStep()) return null;
-        p = woodPrepExit
-          ? null
-          : !woodPrepState.bag
-            ? [279, 70]
-            : !woodPrepState.sawdust
-              ? [50, 61]
-              : !woodPrepState.nutrients
-                ? [39, 130]
-                : woodPrepState.water < 1 && woodPrepLevel < 1
-                  ? [180, 20]
-                  : null;
-      } else if (destination === "woodSterilizer") {
-        const card = visiblePreparedCards().find(
-          (card) => card.type === (step.mode || sterilizerMode),
-        );
-        p = woodTank.left
-          ? null
-          : !woodTank.n
-            ? card
-              ? [card.r[0] + 40, card.r[1] - 18]
-              : null
-            : (woodTank.water || 0) < 1
-              ? woodAutoWater
-                ? null
-                : [285, 34]
-              : [198, 180];
-      } else if (destination === "glovebox") {
-        if (step.hood) p = liquidHoodJob ? null : [49, 47];
-        else {
-          if (gloveGuideStep()) return null;
-          p = woodBagJob
-            ? null
-            : !gloveAvailableBags()
-              ? [49, 114]
-              : !gloveAvailableJars()
-                ? [48, 47]
-                : [160, 80];
-        }
-      } else if (destination === "liquidStir")
-        p = liquidPending.length ? [58, 173] : null;
-      else if (destination === "extraction")
-        p = { empty: [40, 46], ground: [125, 113], loaded: [207, 167] }[
-          extraction.phase
-        ];
-      else if (destination === "bottling")
-        p = !bottlingJob && extractInventory.length ? [51, 44] : null;
-      else if (destination === "nutrients") {
-        if (!nutrientMix.running)
-          p =
-            nutrientRecipe !== "spirulina" && !nutrientMix.a && !nutrientMix.b
-              ? [95, 14]
-              : !nutrientMix.a
-                ? [45, 58]
-                : [271, 58];
-      } else if (destination === "spirulina") {
-        if (spirulina.progress >= 1) p = [164, 43];
-        else if (!spirulina.fed) p = [273, 35];
-        else if (spirulina.mediumReady && !spirulina.inoculated) {
-          if (spirulinaInoculum.volume < 0.5) p = [48, 25];
-          else if (spirulinaInoculum.maturity >= 1) p = [48, 113];
-        }
-      }
       return p ? { x: p[0], y: p[1] } : null;
     }
     function drawRouteGuide() {
@@ -16117,6 +16721,7 @@
           : Math.min(0.15, (now - last) / 1000);
       last = now;
       if (productRevealQueue.length) {
+        document.querySelector("#route-pointer").hidden = true;
         requestAnimationFrame(frame);
         return;
       }
@@ -16221,6 +16826,7 @@
       updateEconomyControls();
       flushReadySignals();
       scene(dt);
+      updateGuidePointer();
       requestAnimationFrame(frame);
     }
     document.addEventListener("visibilitychange", () => {
