@@ -102,3 +102,7 @@ Petri usa una silueta oval baja, tapa de doble borde, espesor de vidrio verde az
 ## Materiales de la sala principal
 
 Mezcla reutiliza el frasco redondeado de campana con Pleurotus fijo. Paja de paca, cesto y arrastre comparte hebras irregulares, sin renglones ni rectángulo de fondo; los cordeles conservan la silueta de la paca. La cal comparte cubeta crema, tapa acero, asa y Ca en sus tres usos.
+
+## Aparatos principales
+
+Triturador, tanque con llave y llenadora usan dibujantes compartidos entre miniatura y módulo. El tanque es acero opaco con agua visible por la apertura superior, borde redondeado y marcas; la mesa sostiene sus pies. La llenadora tiene tolvas, ventana con contenido recortado, paleta, boquilla y seis indicadores; no pintar fibras de bandeja por fuera de ella. Mantener el tamaño variable del tanque y las zonas de control.

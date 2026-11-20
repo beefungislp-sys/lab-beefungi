@@ -145,3 +145,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Auditoría de assets y próximas tandas](outputs/AUDITORIA-ASSETS-REMODELACION.md): inventario previo de 32 arrastres, referencias y familias pendientes. La [pasada de Petri y limpieza](outputs/TANDA-AUDITORIA-ASSETS-PETRI-LIMPIEZA.md) retira las tarjetas restantes y aplica el método de imagen a código a ambos objetos.
 
 [Materiales principales](outputs/TANDA-MATERIALES-PRINCIPALES.md): micelio compartido, paja fibrosa y cal reutilizada. [Plan de cierre por tandas](outputs/PLAN-CIERRE-REMODELACION.md).
+
+[Aparatos principales](outputs/TANDA-APARATOS-PRINCIPALES.md): triturador, cuba con llave y llenadora desde referencias, compartidos con sus miniaturas.

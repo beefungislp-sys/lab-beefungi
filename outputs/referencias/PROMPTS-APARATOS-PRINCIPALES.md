@@ -1,0 +1,18 @@
+# Aparatos principales
+
+Referencias generadas con image_gen integrado, para recrear en código con el fondo y las mesas existentes.
+
+## Triturador
+```text
+Use case: stylized-concept. Single isolated game apparatus reference for Lab BeeFungi, to recreate in native canvas code. Cozy detailed 16-bit pixel art, front slightly elevated perspective, level horizontal lines and straight verticals, brushed blue-green stainless, cream warm highlights from upper left, restrained sage shadows, clean stepped outline and readable silhouette on mobile. Actual transparent background. No room, floor, bench or table beneath apparatus, no words, labels, UI panels, border or watermark. Preserve a practical compact laboratory scale, no photorealistic 3D. Compact electric straw shredder: wide rectangular funnel hopper at top with dark visible mouth, sloping steel inner walls, six visible blunt feed rollers within a lower dark slot, sturdy compact steel housing with side motor and small amber status light, tiny ventilation slots and bolted seams. Short vertical discharge chute centered underneath, two short rubber mounting feet, cable tidied to one side. Main body roughly as wide as tall, hopper spans its whole width. No loose straw floating around, no people, no extra equipment.
+```
+
+## Pasteurizador
+```text
+Use case: stylized-concept. Single isolated game apparatus reference for Lab BeeFungi, to recreate in native canvas code. Cozy detailed 16-bit pixel art, front slightly elevated perspective, level horizontal lines and straight verticals, brushed blue-green stainless, cream warm highlights from upper left, restrained sage shadows, clean stepped outline and readable silhouette on mobile. Actual transparent background. No room, floor, bench or table beneath apparatus, no words, labels, UI panels, border or watermark. Preserve a practical compact laboratory scale, no photorealistic 3D. Small open alkaline straw soaking tank: squat rounded-rectangular stainless basin with thick oval-cornered rim, visibly hollow inner well holding pale blue water at halfway mark, subtle meniscus. A short steel faucet directly above the back right rim with conspicuous red lever. Two recessed side handles, quiet front capacity marks without digits, small bottom drain valve. Main basin about 1.4 times as wide as high, not a huge barrel. Transparent walls are NOT desired: show water only through the open top. No lid, no flame, no steam, no cal bucket, no additional props.
+```
+
+## Llenadora de mezcla
+```text
+Use case: stylized-concept. Single isolated game apparatus reference for Lab BeeFungi, to recreate in native canvas code. Cozy detailed 16-bit pixel art, front slightly elevated perspective, level horizontal lines and straight verticals, brushed blue-green stainless, cream warm highlights from upper left, restrained sage shadows, clean stepped outline and readable silhouette on mobile. Actual transparent background. No room, floor, bench or table beneath apparatus, no words, labels, UI panels, border or watermark. Preserve a practical compact laboratory scale, no photorealistic 3D. Countertop automatic straw-and-mycelium bag filling mixer: rounded rectangle steel housing, two compact top inlet funnels (one straw, one grain inoculum, no labels), large central dark clear inspection window with a small horizontal paddle inside, three small bolts along sides, amber status light, little six-segment wear indicator on the lower front. A short spout extends to the right and bends down over ONE empty transparent flexible grow bag resting at its own small steel platform, bag has filter patch and folded rim. Broad horizontal composition, coherent with stainless laminar hood, no extra bench below, no futuristic tubes or large blue panels.
+```

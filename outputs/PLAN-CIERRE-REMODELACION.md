@@ -5,7 +5,7 @@ Continuación autorizada del inventario de arte. Sin asignar nuevas letras o nú
 | Orden | Tanda | Estado |
 | --- | --- | --- |
 | 1 | Materiales principales: micelio de mezcla, paja y cal | Completada: TANDA-MATERIALES-PRINCIPALES.md |
-| 2 | Aparatos principales: triturador, tanque/llave y llenadora de mezcla | Pendiente |
+| 2 | Aparatos principales: triturador, tanque/llave y llenadora de mezcla | Completada: TANDA-APARATOS-PRINCIPALES.md |
 | 3 | Extracción y envasado: cristalería, molido, molino, destilador y goteros | Pendiente |
 | 4 | Nutrientes y espirulina: sales, recipientes, matraces y reactor | Pendiente |
 

@@ -67,3 +67,7 @@ Ambas se recrean en código compartido para módulo y arrastre. [Prompts de las 
 ## Materiales principales
 
 `PAJA-FAMILIA-CONCEPTO.png` y `CAL-BOTE-CONCEPTO.png`: variantes de paja y bote de cal, recreados como dibujantes compartidos. [Prompts](PROMPTS-MATERIALES-PRINCIPALES.md).
+
+## Aparatos principales
+
+`TRITURADOR-APARATO-CONCEPTO.png`, `PASTEURIZADOR-APARATO-CONCEPTO.png` y `LLENADORA-MEZCLA-CONCEPTO.png`: referencias de equipo aislado para el código compartido de sala y estación. [Prompts](PROMPTS-APARATOS-PRINCIPALES.md).
