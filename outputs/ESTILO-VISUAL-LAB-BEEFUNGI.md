@@ -98,3 +98,7 @@ La tienda omite al personaje del jugador. Ordenar a los clientes por profundidad
 Los 32 tipos de arrastre se dibujan sin tarjeta adicional. Mantener centro del mouse, separación del dedo y marcador real. Los fondos de cuarto, repisas y superficies de los recipientes se conservan.
 
 Petri usa una silueta oval baja, tapa de doble borde, espesor de vidrio verde azulado, agar ámbar y colonia radial blanca. Mantener 29 × 14 píxeles lógicos para reutilizarlo en reserva, arrastre y animación. Limpieza combina spray transparente aqua con gatillo crema y paño plegado, con el mismo dibujante en mezcla y cabina. Las referencias quedan en `referencias/PETRI-MICELIO-CONCEPTO.png` y `referencias/KIT-LIMPIEZA-CONCEPTO.png`.
+
+## Materiales de la sala principal
+
+Mezcla reutiliza el frasco redondeado de campana con Pleurotus fijo. Paja de paca, cesto y arrastre comparte hebras irregulares, sin renglones ni rectángulo de fondo; los cordeles conservan la silueta de la paca. La cal comparte cubeta crema, tapa acero, asa y Ca en sus tres usos.

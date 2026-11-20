@@ -901,57 +901,73 @@
       c.save();
       c.translate(Math.round(x), Math.round(y));
       c.scale(scale, scale);
-      box(0, 4, 38, 23, "#a8793f");
-      box(0, 0, 38, 22, "#e9bf66");
-      box(3, 3, 32, 2, "#f8dc90");
-      for (let i = 0; i < 30; i++) {
-        artRect(
-          2 + ((i * 11) % 32),
-          2 + ((i * 7) % 20),
-          2 + (i % 5),
-          0.5,
-          ["#ffe6a1", "#d7a34d", "#f4cd79"][i % 3],
+      // Caras compactadas e irregulares: el volumen pertenece a la paca, no a una tarjeta.
+      drawLaminarFace(
+        [
+          [0, 7],
+          [4, 4],
+          [34, 5],
+          [38, 8],
+          [37, 24],
+          [33, 27],
+          [4, 26],
+          [0, 22],
+        ],
+        "#b18340",
+      );
+      drawLaminarFace(
+        [
+          [0, 7],
+          [4, 1],
+          [31, 0],
+          [38, 6],
+          [34, 10],
+          [4, 10],
+        ],
+        "#e9c16e",
+      );
+      drawLaminarFace(
+        [
+          [34, 9],
+          [38, 6],
+          [38, 23],
+          [33, 26],
+          [33, 11],
+        ],
+        "#956a34",
+      );
+      drawStrawField(1, 8, 35, 17, 43, false);
+      drawStrawField(2, 1, 34, 8, 24, true);
+      const edge = [-1, 0, 40, 27];
+      for (let i = 0; i < 8; i++) {
+        const left = i % 2 === 0,
+          yy = 4 + (i % 4) * 6;
+        drawStrawStem(
+          left ? -1 : 35,
+          yy,
+          left ? 3 : 39,
+          yy + 2,
+          i % 3 ? "#e4b964" : "#f6d68b",
+          edge,
         );
       }
-      artRect(1, 22, 35, 1, "#be8942");
-      for (let i = 0; i < 13; i++)
-        box(3 + ((i * 7) % 31), 7 + ((i * 3) % 13), 5, 1, "#bc8a43");
-      box(8, 0, 3, 25, "#75674f");
-      box(27, 0, 3, 25, "#75674f");
-      // Textura adaptada del fork electronicwave: volumen, briznas, motas y cordel con torsión.
-      artRect(1, 0, 36, 1, "#fff0b8");
-      artRect(0, 1, 1, 20, "#f6d68a");
-      artRect(37, 1, 1, 21, "#9c6d33");
-      artRect(36, 2, 1, 19, "#c8973f");
-      artRect(0, 21, 38, 1, "#9b6a30");
-      for (let i = 0; i < 26; i++) {
-        const sx = 1 + Math.floor(texHash(i, 1, 60) * 33),
-          sy = 1 + Math.floor(texHash(i, 2, 60) * 19),
-          len = 2 + Math.floor(texHash(i, 3, 60) * 4),
-          col = ["#fff3c4", "#c48d3c", "#e0b45c", "#8f6430"][i % 4];
-        artRect(sx, sy, len, 0.5, col);
-        if (i % 3 === 0) artRect(sx + len, sy + 0.5, 1, 0.5, col);
-      }
-      for (let i = 0; i < 14; i++)
-        artRect(
-          1 + Math.floor(texHash(i, 5, 61) * 35),
-          1 + Math.floor(texHash(i, 6, 61) * 20),
-          0.5,
-          0.5,
-          i % 2 ? "#8a5f2a" : "#fff7d8",
-        );
-      // briznas sueltas en los bordes
-      for (let i = 0; i < 5; i++) {
-        artRect(-1, 3 + i * 4, 1.5, 0.5, "#e9c46e");
-        artRect(37.5, 5 + i * 4, 1.5, 0.5, "#c9973f");
-      }
-      for (const tx of [8, 27]) {
-        artRect(tx + 0.5, 0, 0.5, 25, "#a99a7c");
-        artRect(tx + 2.5, 0, 0.5, 25, "#4d4434");
-        for (let yy = 1; yy < 24; yy += 3) artRect(tx, yy, 3, 0.5, "#5b5040");
-        box(tx - 1, 10, 5, 3, "#6a5c45");
-        artRect(tx, 10, 2, 0.5, "#b2a383");
-        artRect(tx + 3, 13, 1, 2, "#75674f");
+      // Cordel oscuro que se curva sobre la cara superior y aprieta el frente.
+      for (const tx of [10, 28]) {
+        const cord = [
+          [tx - 3, 1, 4],
+          [tx - 1.5, 5, 4],
+          [tx, 9, 5],
+          [tx + 0.5, 14, 6],
+          [tx, 20, 6],
+        ];
+        for (const [xx, yy, hh] of cord) {
+          artRect(xx, yy, 2, hh, "#66543a");
+          artRect(xx + 0.5, yy, 0.5, hh, "#b49a68");
+          artRect(xx + 1.5, yy, 0.5, hh, "#4e4535");
+          artRect(xx, yy + 1, 1.5, 0.5, "#d0b584");
+        }
+        artRect(tx - 0.5, 12, 3, 2, "#796143");
+        artRect(tx, 12, 1.5, 0.5, "#d8bd89");
       }
       c.restore();
     }
@@ -1139,24 +1155,55 @@
       artRect(x + 3, y + 3, w / 2 - 5, 1, "#edf1d5");
       box(x - 2, y + h - 1, w + 4, 3, "#dbc18d");
     }
-    function drawStrawFibers(x, y, w, h, count, pale = false) {
-      // Semilla local: textura irregular estable, sin consumir el azar del juego.
+    function drawStrawStem(ax, ay, bx, by, color, bounds) {
+      // Tres tramos rectos escalonados por hebra; recorte matemático para cestos y bolsas.
+      const [x, y, w, h] = bounds;
+      if (w <= 0 || h <= 0) return;
+      for (let part = 0; part < 3; part++) {
+        const t = part / 3,
+          end = (part + 1) / 3,
+          px = ax + (bx - ax) * t,
+          py = ay + (by - ay) * t,
+          qx = ax + (bx - ax) * end,
+          qy = ay + (by - ay) * end,
+          left = Math.max(x, Math.round(Math.min(px, qx) * 2) / 2),
+          top = Math.max(y, Math.round(Math.min(py, qy) * 2) / 2),
+          right = Math.min(x + w, Math.max(px, qx) + 0.5),
+          bottom = Math.min(y + h, Math.max(py, qy) + 0.5);
+        if (right > left && bottom > top)
+          artRect(left, top, right - left, bottom - top, color);
+      }
+    }
+    function drawStrawField(x, y, w, h, count, pale = false, mound = false) {
+      if (w <= 0 || h <= 0 || count <= 0) return;
       let seed = 137;
       const noise = () => {
-        seed = (seed * 16807) % 2147483647;
-        return seed / 2147483647;
-      };
-      const colors = pale
-        ? ["#ecd08b", "#d4b977", "#efe0ae"]
-        : ["#e9cd85", "#bf9954", "#f3dca0"];
-      for (let i = 0; i < count; i++) {
-        const xx = Math.floor((x + noise() * Math.max(1, w - 6)) * 2) / 2,
-          yy = Math.floor((y + noise() * Math.max(1, h - 2)) * 2) / 2,
-          len = 2 + Math.floor(noise() * 4);
-        artRect(xx, yy, len, 0.5, colors[i % 3]);
-        if (i % 3 === 0)
-          artRect(xx + len - 0.5, yy + 0.5, 0.5, 1, colors[i % 3]);
+          seed = (seed * 16807) % 2147483647;
+          return seed / 2147483647;
+        },
+        colors = pale
+          ? ["#f1d795", "#d4b36f", "#fff0be", "#e6c586"]
+          : ["#dbb365", "#af813e", "#f1cc7e", "#e8bf6d", "#987039"],
+        bounds = [x, y, w, h];
+      for (let i = 0, n = Math.min(160, Math.floor(count)); i < n; i++) {
+        const v = noise(),
+          spread = mound ? 0.1 + 0.9 * Math.sin((v * Math.PI) / 2) : 1,
+          xx = x + w / 2 + (noise() - 0.5) * w * spread,
+          yy = y + v * h,
+          angle = (noise() * 2 - 1) * Math.PI,
+          length = Math.min(w, 2 + noise() * 4);
+        drawStrawStem(
+          xx,
+          yy,
+          xx + Math.cos(angle) * length,
+          yy + Math.sin(angle) * Math.min(length, h * 0.45),
+          colors[i % colors.length],
+          bounds,
+        );
       }
+    }
+    function drawStrawFibers(x, y, w, h, count, pale = false) {
+      drawStrawField(x, y, w, h, count, pale);
     }
     function drawWarmBasket(x, y, w, h, count, capacity) {
       box(x + 1, y + 3, w - 2, h - 2, "#8d6947");
@@ -1616,22 +1663,12 @@
       mixTray = [99, 130, 128, 69],
       bagSlot = [250, 134, 48, 71];
     function jar(x, y, available = true) {
-      box(x, y, 15, 20, available ? "#b6d8c8" : "#82918c");
-      box(x - 1, y - 3, 17, 5, "#6a929b");
-      if (available) {
-        for (let j = 0; j < 8; j++)
-          box(
-            x + 2 + ((j * 5) % 11),
-            y + 5 + ((j * 7) % 12),
-            2,
-            2,
-            j % 2 ? "#f6efd1" : "#cdd6a5",
-          );
-      }
-      box(x + 2, y + 3, 2, 10, "#deece2");
-      artRect(x + 3, y - 2, 10, 0.5, "#d5dfca");
-      artRect(x + 12, y + 4, 0.5, 13, "#6e9c95");
-      artRect(x + 3, y + 18, 9, 0.5, "#e2e7ca");
+      c.save();
+      c.translate(x + 0.75, y + 1);
+      c.scale(0.9, 0.9);
+      // La sala principal siempre usa Pleurotus, independientemente del selector.
+      drawLaminarJar(0, 0, available, "Pleurotus");
+      c.restore();
     }
     // === RENDER: PREPARACION Y MEZCLA ===
     function drawMix() {
@@ -2120,6 +2157,110 @@
       box(x - 1, y - 1, w + 2, 3, "#d1c29a");
     }
     // === RENDER: PASTEURIZADO ===
+    function drawLimeCan(x, y, scale = 1, open = false) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      // CAL-BOTE-CONCEPTO: a round cream pail, teal lid and lowered wire handle.
+      // Shared 33 x 37 silhouette for the station, pour and cursor preview.
+      softShadow(16.5, 35.5, 16, 1.5, 0.17);
+      drawLaminarOval(3, 29, 27, 8, "#668079");
+      box(3, 6, 27, 27, "#c9b88e");
+      drawLaminarOval(3, 27.5, 27, 8, "#c9b88e");
+      box(4, 7, 25, 24, "#e9d9b3");
+      drawLaminarOval(4, 27, 25, 8, "#e9d9b3");
+      artRect(5, 9, 2, 20, "#fff0cb");
+      artRect(7, 10, 1, 21, "#f5e4ba");
+      artRect(26, 9, 2, 21, "#c8b38b");
+      artRect(23.5, 10, 0.5, 23, "#f1dfb7");
+      artRect(9, 10, 0.5, 23, "#d1bc92");
+      drawLaminarOval(4, 3, 25, 8, "#f2e0b6");
+      drawLaminarOval(5, 4, 23, 5, "#d7c39b");
+      drawLaminarOval(0, 1, 33, 9, "#537b79");
+      box(0, 4, 33, 3, "#6f9490");
+      drawLaminarOval(0, 0, 33, 8, "#92aaa0");
+      if (open) {
+        drawLaminarOval(2, 1.5, 29, 5, "#6b8b80");
+        drawLaminarOval(3, 2.5, 27, 4, "#dcd6b9");
+        drawLaminarOval(5, 2.5, 23, 3, "#f4ecd1");
+        for (let i = 0; i < 18; i++)
+          artRect(
+            6 + ((i * 7) % 21),
+            3 + (i % 4) * 0.5,
+            i % 3 ? 0.5 : 1,
+            0.5,
+            i % 2 ? "#fff5dc" : "#c6c3ac",
+          );
+      } else {
+        drawLaminarOval(1, 0.5, 31, 6, "#6f9591");
+        drawLaminarOval(2, 1, 29, 4.5, "#83a49b");
+        artRect(5, 1.5, 6, 0.5, "#e7d4a5");
+        artRect(3, 3, 2, 0.5, "#f6e6bb");
+        artRect(24, 4, 5, 0.5, "#9eb5a5");
+        artRect(13, 1, 9, 0.5, "#b8c6ad");
+      }
+      artRect(3, 7, 7, 0.5, "#d7d9b5");
+      artRect(21, 7.5, 7, 0.5, "#476f71");
+      drawLaminarFace(
+        [
+          [11, 17],
+          [22, 17],
+          [24, 19],
+          [24, 24.5],
+          [22.5, 26],
+          [11, 26],
+          [9.5, 24.5],
+          [9.5, 19],
+        ],
+        "#89946e",
+      );
+      drawLaminarFace(
+        [
+          [11, 17.5],
+          [22, 17.5],
+          [23.5, 19],
+          [23.5, 24],
+          [22, 25.5],
+          [11, 25.5],
+          [10, 24],
+          [10, 19],
+        ],
+        "#c6c69a",
+      );
+      artRect(11, 18, 10, 0.5, "#e8dfb3");
+      smallText("Ca", 11.5, 24, "#536c58");
+      for (const xx of [1, 29]) {
+        box(xx, 13, 3, 5, "#587b76");
+        artRect(xx + 0.5, 13.5, 1, 3, "#e5c99a");
+      }
+      const handle = [
+        [2, 15],
+        [1.5, 21],
+        [3.5, 26],
+        [8, 30],
+        [15, 32],
+        [22, 31.5],
+        [28, 28],
+        [31, 23],
+        [31.5, 15],
+      ];
+      for (const [color, width] of [
+        ["#60796d", 1.5],
+        ["#c5aa7f", 0.8],
+      ]) {
+        c.strokeStyle = color;
+        c.lineWidth = width;
+        c.beginPath();
+        handle.forEach(([hx, hy], i) =>
+          i ? c.lineTo(hx, hy) : c.moveTo(hx, hy),
+        );
+        c.stroke();
+      }
+      artRect(12, 31.5, 9, 0.5, "#f4e0b5");
+      artRect(7, 33.5, 10, 0.5, "#f3e2ba");
+      artRect(22, 30, 2, 0.5, "#bea57e");
+      c.restore();
+    }
     function drawPasteur() {
       drawWarmStationBackdrop("pasteur");
       box(6, 4, 171, 23, warmPalette.wall);
@@ -2209,13 +2350,7 @@
         for (let yy = 65; yy < bottom - waterHeight; yy += 6)
           box(207, yy, 3, 4, "#b8eef0");
       }
-      box(76, 55, 27, 32, "#eee6c7");
-      box(73, 50, 33, 7, "#a6bec1");
-      artRect(75, 51, 29, 1, "#e7e8cd");
-      artRect(79, 58, 2, 24, "#fff0cf");
-      artRect(99, 59, 2, 25, "#ccc5a6");
-      box(83, 64, 14, 14, "#d1d5b9");
-      smallText("Ca", 85, 74, "#55777a");
+      drawLimeCan(73, 50);
       text("CAL " + lime, 73, 104);
       drawWarmBasket(13, 167, 86, 37, loads, basketCapacity());
       text("PAJA " + loads + "/" + basketCapacity(), 18, 218);
@@ -2227,7 +2362,7 @@
         c.save();
         c.translate(190, 55);
         c.rotate(1);
-        box(-13, -13, 26, 27, "#eee6c7");
+        drawLimeCan(-16.5, -18.5, 1, true);
         c.restore();
         for (let j = 0; j < 15; j++)
           box(
@@ -12387,22 +12522,22 @@
       ...options,
     });
     function drawLooseStraw(mixed = false) {
-      // Montón fibroso: no una paca/cubo. Contraste suficiente incluso al reducirlo.
-      for (let i = 0; i < 48; i++) {
-        const row = Math.floor(i / 8),
-          spread = 18 - Math.abs(row - 3) * 2;
-        const x = -spread + ((i * 11) % (spread * 2));
-        box(
-          x,
-          -10 + row * 4,
-          5 + (i % 4),
-          2,
-          ["#e9bf66", "#f6dc91", "#ae7e3d"][i % 3],
-        );
-      }
+      // Misma fibra que la paca y el cesto, suelta y sin renglones ni base rectangular.
+      drawStrawField(-21, -14, 42, 28, 92, false, true);
       if (mixed)
-        for (let i = 0; i < 12; i++)
-          box(-13 + ((i * 7) % 26), -8 + ((i * 5) % 19), 3, 2, "#f3f0d5");
+        for (let i = 0; i < 9; i++) {
+          const xx = -12 + ((i * 7) % 24),
+            yy = -5 + ((i * 5) % 15);
+          drawStrawStem(xx, yy, xx + 3, yy - 2, "#f5f0d3", [-21, -14, 42, 28]);
+          drawStrawStem(
+            xx + 1,
+            yy - 1,
+            xx + 3,
+            yy + 1,
+            "#e9e5ca",
+            [-21, -14, 42, 28],
+          );
+        }
     }
     function drawDragHarvest(d) {
       const b = fruitShelves[d.slot];
@@ -12428,10 +12563,7 @@
       raw: dragIcon("Paja triturada", () => drawLooseStraw()),
       straw: dragIcon("Paja pasteurizada", () => drawLooseStraw()),
       mixture: dragIcon("Paja con micelio", () => drawLooseStraw(true)),
-      lime: dragIcon("Bote de cal", () => {
-        box(-12, -13, 25, 30, "#eee6c7");
-        box(-14, -18, 29, 6, "#a6bec1");
-      }),
+      lime: dragIcon("Bote de cal", () => drawLimeCan(-16.5, -18.5)),
       jar: dragIcon(
         "Micelio",
         () => {

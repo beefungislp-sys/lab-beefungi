@@ -63,3 +63,7 @@ Use case: stylized-concept. Generate ONE new visual inspiration image for the pr
 - `KIT-LIMPIEZA-CONCEPTO.png`: spray aqua y paño plegado en un solo kit; transparente.
 
 Ambas se recrean en código compartido para módulo y arrastre. [Prompts de las dos referencias](PROMPTS-PETRI-LIMPIEZA.md).
+
+## Materiales principales
+
+`PAJA-FAMILIA-CONCEPTO.png` y `CAL-BOTE-CONCEPTO.png`: variantes de paja y bote de cal, recreados como dibujantes compartidos. [Prompts](PROMPTS-MATERIALES-PRINCIPALES.md).
