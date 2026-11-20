@@ -151,3 +151,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 [Extracción y envasado renovados](outputs/TANDA-EXTRACCION-ENVASADO-ARTE.md): equipo conectado, cristalería por estados, molido compartido y miniaturas coherentes.
 
 Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRULINA-ARTE.md).
+
+[Balance general: economía activa y progresión conservada](outputs/BALANCE-GENERAL-LAB-BEEFUNGI.md).

@@ -65,3 +65,7 @@ Las mejoras del cuarto estéril/agitación todavía no tienen un balance definit
 Build y revisión de diff. Navegador en formato móvil vertical: precios compactos, saldo 6 → 2,5 al comprar los cinco insumos, existencias correctas, saldo cero y pedidos deshabilitados, mejoras pendientes de primera venta y herramientas gratuitas ocultas. Sin errores de consola. No se probó en un teléfono físico.
 
 La partida sigue en memoria. Quedan por calibrar las otras especies, árboles estériles, química y espirulina; después, pulido general y visual.
+
+## Revisión posterior
+
+Esta primera propuesta se conserva como historial. Los valores vigentes y el alcance completo están en [Balance general](BALANCE-GENERAL-LAB-BEEFUNGI.md); se conserva la progresión posterior documentada.

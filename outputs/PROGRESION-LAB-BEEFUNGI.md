@@ -1,6 +1,6 @@
 # Progresión de Lab BeeFungi — revisión de flujo y mejoras
 
-**Estado: implementado, recorrido gratuito de revisión.** Insumos, mejoras, contratación y mantenimiento no cuestan por ahora. Los recursos sí se consumen y se reponen en pedidos. Recargar reinicia; la partida está en memoria.
+**Estado: progresión implementada con economía activa.** Los hitos de esta guía se conservan. Precios, márgenes y mantenimiento se detallan en [Balance general](BALANCE-GENERAL-LAB-BEEFUNGI.md). Los recursos se consumen y se reponen en pedidos. Recargar reinicia; la partida está en memoria.
 
 ## Hitos vigentes
 
@@ -58,6 +58,6 @@ Las ramas de triturador, pasteurizado (capacidad y agua) y mezcla están disponi
 
 Una estación ocupada conserva su oferta deshabilitada hasta estar libre; no se cobra ni cambia de sala al comprar. Las mejoras completas y asistentes contratados dejan de ofrecerse. E, Escape, Regresar o × cierran el panel; no se camina ni se usan estaciones por debajo. Los avisos de desbloqueo cierran el panel para poder leerse.
 
-Las ventas conservan sus ingresos, pero el saldo no limita esta revisión. Los logros secundarios y el balance final quedan para otra tanda.
+Las compras descuentan saldo y las ofertas muestran su costo; el dinero no cambia las condiciones de desbloqueo. La revisión gratuita anterior se conserva como fixture de regresión.
 
 [Nota de la revisión](TANDA-REVISION-FLUJO-Y-MEJORAS.md) · [Huecos adicionales anotados](PENDIENTES-REVISION-FLUJO.md)

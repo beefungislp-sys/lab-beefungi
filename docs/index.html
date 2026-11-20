@@ -471,7 +471,7 @@
     <h1>LAB BEEFUNGI</h1>
     <div class="game-frame">
       <div class="game-toolbar">
-        <output id="wallet" aria-label="Saldo">● 6</output
+        <output id="wallet" aria-label="Saldo">● 15</output
         ><button
           id="upgrade-menu"
           hidden
@@ -540,27 +540,29 @@
         ><button id="sound-toggle" aria-pressed="true">Sonido: activado</button>
         <p id="status" role="status">Selecciona una estación para acercarte.</p>
         <p>
-          Recorrido gratuito de revisión. Pleurotus se prepara sólo en la mezcla
-          principal. Triturador, pasteurizado y mezcla tienen mejoras desde el
-          inicio en la barra superior. Primera cosecha: tienda y primer cliente;
-          primera venta: mejoras de incubación y fructificación. Completa las
-          tres estaciones principales y amplía ambas cámaras a seis para abrir
-          sala estéril y contratar al primer asistente. Cosecha Melena para
-          Reishi; completa las estaciones estériles para Cordyceps, su placa
-          Petri inicial y el segundo asistente. La guía de Cordyceps recorre
-          medio líquido, esterilización, Petri en campana, agitación, arroz,
-          esterilización, CL en campana, incubación y fructificación. Cosechar
-          Cordyceps abre extracción/envasado; el primer gotero abre mesa de
-          química y espirulina. La guía de química prepara solución de
-          espirulina. E cierra el menú de mejoras; WASD y el suelo permiten
-          caminar. La partida sigue en memoria.
+          Empiezas con 15 monedas y un kit de insumos. Compra una unidad por
+          clic; las mejoras y los asistentes se pagan con tus ventas. Pleurotus
+          se prepara sólo en la mezcla principal. Triturador, pasteurizado y
+          mezcla tienen mejoras desde el inicio en la barra superior. Primera
+          cosecha: tienda y primer cliente; primera venta: mejoras de incubación
+          y fructificación. Completa las tres estaciones principales y amplía
+          ambas cámaras a seis para abrir sala estéril y contratar al primer
+          asistente. Cosecha Melena para Reishi; completa las estaciones
+          estériles para Cordyceps, su placa Petri inicial y el segundo
+          asistente. La guía de Cordyceps recorre medio líquido, esterilización,
+          Petri en campana, agitación, arroz, esterilización, CL en campana,
+          incubación y fructificación. Cosechar Cordyceps abre
+          extracción/envasado; el primer gotero abre mesa de química y
+          espirulina. La guía de química prepara solución de espirulina. E
+          cierra el menú de mejoras; WASD y el suelo permiten caminar. La
+          partida sigue en memoria.
         </p>
       </div>
     </details>
   </main>
   <dialog id="orders">
     <h2>Oficina · Pedidos</h2>
-    <p id="order-balance">Saldo: 6 monedas</p>
+    <p id="order-balance">Saldo: 15 monedas</p>
     <div id="order-items"></div>
     <p id="species-info" role="status"></p>
     <button id="close-orders">Volver</button>
@@ -572,20 +574,44 @@
   </dialog>
   <script>
     // === CONFIGURACION Y ESTADO ===
-    const pleuroBalance = {
-      startCoins: 6,
+    // Balance amable: los precios cambian, los hitos y recetas se conservan.
+    const gameBalance = {
+      startCoins: 15,
       supplies: {
         paja: 1,
         micelio: 1,
         bolsas: 0.5,
         cal: 0.5,
         limpieza: 0.5,
-        nutrientes: 1,
-        frascos: 1,
+        nutrientes: 0.5,
+        frascos: 0.5,
       },
+      substrates: { paja: 1, madera: 0.5, cordy: 1 },
+      mycelium: {
+        Pleurotus: 1,
+        "Melena de leon": 1.5,
+        Reishi: 2,
+        Cordyceps: 2.5,
+      },
+      upgrades: {
+        crusher: [3, 4],
+        tank: [3, 4],
+        pasteur: 3,
+        mix: 5,
+        chamber: [4, 6, 6],
+        woodPrep: [4, 7, 4],
+        woodSterilizer: [4, 6, 4],
+        glovebox: [3, 6, 10],
+        liquidStir: 4,
+      },
+      assistants: {
+        helper: { hire: 5, wage: 0.25, period: 60 },
+        lab: { hire: 10, wage: 0.5, period: 60 },
+      },
+      spirulinaPrice: 3,
     };
-    // Recorrido temporal de revisión: gratis, pero conserva todos los hitos.
-    let progressionPreview = true;
+    const pleuroBalance = gameBalance; // Nombre conservado para notas y verificaciones históricas.
+    let progressionPreview = false; // Sólo las regresiones pueden activar el recorrido gratuito.
     let progressionBypass = false; // Exclusivo de regresiones del prototipo.
     const progression = {
       sterile: false,
@@ -3657,9 +3683,9 @@
     }
     const speciesPrices = {
       Pleurotus: 1,
-      "Melena de leon": 1.25,
-      Reishi: 1.5,
-      Cordyceps: 1.75,
+      "Melena de leon": 1.5,
+      Reishi: 2,
+      Cordyceps: 3,
     };
     function speciesShort(name) {
       return (
@@ -7714,19 +7740,15 @@
       }
     }
     function hireHelper() {
-      if (!helperUnlocked()) return;
-      if (helper.hired) return;
-      if (!progressionPreview && saleCoins < 5) {
-        say("Necesitas 5 monedas. Puedes añadir saldo de prueba.");
-        return;
-      }
-      if (!progressionPreview) saleCoins -= 5;
+      if (!helperUnlocked() || helper.hired) return false;
+      if (!payCoins(gameBalance.assistants.helper.hire)) return false;
       helper.hired = true;
       say(
-        progressionPreview
-          ? "Asistente contratado gratis, sin mantenimiento en este recorrido."
-          : "Asistente contratado: usa insumos disponibles y cobra 0.25 cada 30 segundos.",
+        "Asistente contratado. Mantenimiento: " +
+          coinsText(gameBalance.assistants.helper.wage) +
+          " monedas por minuto.",
       );
+      return true;
     }
     function pleuroStock() {
       return selectedSpecies === "Pleurotus"
@@ -7905,17 +7927,17 @@
       )
         fillBag();
       if (!helper.hired || dt <= 0) return;
-      helper.paid = Math.min(30, helper.paid + dt);
-      if (helper.paid >= 30) {
-        if (!progressionPreview && saleCoins < 0.25) {
+      const payroll = gameBalance.assistants.helper;
+      helper.paid = Math.min(payroll.period, helper.paid + dt);
+      if (helper.paid >= payroll.period) {
+        if (!canAfford(payroll.wage)) {
           helper.paused = true;
           cancelAssistantTask(helper);
           helper.notice = "Falta saldo";
           return;
         }
-        if (!progressionPreview)
-          saleCoins = Number((saleCoins - 0.25).toFixed(2));
-        helper.paid -= 30;
+        payCoins(payroll.wage);
+        helper.paid -= payroll.period;
       }
       helper.paused = false;
       helper.notice = helperShortage();
@@ -8067,8 +8089,12 @@
       h.disabled = !helperUnlocked() || helper.hired;
       h.textContent = helper.hired
         ? helper.paused
-          ? "Asistente sin saldo · 0.25/30 s"
-          : "Asistente activo · 0.25/30 s"
+          ? "Asistente sin saldo · " +
+            coinsText(gameBalance.assistants.helper.wage) +
+            "/min"
+          : "Asistente activo · " +
+            coinsText(gameBalance.assistants.helper.wage) +
+            "/min"
         : helperUnlocked()
           ? "Contratar asistente · 5 monedas"
           : "Asistente bloqueado · mejora todo";
@@ -8429,18 +8455,15 @@
       renderOrders();
     }
     function hireLab() {
-      if (!labUnlocked() || labHelper.hired) return;
-      if (!progressionPreview && saleCoins < 10) {
-        say("El asistente de laboratorio cuesta 10 monedas.");
-        return;
-      }
-      if (!progressionPreview) saleCoins -= 10;
+      if (!labUnlocked() || labHelper.hired) return false;
+      if (!payCoins(gameBalance.assistants.lab.hire)) return false;
       labHelper.hired = true;
       say(
-        progressionPreview
-          ? "Asistente de laboratorio contratado gratis, sin mantenimiento. Inoculación manual."
-          : "Laboratorio contratado: 0.5 monedas cada 30 segundos. Inoculación manual.",
+        "Asistente de laboratorio contratado. Mantenimiento: " +
+          coinsText(gameBalance.assistants.lab.wage) +
+          " monedas por minuto. Inoculación manual.",
       );
+      return true;
     }
     function majorityMode(items, phase) {
       const counts = new Map();
@@ -8769,17 +8792,17 @@
     function advanceLabHelper(dt) {
       if (progressionBypass && labUnlocked()) liquidUnlocked = true;
       if (!labHelper.hired || dt <= 0) return;
-      labHelper.paid = Math.min(30, labHelper.paid + dt);
-      if (labHelper.paid >= 30) {
-        if (!progressionPreview && saleCoins < 0.5) {
+      const payroll = gameBalance.assistants.lab;
+      labHelper.paid = Math.min(payroll.period, labHelper.paid + dt);
+      if (labHelper.paid >= payroll.period) {
+        if (!canAfford(payroll.wage)) {
           labHelper.paused = true;
           cancelAssistantTask(labHelper);
           labHelper.notice = "Falta saldo";
           return;
         }
-        if (!progressionPreview)
-          saleCoins = Number((saleCoins - 0.5).toFixed(2));
-        labHelper.paid -= 30;
+        payCoins(payroll.wage);
+        labHelper.paid -= payroll.period;
       }
       labHelper.paused = false;
       labHelper.notice = labHelperShortage();
@@ -9441,7 +9464,9 @@
       hire.textContent = labHelper.hired
         ? labHelper.paused
           ? "Lab sin saldo"
-          : "Lab activo · 0.5/30 s"
+          : "Lab activo · " +
+            coinsText(gameBalance.assistants.lab.wage) +
+            "/min"
         : labUnlocked()
           ? "Laboratorio · 10 monedas"
           : "Lab: completa el árbol";
@@ -10861,7 +10886,7 @@
       return dropperStock[name] || 0;
     }
     function dropperPrice(name) {
-      return name === "Pleurotus" ? 0.5 : speciesPrices[name] * 2;
+      return (speciesPrices[name] || speciesPrices.Pleurotus) * 0.5;
     }
     function startBottling() {
       if (bottlingJob || !extractInventory.length) return false;
@@ -12550,7 +12575,8 @@
         }
         spirulinaHarvest--;
         spirulinaSold++;
-        saleCoins += 2;
+        saleCoins =
+          Math.round((saleCoins + gameBalance.spirulinaPrice) * 100) / 100;
         customer.bought = (customer.bought || 0) + 1;
         customer.remaining--;
         if (!customer.remaining) {
@@ -13599,13 +13625,22 @@
       minimalBottlingDown(e);
     };
 
-    // Primera pasada de balance: Pleurotus. Los demás árboles siguen en prueba.
+    // Economía completa: los desbloqueos conservan sus condiciones de progreso.
     function hasFirstSale() {
       return soldGrams >= 250 || droppersSold > 0 || spirulinaSold > 0;
     }
     // === ECONOMIA Y CONTROLES ===
     function supplyPrice(id) {
-      return progressionPreview ? 0 : (pleuroBalance.supplies[id] ?? 1);
+      if (progressionPreview || testMode) return 0;
+      if (id === "paja")
+        return (
+          gameBalance.substrates[selectedSubstrate] ?? gameBalance.supplies.paja
+        );
+      if (id === "micelio")
+        return (
+          gameBalance.mycelium[selectedSpecies] ?? gameBalance.supplies.micelio
+        );
+      return gameBalance.supplies[id] ?? 1;
     }
     function stationUpgradesAvailable(station) {
       return ["crusher", "pasteur", "mix"].includes(station) || hasFirstSale();
@@ -13615,6 +13650,9 @@
     }
     function coinsText(n) {
       return Number(n.toFixed(2)).toString();
+    }
+    function canAfford(cost) {
+      return progressionPreview || testMode || saleCoins + 1e-9 >= cost;
     }
     function payCoins(cost) {
       if (progressionPreview || testMode) return true;
@@ -13631,19 +13669,23 @@
         return tankCapacity >= 6
           ? null
           : {
-              cost: tankCapacity === 2 ? 3 : 5,
+              cost: gameBalance.upgrades.tank[tankCapacity === 2 ? 0 : 1],
               label: "Tanque " + (tankCapacity + 2) + " cargas",
               blocked: !!tank.left || tank.n > 0,
             };
       if (auxView === "pasteur")
         return autoWater
           ? null
-          : { cost: 4, label: "Agua automática", blocked: false };
+          : {
+              cost: gameBalance.upgrades.pasteur,
+              label: "Agua automática",
+              blocked: false,
+            };
       if (!auxView && close && !mixView)
         return crusherLevel >= 2
           ? null
           : {
-              cost: crusherLevel === 0 ? 3 : 5,
+              cost: gameBalance.upgrades.crusher[crusherLevel],
               label:
                 crusherLevel === 0
                   ? "Tolva de 3 pacas"
@@ -13653,7 +13695,11 @@
       if (!auxView && close && mixView)
         return autoMixer
           ? null
-          : { cost: 6, label: "Llenadora automática", blocked: !!bagJob };
+          : {
+              cost: gameBalance.upgrades.mix,
+              label: "Llenadora automática",
+              blocked: !!bagJob,
+            };
       if (auxView === "incubation" || auxView === "fruiting") {
         const cap = chamberCapacity(auxView),
           control =
@@ -13661,7 +13707,9 @@
         return cap >= 8 && control
           ? null
           : {
-              cost: cap === 4 ? 5 : cap === 6 ? 7 : 8,
+              cost: gameBalance.upgrades.chamber[
+                cap === 4 ? 0 : cap === 6 ? 1 : 2
+              ],
               label:
                 cap < 8
                   ? "Ampliar a " + (cap + 2) + " espacios"
@@ -13669,12 +13717,11 @@
               blocked: false,
             };
       }
-      if (!progressionPreview) return null;
       if (sterileAvailable() && auxView === "woodPrep")
         return woodPrepLevel === 2 && woodFastWater
           ? null
           : {
-              cost: 0,
+              cost: gameBalance.upgrades.woodPrep[woodPrepLevel],
               label:
                 woodPrepLevel === 0
                   ? "Llave automática"
@@ -13687,7 +13734,9 @@
         return woodCapacity === 6 && woodAutoWater
           ? null
           : {
-              cost: 0,
+              cost: gameBalance.upgrades.woodSterilizer[
+                woodCapacity === 2 ? 0 : woodCapacity === 4 ? 1 : 2
+              ],
               label:
                 woodCapacity < 6
                   ? "Olla de " + (woodCapacity + 2) + " espacios"
@@ -13699,7 +13748,7 @@
         return gloveLevel === 3
           ? null
           : {
-              cost: 0,
+              cost: gameBalance.upgrades.glovebox[gloveLevel],
               label: ["Mechero", "Cabina ampliada", "Flujo laminar"][
                 gloveLevel
               ],
@@ -13708,7 +13757,11 @@
       if (liquidUnlocked && auxView === "liquidStir")
         return agitationCapacity === 6
           ? null
-          : { cost: 0, label: "Agitación de 6 espacios", blocked: false };
+          : {
+              cost: gameBalance.upgrades.liquidStir,
+              label: "Agitación de 6 espacios",
+              blocked: false,
+            };
       return null;
     }
     function buyStationUpgrade(kind = "module") {
@@ -13727,7 +13780,7 @@
       )
         return false;
       if (!payCoins(offer.cost)) return false;
-      if (!progressionPreview) balanceStats.upgrades += offer.cost;
+      if (!progressionPreview && !testMode) balanceStats.upgrades += offer.cost;
       action();
       refreshProgression();
       updateEconomyControls();
@@ -13796,7 +13849,9 @@
           document.querySelector("#" + id).hidden = true;
         document.querySelector("#lab-hire").hidden = !labUnlocked();
         document.querySelector("#assistant-buy").disabled =
-          !helperUnlocked() || helper.hired || saleCoins < 5;
+          !helperUnlocked() ||
+          helper.hired ||
+          !canAfford(gameBalance.assistants.helper.hire);
         const module = document.querySelector("#module-upgrade"),
           offer = upgradeOffer();
         module.hidden = !offer;
@@ -13824,7 +13879,7 @@
             saleCoins < capacity.cost;
         }
       }
-      if (progressionPreview) updateProgressionControls();
+      updateProgressionControls();
       const ids = [
           "more",
           "shop-species",
@@ -13956,7 +14011,7 @@
       if (hasFirstSale() && !progression.upgradesAnnounced) {
         progression.upgradesAnnounced = true;
         queueUnlock(
-          "Ahora están disponibles las mejoras de incubación y fructificación. En este recorrido todas son gratis.",
+          "Ahora están disponibles las mejoras de incubación y fructificación.",
         );
       }
       if (!shopUnlocked && progression.harvested.has("Pleurotus")) {
@@ -14196,21 +14251,31 @@
         entries.push({
           key: "helper",
           area: "Sala principal",
-          label: "Asistente de preparación",
+          label:
+            "Asistente de preparación · " +
+            coinsText(gameBalance.assistants.helper.wage) +
+            " m/min",
+          cost: gameBalance.assistants.helper.hire,
           blocked: false,
         });
       if (labUnlocked() && !labHelper.hired)
         entries.push({
           key: "labHelper",
           area: "Laboratorio",
-          label: "Asistente de laboratorio",
+          label:
+            "Asistente de laboratorio · " +
+            coinsText(gameBalance.assistants.lab.wage) +
+            " m/min",
+          cost: gameBalance.assistants.lab.hire,
           blocked: false,
         });
       return entries;
     }
     function updateUpgradeMenu() {
       const entries = availableUpgradeEntries(),
-        count = entries.filter((item) => !item.blocked).length;
+        count = entries.filter(
+          (item) => !item.blocked && canAfford(item.cost),
+        ).length;
       const button = document.querySelector("#upgrade-menu"),
         badge = document.querySelector("#upgrade-count");
       button.hidden = !entries.length && !upgradeMenuOpen;
@@ -14220,14 +14285,19 @@
       button.setAttribute?.("aria-expanded", String(upgradeMenuOpen));
       document.querySelector("#upgrades-panel").hidden = !upgradeMenuOpen;
       if (!upgradeMenuOpen) return;
-      const signature = JSON.stringify(entries);
+      const signature = JSON.stringify([
+        entries,
+        saleCoins,
+        progressionPreview,
+        testMode,
+      ]);
       if (signature === upgradeMenuCache) return;
       upgradeMenuCache = signature;
       document.querySelector("#upgrade-items").innerHTML = entries.length
         ? entries
             .map(
               (item) =>
-                `<div class="upgrade-row"><div>${item.area}<small>${item.label}</small></div><button data-upgrade="${item.key}" ${item.blocked ? "disabled" : ""}>${item.blocked ? "En proceso" : "Gratis"}</button></div>`,
+                `<div class="upgrade-row"><div>${item.area}<small>${item.label}</small></div><button data-upgrade="${item.key}" ${item.blocked || !canAfford(item.cost) ? "disabled" : ""}>${item.blocked ? "En proceso" : progressionPreview || testMode ? "Gratis" : coinsText(item.cost) + " m"}</button></div>`,
             )
             .join("")
         : "<p>No hay mejoras disponibles por ahora.</p>";
@@ -14257,9 +14327,11 @@
       const entry = availableUpgradeEntries().find((item) => item.key === key);
       if (!entry || entry.blocked) return false;
       const notices = progression.notices.length;
-      if (key === "helper") hireHelper();
-      else if (key === "labHelper") hireLab();
-      else if (
+      if (key === "helper") {
+        if (!hireHelper()) return false;
+      } else if (key === "labHelper") {
+        if (!hireLab()) return false;
+      } else if (
         !withUpgradeStation(entry.station, () => buyStationUpgrade(entry.kind))
       )
         return false;
