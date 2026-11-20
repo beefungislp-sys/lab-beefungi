@@ -11,3 +11,7 @@ La ventana se cierra con ×, E o Escape. Tiene foco modal, bloquea acciones detr
 Las pruebas históricas omiten únicamente esta presentación mediante un registro explícito de productos vistos. Las regresiones dedicadas arrancan sin ese registro y verifican producción real, nueve encuentros sin repeticiones, cola, cierre, pausa, bloqueo de acciones, pureza del retrato y vidrio negro.
 
 Validación: 209 grupos de pruebas aprobados y build correcto. Revisadas en navegador las cuatro especies, gotero negro, cierre con ×/E y conservación del aviso de tienda. Espirulina revisada en 844 × 390 y 390 × 844; corregido el fondo de las bandas laterales en horizontal. Catálogo regenerado. Captura local de Pleurotus: PRIMERA-COSECHA-QA.jpg.
+
+## Revisión posterior de arte
+
+Los cuatro retratos de hongos ampliados se sustituyen en [Retratos V2](TANDA-RETRATOS-HONGOS-V2.md) por dibujos nuevos basados en referencias generadas para cada especie. Se conservan el comportamiento de las presentaciones, los goteros negros y la espirulina.

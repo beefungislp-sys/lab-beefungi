@@ -1,0 +1,11 @@
+# Retrato Reishi V2
+
+Generación nueva con la herramienta integrada `image_gen`, con `transparent_background: true`. Referencia conceptual para redibujar en canvas; el PNG no se carga durante el juego. Sin imagen de entrada ni edición de imágenes previas.
+
+## Prompt exacto
+
+```text
+Use case: stylized-concept. Asset type: one transparent-background hero portrait for the first-harvest discovery window of the cozy pixel-art game Lab BeeFungi. Subject: a single natural cohesive cluster of exactly four Ganoderma lucidum (Reishi) mushrooms, with their short curved stems visibly merging at one small living root cluster. The dominant cap is broad and kidney-shaped, rich polished mahogany and warm lacquered red, with beautifully nested concentric growth rings and a thin ivory-gold growing edge. Three smaller overlapping asymmetrical fan or kidney caps grow at different angles and heights, all connected, with ivory undersides and subtle pore texture, NO gills. The stems are thick, short, organically bent and reddish brown, never four straight parallel legs. Composition: front-facing slightly elevated view, a compact wide hero cluster filling the central frame, entire silhouette visible with generous transparent margins, a larger cap toward upper left and a lower smaller cap projecting right, coherent contact among all four fruits. Style: detailed crisp 16-bit / Game Boy Advance pixel-art illustration, fine stepped contours and irregular organic shapes, small pixel clusters for lacquer highlights and surface texture, warm cream light from the upper left, restrained soft sage-colored shadows on the fungi. Harmonize warm cream, muted sage, blue-green and honey-accent palette of Lab BeeFungi while keeping the Reishi deep red and mahogany. This is a higher-detail portrait reference that will be manually recreated as layered canvas code at roughly 200 by 150 logical pixels. Background: actual transparent alpha, no checkerboard baked into the image. Constraints: no text, numbers, labels, frame, UI, floor, base, bowl, substrate block, props, scenery, sparkles, aura, drop shadow outside the silhouette, photograph, realistic 3D render, glossy plastic toy appearance, tall parasol mushrooms or detached floating caps.
+```
+
+Destino de la referencia: `outputs/referencias/RETRATO-REISHI-V2.png`.

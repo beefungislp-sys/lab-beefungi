@@ -15064,6 +15064,945 @@
     function productRevealName(name) {
       return name === "Melena de leon" ? "Melena de león" : name;
     }
+
+    // RETRATOS V2: referencia generada -> geometría propia, en 200 x 150.
+    // RETRATO-PLEUROTUS-V2: anatomía y capas trazadas desde la referencia generada.
+    // Silueta canónica 200 x 150. Exclusivo del retrato, sin ampliar el icono pequeño.
+    function drawDiscoveryOysterFan(cap) {
+      const { cx, top, w, h, gill, lean, phase } = cap,
+        rootX = cx + lean,
+        rootY = top + h + gill,
+        q = (value) => Math.round(value * 2) / 2,
+        crown = [],
+        rim = [],
+        samples = 44;
+      for (let i = 0; i <= samples; i++) {
+        const u = i / samples,
+          xx = cx - w / 2 + u * w,
+          arch = Math.pow(Math.sin(Math.PI * u), 0.78),
+          wave =
+            Math.sin(u * Math.PI * 7 + phase) * 1.2 +
+            Math.sin(u * Math.PI * 13 + phase) * 0.45;
+        crown.push([
+          q(xx),
+          q(top + h * 0.58 * (1 - arch) + Math.sin(u * 11 + phase) * 0.8),
+        ]);
+        rim.push([
+          q(xx),
+          q(
+            top +
+              h *
+                (0.88 -
+                  0.28 * Math.sin(u * Math.PI) -
+                  0.12 * Math.sin(u * Math.PI * 2 + phase)) +
+              wave,
+          ),
+        ]);
+      }
+      const underside = [
+        ...rim,
+        [rootX + 8, rootY - 9],
+        [rootX + 4, rootY],
+        [rootX - 4, rootY],
+        [rootX - 9, rootY - 10],
+      ];
+      drawLaminarFace(underside, "#bcaf92");
+      c.save();
+      c.clip();
+      // La lámina se curva desde la unión de carne hacia el borde ondulado.
+      const ribs = 76;
+      for (let i = 0; i <= ribs; i++) {
+        const u = i / ribs,
+          at = u * samples,
+          low = Math.floor(at),
+          high = Math.min(samples, low + 1),
+          t = at - low,
+          endX = rim[low][0] * (1 - t) + rim[high][0] * t,
+          endY = rim[low][1] * (1 - t) + rim[high][1] * t,
+          startX = rootX + (u - 0.5) * 6,
+          curveX = startX + (endX - startX) * 0.62,
+          curveY = endY + (rootY - endY) * 0.54;
+        c.beginPath();
+        c.moveTo(q(startX), rootY + 1);
+        c.quadraticCurveTo(q(curveX), q(curveY), endX, endY);
+        c.strokeStyle =
+          i % 3 === 0 ? "#a6977e" : i % 3 === 1 ? "#eee2c6" : "#d3c4a6";
+        c.lineWidth = i % 3 === 1 ? 0.7 : 0.45;
+        c.stroke();
+        if (i % 4 === 1) {
+          c.beginPath();
+          c.moveTo(
+            q(startX + (endX - startX) * 0.32),
+            q(rootY - (rootY - endY) * 0.34),
+          );
+          c.quadraticCurveTo(
+            q(curveX + 0.7),
+            q(curveY - 1),
+            endX + 0.5,
+            endY - 1,
+          );
+          c.strokeStyle = "#faf0d8";
+          c.lineWidth = 0.3;
+          c.stroke();
+        }
+      }
+      c.restore();
+      const face = [...crown, ...rim.slice().reverse()];
+      drawLaminarFace(face, "#aeb7ac");
+      c.save();
+      c.clip();
+      const shades = [
+        "#d0d0bc",
+        "#c5c7b7",
+        "#bdc1b3",
+        "#b3bbae",
+        "#a6b2a7",
+        "#9aa99f",
+        "#91a39c",
+        "#9aa99e",
+        "#abb6a9",
+        "#c4c7b5",
+      ];
+      for (let band = 0; band < shades.length; band++) {
+        const a = band / shades.length,
+          b = (band + 1) / shades.length,
+          high = crown.map((p, i) => [p[0], q(p[1] * (1 - a) + rim[i][1] * a)]),
+          low = crown.map((p, i) => [p[0], q(p[1] * (1 - b) + rim[i][1] * b)]);
+        drawLaminarFace([...high, ...low.reverse()], shades[band]);
+      }
+      // Pliegues radiales y pequeñas teselas de luz; nunca franjas horizontales solas.
+      for (let i = 1; i < 42; i++) {
+        const u = i / 42,
+          index = Math.round(u * samples),
+          focusX = cx + lean * 0.4,
+          focusY = top + h * 0.86,
+          end = crown[index],
+          swing = Math.sin(i * 1.7 + phase) * 1.4;
+        c.beginPath();
+        c.moveTo(q(focusX + (rim[index][0] - focusX) * 0.72), q(rim[index][1]));
+        c.quadraticCurveTo(
+          q((focusX + end[0]) * 0.5 + swing),
+          q(top + h * 0.48),
+          end[0],
+          end[1],
+        );
+        c.globalAlpha = i % 3 === 0 ? 0.25 : 0.34;
+        c.strokeStyle = i % 3 === 0 ? "#728e88" : "#e6e2cb";
+        c.lineWidth = i % 3 === 0 ? 0.65 : 0.8;
+        c.stroke();
+      }
+      c.globalAlpha = 1;
+      for (let i = 0; i < 95; i++) {
+        const u = texHash(i, phase * 10, 831),
+          v = texHash(i, phase * 10, 832),
+          index = Math.min(samples, Math.floor(u * samples)),
+          yy = crown[index][1] + (rim[index][1] - crown[index][1]) * v;
+        artRect(
+          q(cx - w / 2 + u * w),
+          q(yy),
+          i % 4 === 0 ? 1.5 : 0.65,
+          0.4,
+          i % 3 ? "#c4c9b7" : "#8fa398",
+        );
+      }
+      c.restore();
+      c.beginPath();
+      c.moveTo(...rim[0]);
+      for (const p of rim.slice(1)) c.lineTo(...p);
+      c.strokeStyle = "#eee3c6";
+      c.lineWidth = 1.8;
+      c.stroke();
+      c.beginPath();
+      c.moveTo(...rim[0]);
+      for (const p of rim.slice(1)) c.lineTo(p[0], p[1] - 0.65);
+      c.strokeStyle = "#fff0d2";
+      c.lineWidth = 0.6;
+      c.stroke();
+    }
+    function drawDiscoveryPleurotus(x, y, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      // Carne continua que une los cinco abanicos en una base compacta.
+      drawLaminarFace(
+        [
+          [85, 73],
+          [96, 76],
+          [95, 99],
+          [105, 119],
+          [120, 106],
+          [128, 107],
+          [123, 122],
+          [108, 136],
+          [104, 141],
+          [93, 142],
+          [86, 136],
+          [73, 123],
+          [58, 112],
+          [57, 105],
+          [65, 102],
+          [82, 117],
+          [86, 109],
+        ],
+        "#cabd9f",
+      );
+      drawLaminarFace(
+        [
+          [87, 77],
+          [92, 79],
+          [91, 105],
+          [96, 123],
+          [103, 133],
+          [109, 131],
+          [104, 140],
+          [96, 140],
+          [89, 133],
+          [82, 121],
+          [66, 111],
+          [64, 106],
+          [73, 111],
+          [88, 124],
+          [89, 112],
+        ],
+        "#eee1c3",
+      );
+      drawLaminarFace(
+        [
+          [89, 134],
+          [99, 137],
+          [110, 132],
+          [121, 130],
+          [129, 130],
+          [126, 137],
+          [118, 141],
+          [105, 142],
+          [94, 142],
+        ],
+        "#ded0af",
+      );
+      for (let i = 0; i < 13; i++) {
+        c.beginPath();
+        c.moveTo(96 + i * 0.45, 139);
+        c.bezierCurveTo(87 + i * 0.6, 132, 90 + i * 0.3, 111, 87 + i * 0.5, 86);
+        c.strokeStyle = i % 2 ? "#f7ead0" : "#bdb397";
+        c.lineWidth = 0.4;
+        c.stroke();
+      }
+      const caps = [
+        { cx: 86, top: 10, w: 132, h: 39, gill: 35, lean: 1, phase: 0.2 },
+        { cx: 47, top: 62, w: 70, h: 22, gill: 27, lean: 13, phase: 1.3 },
+        { cx: 142, top: 48, w: 94, h: 30, gill: 31, lean: -16, phase: 1.7 },
+        { cx: 64, top: 86, w: 100, h: 26, gill: 24, lean: 26, phase: 0.8 },
+        { cx: 146, top: 98, w: 80, h: 21, gill: 19, lean: -22, phase: 2.4 },
+      ];
+      for (const cap of caps) drawDiscoveryOysterFan(cap);
+      c.restore();
+    }
+
+    function drawDiscoveryLionsMane(x, y, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      // Retrato propio de descubrimiento, canónico 200 × 150.
+      // Un cuerpo cohesivo, dos lóbulos secundarios y dientes de longitudes distintas.
+      // No amplía el sprite del mundo ni dibuja halo, fondo, suelo o caja.
+      const half = (n) => Math.round(n * 2) / 2,
+        poly = (points, color) =>
+          drawLaminarFace(
+            points.map(([px, py]) => [
+              Math.max(10, Math.min(190, half(px))),
+              Math.max(4, Math.min(142, half(py))),
+            ]),
+            color,
+          ),
+        fleck = (px, py, w, h, color) =>
+          artRect(
+            Math.max(10, Math.min(190 - w, half(px))),
+            Math.max(4, Math.min(142 - h, half(py))),
+            w,
+            h,
+            color,
+          );
+      // La unión queda debajo del pelaje; no hay una silueta rígida alrededor.
+      poly(
+        [
+          [52, 68],
+          [69, 54],
+          [128, 40],
+          [158, 57],
+          [160, 87],
+          [138, 102],
+          [100, 115],
+          [68, 96],
+          [51, 106],
+          [38, 100],
+          [35, 88],
+        ],
+        "#cbbd96",
+      );
+
+      const tuft = (cx, cy, radius, depth, seed, shade = 0) => {
+        const body = [],
+          count = Math.max(16, Math.round(radius * 1.55));
+        for (let i = 0; i <= 12; i++) {
+          const u = i / 6 - 1;
+          body.push([
+            cx + u * radius * 0.48,
+            cy + 5 * (1 - Math.sqrt(Math.max(0, 1 - u * u))),
+          ]);
+        }
+        for (let i = 12; i >= 0; i--) {
+          const u = i / 6 - 1,
+            fall =
+              1 + depth * (0.12 + 0.58 * Math.sqrt(Math.max(0, 1 - u * u)));
+          body.push([cx + u * radius, cy + 8 * u * u + fall]);
+        }
+        poly(body, shade > 1 ? "#b9ad8b" : shade ? "#cbbc96" : "#ddcca6");
+        // Cada diente tiene raíz ancha, una ligera curva y una punta fina distinta.
+        for (let i = 0; i < count; i++) {
+          const u = (i / (count - 1)) * 2 - 1,
+            grain = texHash(i, seed, 743),
+            rootX = cx + u * radius * 0.48,
+            rootY =
+              cy +
+              5 * (1 - Math.sqrt(Math.max(0, 1 - u * u))) +
+              texHash(i, seed, 744) * 1.3,
+            fall =
+              5 +
+              depth *
+                (0.19 + 0.75 * Math.sqrt(Math.max(0, 1 - u * u))) *
+                (0.84 + grain * 0.16),
+            lean = u * (1 + grain * 1.8),
+            shoulderX = cx + u * radius * 0.8,
+            shoulderY = rootY + 6 + Math.abs(u) * 2,
+            bendX = cx + u * radius * 0.95,
+            bendY = rootY + Math.min(14, fall * 0.38) + Math.abs(u) * 1.5,
+            tipX = cx + u * radius * 0.99 + lean,
+            tipY = rootY + fall,
+            width = 0.8 + texHash(i, seed, 745) * 0.9,
+            dark = shade > 1 || rootX > 148,
+            main = dark
+              ? ["#e0d2ad", "#d4c59f", "#ece0bb"][i % 3]
+              : ["#f3e4be", "#ead8af", "#fff0ce", "#e7d4a9"][i % 4];
+          poly(
+            [
+              [rootX - width, rootY],
+              [rootX + 0.7, rootY + 0.5],
+              [shoulderX + 0.7, shoulderY],
+              [bendX + 0.65, bendY],
+              [tipX + 0.3, tipY - 2.5],
+              [tipX, tipY],
+              [tipX - 0.6, tipY - 3],
+              [bendX - width, bendY + 0.5],
+              [shoulderX - width, shoulderY + 0.5],
+            ],
+            main,
+          );
+          // Un reflejo fino acompaña el diente y termina antes de su punta.
+          if (i % 4 !== 3)
+            poly(
+              [
+                [rootX - width * 0.5, rootY + 0.5],
+                [rootX + 0.15, rootY + 1],
+                [shoulderX + 0.1, shoulderY],
+                [bendX + 0.1, bendY],
+                [tipX - 0.1, rootY + fall * 0.77],
+                [tipX - 0.45, rootY + fall * 0.84],
+                [bendX - 0.35, bendY],
+                [shoulderX - 0.35, shoulderY],
+              ],
+              dark ? "#f1e6c6" : grain > 0.4 ? "#fff5db" : "#f8edce",
+            );
+          if (i % 5 === 0)
+            fleck(tipX - 0.3, tipY - 2, 0.5, 1.5, dark ? "#e0d1ad" : "#f7eac9");
+          if (i % 3 === 0)
+            fleck(
+              rootX - 0.5,
+              rootY + 2.5,
+              0.5,
+              1,
+              dark ? "#b2a784" : "#d3c098",
+            );
+        }
+        // Mechones cortos curvados sobre la corona, con textura orgánica clara.
+        for (let i = 0; i < 8; i++) {
+          const u = (i / 7) * 2 - 1,
+            xx = cx + u * radius * 0.43,
+            yy = cy + 3 * u * u;
+          poly(
+            [
+              [xx - 1, yy + 2],
+              [xx + u * 1.6, yy - 1],
+              [xx + u * 2.4 + 0.7, yy - 1],
+              [xx + 0.3, yy + 3],
+            ],
+            shade > 1 ? "#e0d2af" : "#f7e8c5",
+          );
+        }
+      };
+      // Anatomía asimétrica: cuerpo central detrás y dos lóbulos unidos;
+      // las capas de dientes frontales cohesionan la silueta.
+      tuft(104, 5, 23, 28, 11, 0);
+      tuft(79, 18, 25, 33, 12, 0);
+      tuft(129, 24, 22, 34, 13, 2);
+      tuft(59, 38, 20, 39, 14, 0);
+      tuft(164, 51, 21, 53, 15, 2);
+      tuft(34, 87, 20, 44, 16, 0);
+      tuft(53, 76, 16, 41, 17, 1);
+      tuft(98, 30, 29, 45, 18, 0);
+      tuft(130, 52, 18, 55, 19, 2);
+      tuft(75, 60, 23, 58, 20, 1);
+      tuft(111, 75, 22, 64, 21, 1);
+      tuft(83, 43, 22, 53, 22, 0);
+      tuft(110, 51, 19, 54, 23, 0);
+      tuft(41, 99, 16, 37, 24, 0);
+      // Filamentos cortos de unión: ninguna masa blanca queda flotando separada.
+      for (let i = 0; i < 24; i++) {
+        const xx = 57 + texHash(i, 25, 746) * 81,
+          yy = 36 + texHash(i, 26, 747) * 52;
+        fleck(
+          xx,
+          yy,
+          0.5,
+          1 + texHash(i, 27, 748) * 1.5,
+          i % 3 ? "#f3e5c3" : "#d3c39c",
+        );
+      }
+      c.restore();
+    }
+
+    function drawDiscoveryReishi(x, y, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      // Standalone 200 x 150 discovery portrait, authored from RETRATO-REISHI-V2.
+      // Four kidney caps share curved stems; no enlarged gameplay sprite or bitmap.
+      const snap = (n) => Math.round(n * 2) / 2;
+      const smooth = (points, closed = true, steps = 4) => {
+        const out = [],
+          count = points.length;
+        for (let i = 0; i < (closed ? count : count - 1); i++) {
+          const at = (j) =>
+              points[
+                closed
+                  ? (j + count) % count
+                  : Math.max(0, Math.min(count - 1, j))
+              ],
+            a = at(i - 1),
+            b = at(i),
+            d = at(i + 1),
+            e = at(i + 2);
+          for (let j = 0; j < steps; j++) {
+            const t = j / steps,
+              t2 = t * t,
+              t3 = t2 * t;
+            out.push(
+              [0, 1].map((k) =>
+                snap(
+                  0.5 *
+                    (2 * b[k] +
+                      (-a[k] + d[k]) * t +
+                      (2 * a[k] - 5 * b[k] + 4 * d[k] - e[k]) * t2 +
+                      (-a[k] + 3 * b[k] - 3 * d[k] + e[k]) * t3),
+                ),
+              ),
+            );
+          }
+        }
+        if (!closed) out.push(points[count - 1]);
+        return out;
+      };
+      const ribbon = (control, widths, seed) => {
+        const points = smooth(control, false, 5),
+          left = [],
+          right = [];
+        for (let i = 0; i < points.length; i++) {
+          const p = points[Math.max(0, i - 1)],
+            q = points[Math.min(points.length - 1, i + 1)],
+            len = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1,
+            u = (i / (points.length - 1)) * (widths.length - 1),
+            k = Math.floor(u),
+            width =
+              widths[k] +
+              ((widths[Math.min(k + 1, widths.length - 1)] ?? widths[k]) -
+                widths[k]) *
+                (u - k),
+            nx = -(q[1] - p[1]) / len,
+            ny = (q[0] - p[0]) / len;
+          left.push([
+            snap(points[i][0] + nx * width),
+            snap(points[i][1] + ny * width),
+          ]);
+          right.push([
+            snap(points[i][0] - nx * width),
+            snap(points[i][1] - ny * width),
+          ]);
+        }
+        const shape = [...left, ...right.reverse()];
+        drawLaminarFace(shape, "#4e392b");
+        c.save();
+        drawLaminarFace(shape);
+        c.clip();
+        for (let band = 0; band < 7; band++) {
+          const offset = (band - 3) * 1.6;
+          c.strokeStyle = [
+            "#642f24",
+            "#8a3e27",
+            "#b75a2b",
+            "#c88243",
+            "#ac572b",
+            "#843925",
+            "#542b23",
+          ][band];
+          c.lineWidth = 2.5;
+          c.beginPath();
+          points.forEach(([px, py], i) =>
+            i ? c.lineTo(px + offset, py) : c.moveTo(px + offset, py),
+          );
+          c.stroke();
+        }
+        for (let i = 0; i < 75; i++) {
+          const px = 49 + texHash(i, 8, seed) * 122,
+            py = 57 + texHash(i, 12, seed + 1) * 84;
+          artRect(snap(px), snap(py), 0.5, 1.5, i % 3 ? "#9b4b2b" : "#d99750");
+        }
+        c.restore();
+      };
+      // Every branch begins at the same root knot and bends toward its cap.
+      ribbon(
+        [
+          [102, 134],
+          [104, 121],
+          [97, 108],
+          [94, 96],
+          [97, 83],
+          [90, 70],
+          [85, 61],
+        ],
+        [7, 8, 7, 7, 6, 5, 5],
+        91,
+      );
+      ribbon(
+        [
+          [103, 134],
+          [116, 126],
+          [124, 114],
+          [133, 103],
+          [145, 94],
+          [151, 84],
+        ],
+        [7, 7, 6, 6, 5, 4],
+        92,
+      );
+      ribbon(
+        [
+          [103, 134],
+          [91, 131],
+          [80, 127],
+          [72, 121],
+          [67, 113],
+          [64, 108],
+        ],
+        [6, 6, 5, 5, 4, 4],
+        93,
+      );
+      ribbon(
+        [
+          [104, 134],
+          [117, 134],
+          [131, 131],
+          [145, 130],
+          [155, 126],
+          [162, 123],
+        ],
+        [6, 6, 5, 4, 4, 4],
+        94,
+      );
+
+      const cap = (cx, cy, rx, ry, angle, depth, seed) => {
+        c.save();
+        c.translate(cx, cy);
+        c.rotate(angle);
+        const profile = [
+            [-1, 0.12],
+            [-0.98, -0.15],
+            [-0.84, -0.52],
+            [-0.59, -0.78],
+            [-0.26, -0.94],
+            [0.11, -0.92],
+            [0.38, -0.77],
+            [0.48, -0.55],
+            [0.75, -0.55],
+            [0.92, -0.32],
+            [1, -0.03],
+            [0.94, 0.18],
+            [0.69, 0.26],
+            [0.43, 0.2],
+            [0.22, 0.32],
+            [0.14, 0.56],
+            [0.04, 0.37],
+            [-0.16, 0.28],
+            [-0.4, 0.4],
+            [-0.68, 0.43],
+            [-0.89, 0.31],
+          ],
+          outline = smooth(
+            profile.map(([u, v]) => [u * rx, v * ry]),
+            true,
+            4,
+          ),
+          root = [rx * 0.14, ry * 0.55],
+          scaled = (factor, lift = 0, irregularity = 0) =>
+            outline.map(([px, py], i) => {
+              const wobble = irregularity * (texHash(i, 7, seed) - 0.5);
+              return [
+                snap(root[0] + (px - root[0]) * factor + wobble),
+                snap(root[1] + (py - root[1]) * factor + lift + wobble * 0.4),
+              ];
+            });
+        // Cream pore-bearing underside, with muted olive shade at the joined stem.
+        drawLaminarFace(scaled(1, depth + 1), "#665940");
+        drawLaminarFace(scaled(0.985, depth), "#cab58b");
+        drawLaminarFace(scaled(0.95, depth - 1), "#e6cfa0");
+        c.save();
+        drawLaminarFace(scaled(0.985, depth));
+        c.clip();
+        for (let i = 0; i < 190; i++) {
+          const px = snap(-rx + texHash(i, 3, seed) * rx * 2),
+            py = snap(-ry + texHash(i, 11, seed + 5) * (ry * 1.7 + depth));
+          artRect(
+            px,
+            py,
+            i % 4 ? 0.5 : 1,
+            0.5,
+            ["#b49e75", "#f0ddaf", "#d6bf93", "#98916b"][i % 4],
+          );
+        }
+        c.restore();
+        // Uneven concentric growth bands converge at the natural kidney cleft.
+        const bands = [
+          [1, "#5e3025"],
+          [0.985, "#f0d3a1"],
+          [0.955, "#f4dba8"],
+          [0.925, "#c78740"],
+          [0.902, "#b85a2b"],
+          [0.856, "#d06a31"],
+          [0.807, "#a64028"],
+          [0.765, "#b84e2b"],
+          [0.713, "#8a3025"],
+          [0.665, "#b44729"],
+          [0.61, "#8a2e24"],
+          [0.557, "#a33b27"],
+          [0.5, "#6f2923"],
+          [0.442, "#8f3024"],
+          [0.383, "#aa3b25"],
+          [0.32, "#762722"],
+          [0.25, "#8c2b23"],
+          [0.17, "#61251f"],
+        ];
+        for (const [factor, color] of bands)
+          drawLaminarFace(scaled(factor, 0, factor < 0.94 ? 0.9 : 0), color);
+        c.save();
+        drawLaminarFace(outline);
+        c.clip();
+        // Fine irregular lacquer grain remains subordinate to the broad ring structure.
+        for (let i = 0; i < 245; i++) {
+          const px = snap(-rx + texHash(i, 13, seed) * rx * 2),
+            py = snap(-ry + texHash(i, 19, seed + 1) * ry * 1.6);
+          artRect(
+            px,
+            py,
+            i % 7 ? 0.5 : 1.5,
+            0.5,
+            [
+              "rgba(240,163,89,.22)",
+              "rgba(80,28,24,.22)",
+              "rgba(209,100,50,.24)",
+              "rgba(255,204,138,.15)",
+            ][i % 4],
+          );
+        }
+        const shine = [
+          [-0.67, -0.36, 0.13, 0.07],
+          [-0.58, -0.48, 0.13, 0.055],
+          [-0.45, -0.59, 0.15, 0.05],
+          [-0.27, -0.66, 0.1, 0.035],
+          [-0.76, -0.05, 0.08, 0.055],
+          [-0.65, 0.12, 0.12, 0.04],
+          [-0.45, 0.17, 0.1, 0.025],
+          [0.46, -0.38, 0.1, 0.025],
+        ];
+        for (const [u, v, ww, hh] of shine) {
+          const sx = u * rx,
+            sy = v * ry;
+          drawLaminarFace(
+            [
+              [snap(sx), snap(sy)],
+              [snap(sx + ww * rx), snap(sy - hh * ry)],
+              [snap(sx + ww * rx - 0.5), snap(sy + hh * ry)],
+              [snap(sx + 1), snap(sy + hh * ry * 1.6)],
+            ],
+            "#e7ac7c",
+          );
+          artRect(
+            snap(sx + 1),
+            snap(sy),
+            Math.max(0.5, ww * rx * 0.45),
+            0.5,
+            "#ffe0b0",
+          );
+        }
+        // Saddle fold near the point where the cap curves into the shared stem.
+        drawLaminarFace(
+          [
+            [rx * 0.04, ry * 0.24],
+            [rx * 0.18, ry * 0.38],
+            [rx * 0.14, ry * 0.55],
+            [rx * 0.08, ry * 0.38],
+          ],
+          "rgba(69,32,26,.45)",
+        );
+        c.restore();
+        c.restore();
+      };
+      cap(76, 43, 60, 37, -0.12, 7, 111);
+      cap(145, 75, 40, 27, 0.06, 6, 112);
+      cap(59, 106, 35, 22, -0.14, 5, 113);
+      cap(157, 119, 30, 18, 0.1, 4, 114);
+
+      // A compact organic knot joins all stems; no pot, substrate block or platform.
+      drawLaminarFace(
+        smooth(
+          [
+            [93, 131],
+            [101, 128],
+            [109, 130],
+            [115, 133],
+            [121, 136],
+            [114, 136],
+            [118, 140],
+            [110, 138],
+            [104, 140],
+            [97, 138],
+            [89, 140],
+            [94, 135],
+            [88, 134],
+          ],
+          true,
+          3,
+        ),
+        "#7c4228",
+      );
+      drawLaminarFace(
+        smooth(
+          [
+            [96, 132],
+            [102, 131],
+            [107, 133],
+            [114, 135],
+            [109, 136],
+            [104, 135],
+            [100, 137],
+            [95, 136],
+          ],
+          true,
+          3,
+        ),
+        "#bc7740",
+      );
+      artRect(100, 132.5, 3, 1, "#e1a25c");
+      artRect(106, 134, 2, 1, "#d49b54");
+      artRect(95, 135, 1.5, 0.5, "#e7b574");
+      c.restore();
+    }
+
+    // Portrait-only Cordyceps specimen, 200 x 150 logical pixels.
+    // Raster geometry is prepared once; drawing never changes game state or uses RNG.
+    let discoveryCordycepsPixels = null;
+    function prepareDiscoveryCordycepsPixels() {
+      const runs = [];
+      const hash = (x, y, seed) => {
+        let n =
+          Math.imul(x + seed * 71, 374761393) ^
+          Math.imul(y + seed * 13, 668265263);
+        n = Math.imul(n ^ (n >>> 13), 1274126177);
+        return (n ^ (n >>> 16)) >>> 0;
+      };
+      const palette = [
+        "#775d42",
+        "#956039",
+        "#bd6229",
+        "#de7525",
+        "#f28d29",
+        "#ffa73b",
+        "#ffc45c",
+        "#ffdc85",
+        "#fff0b3",
+      ];
+      // Base, lower bend, upper bend, rounded tip, fertile radius; back to front.
+      const stems = [
+        [96, 132, 72, 103, 41, 66, 44, 39, 5.4],
+        [100, 132, 76, 98, 63, 56, 67, 29, 5.5],
+        [104, 132, 112, 74, 99, 42, 95, 22, 5.6],
+        [106, 132, 115, 85, 134, 55, 137, 32, 6],
+        [108, 133, 141, 103, 160, 87, 162, 64, 5.5],
+        [96, 133, 65, 111, 57, 89, 48, 80, 5],
+        [101, 132, 90, 82, 82, 48, 78, 16, 6],
+        [105, 132, 115, 90, 126, 45, 121, 13, 6.5],
+        [107, 132, 129, 91, 160, 57, 152, 40, 6.6],
+        [94, 134, 63, 115, 26, 105, 25, 85, 5.7],
+        [97, 134, 81, 97, 59, 83, 59, 63, 6],
+        [101, 134, 92, 95, 97, 74, 87, 52, 7],
+        [104, 135, 105, 89, 121, 70, 123, 49, 6.1],
+        [108, 135, 138, 103, 169, 82, 177, 69, 6.8],
+        [95, 135, 79, 125, 74, 113, 69, 105, 5.4],
+        [102, 136, 105, 114, 112, 100, 130, 94, 7],
+        [108, 135, 139, 122, 167, 125, 175, 111, 5.2],
+        [104, 136, 113, 126, 119, 117, 122, 111, 4.4],
+      ];
+      const pixelRun = (pixels) => {
+        for (const [y, row] of pixels) {
+          const xs = [...row.keys()].sort((a, b) => a - b);
+          let left = null,
+            last = null,
+            color = null;
+          for (const x of xs) {
+            const next = row.get(x);
+            if (left !== null && (x !== last + 1 || next !== color)) {
+              runs.push([left, y, last - left + 1, color]);
+              left = null;
+            }
+            if (left === null) {
+              left = x;
+              color = next;
+            }
+            last = x;
+          }
+          if (left !== null) runs.push([left, y, last - left + 1, color]);
+        }
+      };
+      stems.forEach((s, seed) => {
+        const samples = [];
+        for (let i = 0; i <= 88; i++) {
+          const t = i / 88,
+            u = 1 - t;
+          samples.push({
+            x:
+              u * u * u * s[0] +
+              3 * u * u * t * s[2] +
+              3 * u * t * t * s[4] +
+              t * t * t * s[6],
+            y:
+              u * u * u * s[1] +
+              3 * u * u * t * s[3] +
+              3 * u * t * t * s[5] +
+              t * t * t * s[7],
+            r:
+              1.75 +
+              (s[8] - 1.75) * Math.min(1, Math.max(0, (t - 0.25) / 0.44)),
+            t,
+          });
+        }
+        const pixels = new Map();
+        const loX = Math.max(
+          10,
+          Math.floor(Math.min(...samples.map((p) => p.x - p.r)) - 1),
+        );
+        const hiX = Math.min(
+          189,
+          Math.ceil(Math.max(...samples.map((p) => p.x + p.r)) + 1),
+        );
+        const loY = Math.max(
+          4,
+          Math.floor(Math.min(...samples.map((p) => p.y - p.r)) - 1),
+        );
+        const hiY = Math.min(
+          141,
+          Math.ceil(Math.max(...samples.map((p) => p.y + p.r)) + 1),
+        );
+        for (let y = loY; y <= hiY; y++)
+          for (let x = loX; x <= hiX; x++) {
+            let d = Infinity,
+              nearest;
+            for (const p of samples) {
+              const q =
+                ((x + 0.5 - p.x) ** 2 + (y + 0.5 - p.y) ** 2) / (p.r * p.r);
+              if (q < d) {
+                d = q;
+                nearest = p;
+              }
+            }
+            if (d > 1.1) continue;
+            const h = hash(x, y, seed),
+              side = (x + 0.5 - nearest.x) / nearest.r;
+            let shade =
+              d > 0.84
+                ? 2
+                : side < -0.25
+                  ? 6
+                  : side < 0.3
+                    ? 5
+                    : side < 0.7
+                      ? 4
+                      : 3;
+            if (nearest.t < 0.44) shade -= 1;
+            if (d > 0.97) shade = 1;
+            if (nearest.t > 0.5 && d < 0.82) {
+              if (h % 17 === 0) shade = Math.min(8, shade + 2);
+              else if (h % 13 === 0) shade = Math.max(2, shade - 2);
+              else if (h % 5 === 0) shade = Math.min(7, shade + 1);
+            } else if (h % 9 === 0) shade = Math.min(7, shade + 1);
+            if (side < -0.5 && d < 0.83 && h % 4 !== 0)
+              shade = Math.min(8, shade + 1);
+            if (!pixels.has(y)) pixels.set(y, new Map());
+            pixels.get(y).set(x, palette[Math.max(0, shade)]);
+          }
+        pixelRun(pixels);
+      });
+      // Interwoven cream mycelium conceals stem joins, without a pedestal or shadow.
+      const base = new Map(),
+        baseColors = [
+          "#8d6c49",
+          "#b58b52",
+          "#d2aa69",
+          "#edcb8c",
+          "#ffe6ad",
+          "#fff2cb",
+        ];
+      for (let y = 129; y <= 141; y++)
+        for (let x = 78; x <= 123; x++) {
+          const h = hash(x, y, 97),
+            edge = ((x - 100.5) / 23) ** 2 + ((y - 135) / 6.2) ** 2;
+          if (edge > 1 + (h % 9) * 0.015) continue;
+          let k = edge > 0.78 ? 1 : 2 + (h % 4);
+          if ((x + y * 2) % 9 < 2) k = Math.min(5, k + 1);
+          if (y > 138) k = Math.max(0, k - 1);
+          if (!base.has(y)) base.set(y, new Map());
+          base.get(y).set(x, baseColors[k]);
+        }
+      pixelRun(base);
+      return Object.freeze(runs.map((r) => Object.freeze(r)));
+    }
+
+    function drawDiscoveryCordyceps(x, y, scale = 1) {
+      c.save();
+      c.translate(x, y);
+      c.scale(scale, scale);
+      if (!discoveryCordycepsPixels)
+        discoveryCordycepsPixels = prepareDiscoveryCordycepsPixels();
+      for (const [px, py, width, color] of discoveryCordycepsPixels) {
+        c.fillStyle = color;
+        c.fillRect(px, py, width, 1);
+      }
+      c.restore();
+    }
+
+    const discoveryPortraitDrawers = {
+      Pleurotus: drawDiscoveryPleurotus,
+      "Melena de leon": drawDiscoveryLionsMane,
+      Reishi: drawDiscoveryReishi,
+      Cordyceps: drawDiscoveryCordyceps,
+    };
     function drawProductPortrait(item) {
       c.save();
       c.setTransform(2, 0, 0, 2, 0, 0);
@@ -15073,7 +16012,11 @@
       softShadow(160, 179, item.kind === "dropper" ? 33 : 65, 6, 0.35);
       if (item.kind === "dropper") drawDropper(128, 61, item.species, 4, 1);
       else if (item.kind === "spirulina") drawSpirulinaJar(114, 61, 4);
-      else drawSpeciesFruit(item.species, 96, 58, 1, 4, 3);
+      else {
+        const draw =
+          discoveryPortraitDrawers[item.species] || drawDiscoveryPleurotus;
+        draw(50, 22, 1.1);
+      }
       const art = document.querySelector("#product-reveal-art"),
         target = art.getContext("2d");
       target.imageSmoothingEnabled = false;

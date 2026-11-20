@@ -155,3 +155,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Balance general: economía activa y progresión conservada](outputs/BALANCE-GENERAL-LAB-BEEFUNGI.md).
 
 [Primera cosecha: presentaciones y goteros negros](outputs/TANDA-PRIMERAS-COSECHAS.md).
+
+[Retratos de hongos V2: referencias nuevas y reconstrucción en código](outputs/TANDA-RETRATOS-HONGOS-V2.md).

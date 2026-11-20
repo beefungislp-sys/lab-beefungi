@@ -118,3 +118,7 @@ Cristalería con base, hombros, menisco y reflejos cálidos; solución N diferen
 ## Presentaciones y goteros negros
 
 El vidrio vigente del gotero es negro con reflejos verde azulados, tapa carbón y collar crema; sustituye el ámbar de la referencia histórica. La etiqueta mantiene el color de especie. Los primeros encuentros amplían el mismo sprite sobre fondo petróleo, luz cálida suave y sombra discreta. La única leyenda visible es el nombre del hongo o Espirulina.
+
+## Retratos de hongos V2
+
+Las cuatro primeras cosechas usan ilustraciones de canvas propias de 200 × 150, reconstruidas desde sus referencias generadas. Comparten luz cálida, sombras salvia, siluetas orgánicas y detalle fino. No se escalan los iconos pequeños para esta vista. El mundo conserva sus sprites ligeros; las ventanas mantienen sólo el nombre.
