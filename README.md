@@ -153,3 +153,5 @@ Respaldo: https://github.com/beefungislp-sys/lab-beefungi
 Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRULINA-ARTE.md).
 
 [Balance general: economía activa y progresión conservada](outputs/BALANCE-GENERAL-LAB-BEEFUNGI.md).
+
+[Primera cosecha: presentaciones y goteros negros](outputs/TANDA-PRIMERAS-COSECHAS.md).
