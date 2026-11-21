@@ -29,12 +29,12 @@ El Petri inicial del desbloqueo sigue regalándose una sola vez. Agua y sales A/
 
 | Producto | Setas por 250 g | Cada gotero |
 | --- | ---: | ---: |
-| Pleurotus | 1 | 0,5 |
-| Melena | 2,5 | 0,75 |
-| Reishi | 3 | 1 |
-| Cordyceps | 3 | 1,5 |
+| Pleurotus | 1 | 3 |
+| Melena | 2,5 | 3 |
+| Reishi | 3 | 3 |
+| Cordyceps | 3 | 3 |
 
-Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros. Sus precios se mantienen independientes de las setas: el lote vale 2 / 3 / 4 / 6 monedas según la especie. Sigue agregando valor al producto usado, aunque el aumento de Melena y Reishi reduce ese margen de transformación. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
+Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros. Todos los goteros valen ahora 3 monedas por unidad: cada matraz produce cuatro y su venta completa suma 12 monedas, independientemente de la especie. Sus precios son independientes de los de las setas. La extracción consume 250 g: el valor añadido respecto a vender esas setas directamente es de 11 / 9,5 / 9 / 9 monedas por lote, antes de otros costes. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
 
 ## Mejoras y asistentes
 
@@ -88,3 +88,7 @@ La espera de llegada se conserva mientras la fila está llena, para ocupar una v
 ## Ajuste de venta de Melena y Reishi
 
 Melena aumenta una moneda por porción (1,5 → 2,5) y Reishi una moneda (2 → 3), corregido desde el aumento provisional de 1,5. Se aplican a nuevas ventas, sin revalorizar ventas anteriores ni inventar saldo al cargar. Insumos, mejoras, goteros, otras especies, demanda y desbloqueos se conservan. [Nota inicial](TANDA-VENTAS-MELENA-REISHI.md) y [corrección vigente](TANDA-REISHI-ESTERILIZADOR-CORDY.md).
+
+## Cierre de balance: goteros
+
+Se fija el precio de todos los goteros en 3 monedas por unidad, incluido el inventario guardado que se venda a partir de esta versión. No se modifican ingresos de ventas anteriores, rendimiento, desbloqueos ni otros precios. [Nota del cierre](TANDA-BALANCE-GOTEROS.md).
