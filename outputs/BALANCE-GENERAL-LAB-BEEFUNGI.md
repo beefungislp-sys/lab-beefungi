@@ -30,11 +30,11 @@ El Petri inicial del desbloqueo sigue regalándose una sola vez. Agua y sales A/
 | Producto | Setas por 250 g | Cada gotero |
 | --- | ---: | ---: |
 | Pleurotus | 1 | 0,5 |
-| Melena | 1,5 | 0,75 |
-| Reishi | 2 | 1 |
+| Melena | 2,5 | 0,75 |
+| Reishi | 3,5 | 1 |
 | Cordyceps | 3 | 1,5 |
 
-Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros, cuyo total duplica el valor de los hongos usados, sin el multiplicador desproporcionado anterior en especies avanzadas. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
+Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros. Sus precios se mantienen independientes de las setas: el lote vale 2 / 3 / 4 / 6 monedas según la especie. Sigue agregando valor al producto usado, aunque el aumento de Melena y Reishi reduce ese margen de transformación. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
 
 ## Mejoras y asistentes
 
@@ -61,15 +61,15 @@ Valores del juego, con clima óptimo, sin salarios ni fallos en esta primera tab
 | Bloque | Insumos directos | Venta de 950 g a largo plazo | Composta | Margen antes de limpieza |
 | --- | ---: | ---: | ---: | ---: |
 | Pleurotus | 2,25 | 3,8 | 1 | 2,55 |
-| Melena | 3 | 5,7 | 1 | 3,7 |
-| Reishi | 3,5 | 7,6 | 1 | 5,1 |
+| Melena | 3 | 9,5 | 1 | 7,5 |
+| Reishi | 3,5 | 13,3 | 1 | 10,8 |
 | Cordyceps | 5,5 | 11,4 | 1 | 6,9 |
 
 Pleurotus incluye media paca, micelio, bolsa y media cal (tanque inicial de dos); limpiar cada tres añade aproximadamente 0,17 por bloque y cada seis aproximadamente 0,08. En seis cargas se reparte menos cal por bloque. Cordyceps incluye dos frascos, dos nutrientes, arroz y Petri. Su primer flush de 500 g ya vende seis monedas frente a 5,5 de insumos, y el primer Petri regalado facilita el arranque de la ruta.
 
 Con el riesgo limpio de Pleurotus (10%) y limpieza cada tres, el margen esperado es aproximadamente dos monedas por bloque. El riesgo avanzado depende de cabina: limpia 5%, con mechero 2,5%, flujo laminar 0,1%; se conserva. Los márgenes son una proyección de muchas tandas, no dinero disponible inmediato: clientes compran unidades completas y quedan gramos remanentes.
 
-Ejemplo de caja inicial sin pérdidas: seis bloques generan 5700 g, de los que se venden 22 unidades (22 monedas) y quedan 200 g; seis compostas suman seis. Con 15 iniciales y una cal adicional de 0,5, la caja es 42,5. Tras el hito principal de 30 y la contratación opcional de cinco quedan 7,5, más los remanentes. Cuatro bloques sanos completos ya pueden financiar el hito si no se gastó en otras compras; cinco/seis permiten más margen. No se impone un número de tandas: los hitos vigentes mandan.
+Ejemplo de caja inicial sin pérdidas: seis bloques generan 5700 g, de los que se venden 22 unidades (22 monedas) y quedan 200 g; seis compostas suman seis. Con 15 iniciales y una cal adicional de 0,5, la caja es 42,5. Tras el hito principal de 34 y la contratación opcional de cinco quedan 3,5, más los remanentes. Cuatro bloques sanos completos ya pueden financiar el hito si no se gastó en otras compras; cinco/seis permiten más margen. No se impone un número de tandas: los hitos vigentes mandan.
 
 La reposición de dos bloques Pleurotus con una limpieza cuesta cinco. Es recomendable conservar esa caja de trabajo al invertir en mejoras opcionales. No se añade deuda, rescate automático ni una reserva obligatoria que cambie las compras.
 
@@ -84,3 +84,7 @@ Resultado: 206 grupos de verificación aprobados y build correcto. Navegador: sa
 La tienda conserva tres puestos y los clientes conservan su paciencia. Según las unidades enteras listas para vender: 0–3 → llegadas de 20–30 s y pedidos de 1–2; 4–11 → 10–16 s y 2–3; 12–23 → 6–10 s y 3–4; 24 o más → 4–7 s y 4–6. Los pedidos se limitan por stock libre de cada producto/especie, descontando los compromisos de la fila. La selección se pondera por las existencias libres. Los pedidos ya iniciados no cambian y el cliente de bienvenida conserva una unidad.
 
 La espera de llegada se conserva mientras la fila está llena, para ocupar una vacante sin esperar otro intervalo completo. Las mejoras iniciales conservan sus precios; las etapas posteriores aumentan moderadamente según la tabla anterior. Los desbloqueos y las mejoras compradas previamente se conservan. [Nota de revisión](TANDA-DEMANDA-Y-ARRASTRE-MOVIL.md).
+
+## Ajuste de venta de Melena y Reishi
+
+Melena aumenta una moneda por porción (1,5 → 2,5) y Reishi una y media (2 → 3,5). Se aplican a nuevas ventas, sin revalorizar ventas anteriores ni inventar saldo al cargar. Insumos, mejoras, goteros, otras especies, demanda y desbloqueos se conservan. [Nota del ajuste](TANDA-VENTAS-MELENA-REISHI.md).

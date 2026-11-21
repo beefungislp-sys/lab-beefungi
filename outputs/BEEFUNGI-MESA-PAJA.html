@@ -784,6 +784,12 @@
         Reishi: 2,
         Cordyceps: 2.5,
       },
+      droppers: {
+        Pleurotus: 0.5,
+        "Melena de leon": 0.75,
+        Reishi: 1,
+        Cordyceps: 1.5,
+      },
       upgrades: {
         crusher: [3, 6],
         tank: [3, 6],
@@ -3980,8 +3986,8 @@
     }
     const speciesPrices = {
       Pleurotus: 1,
-      "Melena de leon": 1.5,
-      Reishi: 2,
+      "Melena de leon": 2.5,
+      Reishi: 3.5,
       Cordyceps: 3,
     };
     function speciesShort(name) {
@@ -11571,7 +11577,9 @@
       return dropperStock[name] || 0;
     }
     function dropperPrice(name) {
-      return (speciesPrices[name] || speciesPrices.Pleurotus) * 0.5;
+      return Object.hasOwn(gameBalance.droppers, name)
+        ? gameBalance.droppers[name]
+        : gameBalance.droppers.Pleurotus;
     }
     function startBottling() {
       if (bottlingJob || !extractInventory.length) return false;

@@ -173,3 +173,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Animación de limpieza](outputs/TANDA-ANIMACION-LIMPIEZA.md): rociado, trapo y brillo al limpiar bandeja, llenadora o cabina.
 
 [Sonidos de cosecha y compostaje](outputs/TANDA-SONIDOS-COSECHA-COMPOSTA.md): golpes orgánicos breves de madera y tierra, sólo en acciones completadas.
+
+[Ajuste de venta de Melena y Reishi](outputs/TANDA-VENTAS-MELENA-REISHI.md): porciones de 250 g a 2,5 y 3,5 monedas respectivamente.
