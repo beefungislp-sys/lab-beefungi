@@ -1,4 +1,4 @@
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, cp } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 const html = await readFile('outputs/BEEFUNGI-MESA-PAJA.html', 'utf8');
@@ -8,6 +8,7 @@ new vm.Script(script);
 const version = { sourceSha256: createHash('sha256').update(html).digest('hex'), builtAt: new Date().toISOString() };
 for (const folder of ['dist', 'docs']) {
   await mkdir(folder, { recursive: true });
+  await cp('assets/audio', folder + '/assets/audio', { recursive: true });
   await writeFile(folder + '/index.html', html, 'utf8');
   await writeFile(folder + '/.nojekyll', '', 'utf8');
   await writeFile(folder + '/version.json', JSON.stringify(version) + '\n', 'utf8');

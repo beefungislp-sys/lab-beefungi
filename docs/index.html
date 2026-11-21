@@ -647,6 +647,7 @@
       <div class="help-content">
         <button id="test-mode" aria-pressed="false">Modo prueba: apagado</button
         ><button id="sound-toggle" aria-pressed="true">Sonido: activado</button>
+        <button id="music-toggle" aria-pressed="true">Música: activada</button>
         <p id="status" role="status">Selecciona una estación para acercarte.</p>
         <p>
           Empiezas con 15 monedas y un kit de insumos. Compra una unidad por
@@ -12758,7 +12759,7 @@
         drawSpirulinaJar(x + (n === 1 ? 20 : 8) + i * 24, y + 2, 0.55);
     };
 
-    // Dos señales cortas, locales y sin archivos externos.
+    // Señales cortas sintetizadas y tres arreglos musicales propios.
     // === SONIDO Y AVISOS ===
     let soundEnabled = true,
       audioContext = null,
@@ -12774,6 +12775,8 @@
       activeSoundNodes = new Set();
     function unlockGameAudio() {
       if (!soundEnabled) return;
+      audioGesture = true;
+      syncGameMusic();
       try {
         const Audio = window.AudioContext || window.webkitAudioContext;
         if (!Audio) return;
@@ -12781,6 +12784,127 @@
         if (audioContext.state === "suspended")
           audioContext.resume()?.catch?.(() => {});
       } catch {}
+    }
+    const gameCueProfiles = {
+      ready: { notes: [660, 880], step: 0.09, duration: 0.085, gain: 0.065 },
+      missing: { notes: [220, 165], step: 0.09, duration: 0.085, gain: 0.065 },
+      place: { notes: [520], step: 0.04, duration: 0.055, gain: 0.04 },
+      sale: { notes: [988, 1319], step: 0.065, duration: 0.075, gain: 0.045 },
+      unlock: {
+        notes: [523.25, 659.25, 783.99, 1046.5],
+        step: 0.105,
+        duration: 0.16,
+        gain: 0.045,
+      },
+      discovery: {
+        notes: [659.25, 783.99, 987.77, 1174.66],
+        step: 0.12,
+        duration: 0.19,
+        gain: 0.04,
+      },
+    };
+    function playActionCue(kind, cooldown = 0.16) {
+      if (!soundEnabled || document.hidden) return;
+      const key = "action:" + kind;
+      if (feedbackTime - (soundCooldown.get(key) ?? -10) < cooldown) return;
+      soundCooldown.set(key, feedbackTime);
+      playGameCue(kind);
+    }
+    const musicTracks = [
+      "01-micelio",
+      "02-luz-de-vidrio",
+      "03-jardin-burbujeante",
+    ];
+    let musicEnabled = true,
+      musicPlayer = null,
+      musicIndex = 0,
+      audioGesture = false;
+    try {
+      musicEnabled = localStorage.getItem("lab-beefungi-musica") !== "0";
+    } catch {}
+    function syncGameMusic() {
+      if (!audioGesture || !soundEnabled || !musicEnabled || document.hidden) {
+        musicPlayer?.pause();
+        return;
+      }
+      if (!musicPlayer && typeof window.Audio === "function") {
+        musicPlayer = new window.Audio();
+        musicPlayer.preload = "none";
+        musicPlayer.volume = 0.16;
+        musicPlayer.onended = () => {
+          musicIndex = (musicIndex + 1) % musicTracks.length;
+          loadMusicTrack();
+          syncGameMusic();
+        };
+        loadMusicTrack();
+      }
+      if (musicPlayer?.paused) musicPlayer.play()?.catch?.(() => {});
+    }
+    function loadMusicTrack() {
+      if (!musicPlayer) return;
+      const prefix =
+        typeof location !== "undefined" && /\/outputs\//.test(location.pathname)
+          ? "../assets/audio/"
+          : "assets/audio/";
+      musicPlayer.src = prefix + musicTracks[musicIndex] + ".wav";
+    }
+    function updateMusicButton() {
+      const button = document.querySelector("#music-toggle");
+      button.textContent = musicEnabled
+        ? "Música: activada"
+        : "Música: apagada";
+      button.setAttribute?.("aria-pressed", String(musicEnabled));
+    }
+    document.querySelector("#music-toggle").onclick = () => {
+      musicEnabled = !musicEnabled;
+      try {
+        localStorage.setItem("lab-beefungi-musica", musicEnabled ? "1" : "0");
+      } catch {}
+      unlockGameAudio();
+      syncGameMusic();
+      updateMusicButton();
+    };
+    // No se descarga ni reproduce música hasta una interacción del usuario.
+    document.addEventListener(
+      "pointerdown",
+      () => {
+        unlockGameAudio();
+      },
+      { passive: true },
+    );
+    document.addEventListener("keydown", () => {
+      unlockGameAudio();
+    });
+    document.addEventListener("visibilitychange", syncGameMusic);
+    updateMusicButton();
+    function placementInventory() {
+      return [
+        bales,
+        loads,
+        treatedLoads,
+        pleuroStock(),
+        bags,
+        lime,
+        cleaning,
+        woodStock,
+        nutrientStock,
+        cordySubStock,
+        sterileWood,
+        sterileCordy,
+        liquidSterile,
+        preparedWood,
+        preparedLiquid,
+        preparedCordy,
+        spirulinaNutrients,
+        micelio,
+        micelioStock,
+        liquidEmpty,
+        matureLiquidCount(),
+        liquidPending.length,
+        extractInventory.length,
+        harvestCart.reduce((sum, item) => sum + (item.grams || 0), 0),
+        ...Object.values(speciesStocks),
+      ];
     }
     function playGameCue(kind) {
       if (!soundEnabled || !audioContext || audioContext.state !== "running")
@@ -12790,9 +12914,10 @@
             audioContext.currentTime,
             audioContext._beeNext || 0,
           ),
-          notes = kind === "ready" ? [660, 880] : [220, 165],
-          step = 0.09;
-        audioContext._beeNext = start + 0.21;
+          profile = gameCueProfiles[kind] || gameCueProfiles.missing,
+          { notes, step, duration, gain: volume } = profile;
+        if (start - audioContext.currentTime > 0.35) return;
+        audioContext._beeNext = start + (notes.length - 1) * step + duration;
         for (let i = 0; i < notes.length; i++) {
           const osc = audioContext.createOscillator(),
             gain = audioContext.createGain(),
@@ -12800,8 +12925,8 @@
           osc.type = "triangle";
           osc.frequency.setValueAtTime(notes[i], t);
           gain.gain.setValueAtTime(0.0001, t);
-          gain.gain.linearRampToValueAtTime(0.065, t + 0.008);
-          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.085);
+          gain.gain.linearRampToValueAtTime(volume, t + 0.008);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
           osc.connect(gain);
           gain.connect(audioContext.destination);
           osc.onended = () => {
@@ -12811,7 +12936,7 @@
           };
           activeSoundNodes.add(osc);
           osc.start(t);
-          osc.stop(t + 0.09);
+          osc.stop(t + duration + 0.005);
         }
       } catch {}
     }
@@ -12862,13 +12987,21 @@
     }
     function playerAction(action, e) {
       const previous = manualFeedback,
-        origin = feedbackOrigin;
+        origin = feedbackOrigin,
+        inputBefore = placementInventory(),
+        coinsBefore = saleCoins,
+        flashBefore = feedbackFlash;
       manualFeedback = true;
       feedbackOrigin = drag?.start || (e?.clientX != null ? point(e) : null);
       unlockGameAudio();
       try {
         return action(e);
       } finally {
+        if (!previous && feedbackFlash === flashBefore) {
+          if (saleCoins > coinsBefore) playActionCue("sale");
+          else if (placementInventory().some((n, i) => n < inputBefore[i]))
+            playActionCue("place");
+        }
         manualFeedback = previous;
         feedbackOrigin = origin;
       }
@@ -12910,6 +13043,7 @@
         activeSoundNodes.clear();
         if (audioContext) audioContext._beeNext = 0;
       }
+      syncGameMusic();
       updateSoundButton();
     };
     updateSoundButton();
@@ -14126,6 +14260,7 @@
     function queueUnlock(message) {
       if (upgradeMenuOpen) closeUpgradeMenu();
       progression.notices.push(message);
+      playActionCue("unlock", 0.6);
       renderUnlockNotice();
     }
     function renderUnlockNotice() {
@@ -16642,6 +16777,7 @@
       drawProductPortrait(item);
       const dialog = document.querySelector("#product-reveal");
       if (!dialog.open) dialog.showModal();
+      playActionCue("discovery", 0.6);
       document.querySelector("#product-reveal-close").focus();
     }
     function queueProductReveal(kind, species) {

@@ -159,3 +159,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Retratos de hongos V2: referencias nuevas y reconstrucción en código](outputs/TANDA-RETRATOS-HONGOS-V2.md).
 
 [Guía de reposición y recuperación](outputs/TANDA-GUIA-RECUPERACION.md).
+
+[Música de flauta y sonidos de acciones](outputs/TANDA-MUSICA-FLAUTA-Y-SONIDOS.md).
