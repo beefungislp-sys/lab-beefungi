@@ -785,14 +785,14 @@
         Cordyceps: 2.5,
       },
       upgrades: {
-        crusher: [3, 4],
-        tank: [3, 4],
+        crusher: [3, 6],
+        tank: [3, 6],
         pasteur: 3,
         mix: 5,
-        chamber: [4, 6, 6],
-        woodPrep: [4, 7, 4],
-        woodSterilizer: [4, 6, 4],
-        glovebox: [3, 6, 10],
+        chamber: [4, 9, 10],
+        woodPrep: [4, 10, 7],
+        woodSterilizer: [4, 9, 7],
+        glovebox: [3, 9, 15],
         liquidStir: 4,
       },
       assistants: {
@@ -4916,26 +4916,84 @@
       }
       return true;
     }
+    // Demanda derivada del producto vendible; no cambia inventarios ni pedidos existentes.
+    function shopDemandStock() {
+      return shopInventoryCards
+        .map((card) => {
+          const units = Math.floor(shopUnits(card) + 1e-8);
+          const reserved = shopQueue
+            .filter(
+              (c) =>
+                (c.product || "mushroom") === card.product &&
+                (c.species || "Pleurotus") === card.species,
+            )
+            .reduce((n, c) => n + Math.max(0, c.remaining || 0), 0);
+          return { ...card, units, free: Math.max(0, units - reserved) };
+        })
+        .filter((card) => card.units > 0);
+    }
+    function shopDemandProfile() {
+      const units = shopDemandStock().reduce((n, card) => n + card.units, 0);
+      return units >= 24
+        ? { min: 4, max: 7, orderMin: 4, orderMax: 6 }
+        : units >= 12
+          ? { min: 6, max: 10, orderMin: 3, orderMax: 4 }
+          : units >= 4
+            ? { min: 10, max: 16, orderMin: 2, orderMax: 3 }
+            : { min: 20, max: 30, orderMin: 1, orderMax: 2 };
+    }
+    function nextShopArrival(profile = shopDemandProfile()) {
+      return profile.min + Math.random() * (profile.max - profile.min);
+    }
+    function createShopDemand() {
+      const stock = shopDemandStock(),
+        available = stock.filter((card) => card.free >= 1),
+        profile = shopDemandProfile();
+      if (!available.length)
+        return stock.length
+          ? null
+          : {
+              product: "mushroom",
+              species: "Pleurotus",
+              requested: Math.random() < 0.5 ? 1 : 2,
+            };
+      let roll =
+        Math.random() * available.reduce((n, card) => n + card.free, 0);
+      let chosen = available[available.length - 1];
+      for (const card of available) {
+        roll -= card.free;
+        if (roll < 0) {
+          chosen = card;
+          break;
+        }
+      }
+      const requested = Math.min(
+        chosen.free,
+        profile.orderMin +
+          Math.floor(Math.random() * (profile.orderMax - profile.orderMin + 1)),
+      );
+      return { product: chosen.product, species: chosen.species, requested };
+    }
     function advanceShop(dt) {
       if (!shopUnlocked || dt <= 0) return;
       shopWait += dt;
-      if (shopWait >= shopNextArrival) {
-        shopWait = 0;
-        shopNextArrival = 20 + Math.random() * 10;
-        if (shopQueue.length < shopCustomerStyle.capacity) {
-          const requested = Math.random() < 0.5 ? 1 : 2,
-            available = speciesCatalog.filter(
-              (s) => shopInventoryGrams(s.name) >= 250,
-            ),
-            options = available.length ? available : [speciesCatalog[0]],
-            name = options[Math.floor(Math.random() * options.length)].name;
+      const profile = shopDemandProfile();
+      if (shopNextArrival > profile.max)
+        shopNextArrival = nextShopArrival(profile);
+      if (
+        shopWait >= shopNextArrival &&
+        shopQueue.length < shopCustomerStyle.capacity
+      ) {
+        const order = createShopDemand();
+        if (order) {
+          shopWait = 0;
+          shopNextArrival = nextShopArrival(profile);
           shopQueue.push({
             id: ++customerSerial,
-            species: name,
+            ...order,
             y: 235,
             bought: 0,
-            requested,
-            remaining: requested,
+            remaining: order.requested,
             wait: 0,
             color: ["#bd845a", "#6d9aa5", "#a687ad"][
               Math.floor(Math.random() * 3)
@@ -4943,6 +5001,8 @@
           });
         }
       }
+      // La espera de llegada se conserva al llenarse la fila: el hueco se repone sin otra espera completa.
+      shopWait = Math.min(shopWait, shopNextArrival);
       const staying = [];
       for (const customer of shopQueue) {
         // El cliente de bienvenida espera su primera entrega; los demás conservan su paciencia.
@@ -11794,23 +11854,6 @@
       say("Gotero de " + name + " vendido.");
       return true;
     };
-    const bottlingShopAdvance = advanceShop;
-    advanceShop = function (dt) {
-      const ids = new Set(shopQueue.map(customerId));
-      bottlingShopAdvance(dt);
-      for (const customer of shopQueue) {
-        if (ids.has(customerId(customer))) continue;
-        const available = speciesCatalog.filter((s) => dropperCount(s.name));
-        if (
-          available.length &&
-          (shopInventoryGrams() < 250 || Math.random() < 0.5)
-        ) {
-          customer.product = "dropper";
-          customer.species =
-            available[Math.floor(Math.random() * available.length)].name;
-        }
-      }
-    };
     const bottlingOrder = drawCustomerOrder;
     drawCustomerOrder = function (customer) {
       if (customer.product !== "dropper") {
@@ -13104,23 +13147,6 @@
       }
       return spirulinaServe(id, offered, product);
     };
-    const spirulinaShopAdvance = advanceShop;
-    advanceShop = function (dt) {
-      const ids = new Set(shopQueue.map(customerId));
-      spirulinaShopAdvance(dt);
-      if (spirulinaHarvest)
-        for (const customer of shopQueue) {
-          if (
-            !ids.has(customerId(customer)) &&
-            ((shopInventoryGrams() < 250 &&
-              !Object.values(dropperStock).some((n) => n > 0)) ||
-              Math.random() < 0.33)
-          ) {
-            customer.product = "spirulina";
-            customer.species = "Spirulina";
-          }
-        }
-    };
     const spirulinaOrder = drawCustomerOrder;
     drawCustomerOrder = function (customer) {
       if (customer.product !== "spirulina") {
@@ -14014,7 +14040,7 @@
       text("SALIR", 144, 232);
     };
     drawCustomerOrder = function (customer) {
-      const count = Math.max(0, Math.min(2, customer.remaining || 0));
+      const count = Math.max(0, Math.floor(customer.remaining || 0));
       if (!count) return;
       const [x, y] = shopOrderRect(customer),
         name = customer.species || "Pleurotus",
@@ -14034,6 +14060,11 @@
         4,
         product === "spirulina" ? "#7cb68b" : speciesColor(name),
       );
+      if (count > 2) {
+        drawShopProduct(product, name, x + 2, y + 4, 0.45);
+        smallText("×" + count, x + 17, y + 16);
+        return;
+      }
       for (let i = 0; i < count; i++)
         drawShopProduct(
           product,
@@ -15226,17 +15257,11 @@
       const half = 24 * scale;
       // El mouse sostiene el centro del objeto; sólo el dedo necesita separación.
       if (!touch) return { x: d.now.x, y: d.now.y, scale, half, touch };
-      const gap = 52 / pixelsPerUnit;
-      let x = d.now.x,
-        y = d.now.y - gap - half;
-      // Cerca del borde superior se coloca al lado, para no volver bajo el dedo.
-      if (touch && y < half + 2) {
-        x = d.now.x < 160 ? d.now.x + gap + half : d.now.x - gap - half;
-        y = d.now.y;
-      }
+      // Separación mínima constante en píxeles de pantalla; nunca salta de lado.
+      const gap = 12 / pixelsPerUnit;
       return {
-        x: Math.max(half + 2, Math.min(318 - half, x)),
-        y: Math.max(half + 2, Math.min(238 - half, y)),
+        x: Math.max(2, Math.min(318, d.now.x)),
+        y: Math.max(2, Math.min(238, d.now.y - gap)),
         scale,
         half,
         touch,

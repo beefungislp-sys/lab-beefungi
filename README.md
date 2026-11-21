@@ -167,3 +167,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Personajes seleccionables](outputs/TANDA-PERSONAJES-SELECCIONABLES.md): referencia propia y sprites nativos compartidos, animación de reposo/caminata y elección incluida en la partida.
 
 [Selector con dos opciones](outputs/TANDA-PERSONAJES-DOS-OPCIONES.md): chico de cabello corto y chica con coleta; partidas anteriores compatibles.
+
+[Demanda adaptativa y arrastre móvil](outputs/TANDA-DEMANDA-Y-ARRASTRE-MOVIL.md): llegadas y pedidos según existencias, mejoras posteriores más costosas e icono táctil a 12 px del dedo.

@@ -40,17 +40,17 @@ Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantie
 
 | Rama | Costos por etapa |
 | --- | --- |
-| Triturador | 3 / 4 |
-| Tanque 4/6 | 3 / 4 |
+| Triturador | 3 / 6 |
+| Tanque 4/6 | 3 / 6 |
 | Agua de pasteurizado | 3 |
 | Llenadora de mezcla | 5 |
-| Cada cámara: seis / ocho / control | 4 / 6 / 6 |
-| Sustrato: agua / llenadora / agua rápida | 4 / 7 / 4 |
-| Esterilizador: cuatro / seis / agua | 4 / 6 / 4 |
-| Cabina: mechero / ampliación / flujo laminar | 3 / 6 / 10 |
+| Cada cámara: seis / ocho / control | 4 / 9 / 10 |
+| Sustrato: agua / llenadora / agua rápida | 4 / 10 / 7 |
+| Esterilizador: cuatro / seis / agua | 4 / 9 / 7 |
+| Cabina: mechero / ampliación / flujo laminar | 3 / 9 / 15 |
 | Agitación seis espacios | 4 |
 
-Hito principal: **30 monedas** en mejoras, sin exigir contratar al asistente. Árbol estéril: **48 monedas**, sin exigir maximizar cámaras ni contratar al segundo. Las contrataciones continúan opcionales: preparación cuesta cinco y mantiene 0,25 por minuto; laboratorio cuesta diez y mantiene 0,5 por minuto. No se cobran antes de contratar; si falta saldo, conservan la pausa/aviso existentes y pueden reanudarse al obtener dinero. Las pruebas explícitas no consumen saldo.
+Hito principal: **34 monedas** en mejoras, sin exigir contratar al asistente. Árbol estéril: **68 monedas**, sin exigir maximizar cámaras ni contratar al segundo. Las contrataciones continúan opcionales: preparación cuesta cinco y mantiene 0,25 por minuto; laboratorio cuesta diez y mantiene 0,5 por minuto. No se cobran antes de contratar; si falta saldo, conservan la pausa/aviso existentes y pueden reanudarse al obtener dinero. Las pruebas explícitas no consumen saldo.
 
 La oferta muestra precio, saldo insuficiente la deshabilita y el contador rojo cuenta las compras realizables ahora. La fila no desaparece por falta de dinero; el precio y la disponibilidad se actualizan al comprar o vender. Los procesos ocupados conservan sus restricciones originales. El menú indica también el mantenimiento al ofrecer un asistente.
 
@@ -78,3 +78,9 @@ La reposición de dos bloques Pleurotus con una limpieza cuesta cinco. Es recome
 Se comprueban cobros, rechazo sin saldo, costo correcto por medio/especie, menús y contrataciones, exención de pruebas, nóminas, presupuesto de reposición y el recorrido completo de desbloqueos con economía real. Se mantienen también las regresiones del recorrido gratuito mediante una fixture explícita. Actualización posterior: el guardado local conserva la partida al recargar. No hay producción ni salarios fuera de línea; las reglas de balance se conservan.
 
 Resultado: 206 grupos de verificación aprobados y build correcto. Navegador: saldo 15 → 12 → 8 → 5 → 2 al comprar etapas; compras de paja y micelio 2 → 1 → 0, inventarios actualizados y pedidos deshabilitados sin saldo. Las ofertas futuras permanecen ocultas y las visibles sin fondos conservan su precio deshabilitado. Catálogo regenerado; captura local BALANCE-GENERAL-QA.jpg.
+
+## Demanda adaptativa
+
+La tienda conserva tres puestos y los clientes conservan su paciencia. Según las unidades enteras listas para vender: 0–3 → llegadas de 20–30 s y pedidos de 1–2; 4–11 → 10–16 s y 2–3; 12–23 → 6–10 s y 3–4; 24 o más → 4–7 s y 4–6. Los pedidos se limitan por stock libre de cada producto/especie, descontando los compromisos de la fila. La selección se pondera por las existencias libres. Los pedidos ya iniciados no cambian y el cliente de bienvenida conserva una unidad.
+
+La espera de llegada se conserva mientras la fila está llena, para ocupar una vacante sin esperar otro intervalo completo. Las mejoras iniciales conservan sus precios; las etapas posteriores aumentan moderadamente según la tabla anterior. Los desbloqueos y las mejoras compradas previamente se conservan. [Nota de revisión](TANDA-DEMANDA-Y-ARRASTRE-MOVIL.md).
