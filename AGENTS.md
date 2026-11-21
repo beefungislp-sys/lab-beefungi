@@ -13,7 +13,7 @@ El usuario autorizó respaldar en GitHub y actualizar la página después de cad
 
 GitHub Pages sirve exclusivamente `docs/`, generado por el build, con el juego como `index.html`. El repositorio respalda fuente, pruebas y notas; los renders de QA y temporales se ignoran.
 
-La partida sigue en memoria; no atribuirle guardado o sincronización entre dispositivos.
+La partida se guarda localmente en el navegador (esquema versionado y respaldo). No hay sincronización entre dispositivos ni progreso fuera de línea. El modo de prueba y los trucos no reemplazan una partida real.
 
 ## Nombres de tandas
 

@@ -1,6 +1,6 @@
 # Progresión de Lab BeeFungi — revisión de flujo y mejoras
 
-**Estado: progresión implementada con economía activa.** Los hitos de esta guía se conservan. Precios, márgenes y mantenimiento se detallan en [Balance general](BALANCE-GENERAL-LAB-BEEFUNGI.md). Los recursos se consumen y se reponen en pedidos. Recargar reinicia; la partida está en memoria.
+**Estado: progresión implementada con economía activa.** Los hitos de esta guía se conservan. Precios, márgenes y mantenimiento se detallan en [Balance general](BALANCE-GENERAL-LAB-BEEFUNGI.md). Los recursos se consumen y se reponen en pedidos. La partida se guarda localmente y al recargar ofrece Continuar. No avanza mientras está cerrada ni se sincroniza entre dispositivos.
 
 ## Hitos vigentes
 

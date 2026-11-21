@@ -648,6 +648,11 @@
         <button id="test-mode" aria-pressed="false">Modo prueba: apagado</button
         ><button id="sound-toggle" aria-pressed="true">Sonido: activado</button>
         <button id="music-toggle" aria-pressed="true">Música: activada</button>
+        <button id="save-now">Guardar partida</button>
+        <button id="new-game">Nueva partida</button>
+        <p id="save-status" role="status" aria-live="polite">
+          Guardado automático en este navegador.
+        </p>
         <p id="status" role="status">Selecciona una estación para acercarte.</p>
         <p>
           Empiezas con 15 monedas y un kit de insumos. Compra una unidad por
@@ -665,11 +670,24 @@
           extracción/envasado; el primer gotero abre mesa de química y
           espirulina. La guía de química prepara solución de espirulina. E
           cierra el menú de mejoras; WASD y el suelo permiten caminar. La
-          partida sigue en memoria.
+          partida se guarda en este navegador; no se sincroniza entre
+          dispositivos.
         </p>
       </div>
     </details>
   </main>
+  <dialog id="save-menu" aria-labelledby="save-title">
+    <h2 id="save-title">Lab BeeFungi</h2>
+    <p id="save-summary"></p>
+    <button id="continue-game">Continuar partida</button>
+    <button id="start-new-game">Nueva partida</button>
+  </dialog>
+  <dialog id="reset-save" aria-labelledby="reset-title">
+    <h2 id="reset-title">¿Empezar de nuevo?</h2>
+    <p>Se reemplazará la partida guardada en este navegador.</p>
+    <button id="cancel-reset">Cancelar</button>
+    <button id="confirm-reset">Empezar de nuevo</button>
+  </dialog>
   <dialog id="orders">
     <h2>Oficina · Pedidos</h2>
     <p id="order-balance">Saldo: 15 monedas</p>
@@ -16856,7 +16874,7 @@
           ? 0
           : Math.min(0.15, (now - last) / 1000);
       last = now;
-      if (productRevealQueue.length) {
+      if (saveGate || productRevealQueue.length) {
         document.querySelector("#route-pointer").hidden = true;
         requestAnimationFrame(frame);
         return;
@@ -16963,6 +16981,7 @@
       flushReadySignals();
       scene(dt);
       updateGuidePointer();
+      tickAutoSave(dt);
       requestAnimationFrame(frame);
     }
     document.addEventListener("visibilitychange", () => {
@@ -16972,6 +16991,1238 @@
       woodTank.running = false;
       keys.clear();
     });
+
+    // === PARTIDA LOCAL, ESQUEMA 1 ===
+    // Lista explícita: no se serializan funciones, tareas de asistentes ni recursos gráficos.
+    const saveVersion = 1,
+      saveKeys = [
+        "lab-beefungi-partida-v1",
+        "lab-beefungi-partida-respaldo-v1",
+      ];
+    const saveFields = {
+      gloveGuideDone: [
+        () => gloveGuideDone,
+        (value) => {
+          gloveGuideDone = value;
+        },
+      ],
+      gloveCleanedForLoad: [
+        () => gloveCleanedForLoad,
+        (value) => {
+          gloveCleanedForLoad = value;
+        },
+      ],
+      selectedSubstrate: [
+        () => selectedSubstrate,
+        (value) => {
+          selectedSubstrate = value;
+        },
+      ],
+      nutrientStock: [
+        () => nutrientStock,
+        (value) => {
+          nutrientStock = value;
+        },
+      ],
+      woodPrepState: [
+        () => woodPrepState,
+        (value) => {
+          woodPrepState = value;
+        },
+      ],
+      woodGuideDone: [
+        () => woodGuideDone,
+        (value) => {
+          woodGuideDone = value;
+        },
+      ],
+      guideSpecies: [
+        () => guideSpecies,
+        (value) => {
+          guideSpecies = value;
+        },
+      ],
+      woodStock: [
+        () => woodStock,
+        (value) => {
+          woodStock = value;
+        },
+      ],
+      preparedWood: [
+        () => preparedWood,
+        (value) => {
+          preparedWood = value;
+        },
+      ],
+      sterileWood: [
+        () => sterileWood,
+        (value) => {
+          sterileWood = value;
+        },
+      ],
+      woodTank: [
+        () => woodTank,
+        (value) => {
+          woodTank = value;
+        },
+      ],
+      gloveWood: [
+        () => gloveWood,
+        (value) => {
+          gloveWood = value;
+        },
+      ],
+      gloveJar: [
+        () => gloveJar,
+        (value) => {
+          gloveJar = value;
+        },
+      ],
+      gloveUses: [
+        () => gloveUses,
+        (value) => {
+          gloveUses = value;
+        },
+      ],
+      woodBagJob: [
+        () => woodBagJob,
+        (value) => {
+          woodBagJob = value;
+        },
+      ],
+      shopGuideDone: [
+        () => shopGuideDone,
+        (value) => {
+          shopGuideDone = value;
+        },
+      ],
+      saleSpecies: [
+        () => saleSpecies,
+        (value) => {
+          saleSpecies = value;
+        },
+      ],
+      customerSerial: [
+        () => customerSerial,
+        (value) => {
+          customerSerial = value;
+        },
+      ],
+      salesBySpecies: [
+        () => salesBySpecies,
+        (value) => {
+          salesBySpecies = value;
+        },
+      ],
+      shopUnlocked: [
+        () => shopUnlocked,
+        (value) => {
+          shopUnlocked = value;
+        },
+      ],
+      shopQueue: [
+        () => shopQueue,
+        (value) => {
+          shopQueue = value;
+        },
+      ],
+      shopDeparting: [
+        () => shopDeparting,
+        (value) => {
+          shopDeparting = value;
+        },
+      ],
+      shopWait: [
+        () => shopWait,
+        (value) => {
+          shopWait = value;
+        },
+      ],
+      shopNextArrival: [
+        () => shopNextArrival,
+        (value) => {
+          shopNextArrival = value;
+        },
+      ],
+      soldGrams: [
+        () => soldGrams,
+        (value) => {
+          soldGrams = value;
+        },
+      ],
+      saleCoins: [
+        () => saleCoins,
+        (value) => {
+          saleCoins = value;
+        },
+      ],
+      faucetGuideDone: [
+        () => faucetGuideDone,
+        (value) => {
+          faucetGuideDone = value;
+        },
+      ],
+      cleaningGuideDone: [
+        () => cleaningGuideDone,
+        (value) => {
+          cleaningGuideDone = value;
+        },
+      ],
+      cleaningGuideActive: [
+        () => cleaningGuideActive,
+        (value) => {
+          cleaningGuideActive = value;
+        },
+      ],
+      dirt: [
+        () => dirt,
+        (value) => {
+          dirt = value;
+        },
+      ],
+      bagsSinceClean: [
+        () => bagsSinceClean,
+        (value) => {
+          bagsSinceClean = value;
+        },
+      ],
+      sprayed: [
+        () => sprayed,
+        (value) => {
+          sprayed = value;
+        },
+      ],
+      waitingBagData: [
+        () => waitingBagData,
+        (value) => {
+          waitingBagData = value;
+        },
+      ],
+      fruitingCart: [
+        () => fruitingCart,
+        (value) => {
+          fruitingCart = value;
+        },
+      ],
+      fruitShelves: [
+        () => fruitShelves,
+        (value) => {
+          fruitShelves = value;
+        },
+      ],
+      harvestCart: [
+        () => harvestCart,
+        (value) => {
+          harvestCart = value;
+        },
+      ],
+      compostCart: [
+        () => compostCart,
+        (value) => {
+          compostCart = value;
+        },
+      ],
+      fruitClimate: [
+        () => fruitClimate,
+        (value) => {
+          fruitClimate = value;
+        },
+      ],
+      selectedSpecies: [
+        () => selectedSpecies,
+        (value) => {
+          selectedSpecies = value;
+        },
+      ],
+      speciesStocks: [
+        () => speciesStocks,
+        (value) => {
+          speciesStocks = value;
+        },
+      ],
+      mixedJarSpecies: [
+        () => mixedJarSpecies,
+        (value) => {
+          mixedJarSpecies = value;
+        },
+      ],
+      crusherLevel: [
+        () => crusherLevel,
+        (value) => {
+          crusherLevel = value;
+        },
+      ],
+      crusherQueue: [
+        () => crusherQueue,
+        (value) => {
+          crusherQueue = value;
+        },
+      ],
+      autoWater: [
+        () => autoWater,
+        (value) => {
+          autoWater = value;
+        },
+      ],
+      autoMixer: [
+        () => autoMixer,
+        (value) => {
+          autoMixer = value;
+        },
+      ],
+      prepMode: [
+        () => prepMode,
+        (value) => {
+          prepMode = value;
+        },
+      ],
+      sterilizerMode: [
+        () => sterilizerMode,
+        (value) => {
+          sterilizerMode = value;
+        },
+      ],
+      hoodMode: [
+        () => hoodMode,
+        (value) => {
+          hoodMode = value;
+        },
+      ],
+      preparedLiquid: [
+        () => preparedLiquid,
+        (value) => {
+          preparedLiquid = value;
+        },
+      ],
+      preparedCordy: [
+        () => preparedCordy,
+        (value) => {
+          preparedCordy = value;
+        },
+      ],
+      sterileCordy: [
+        () => sterileCordy,
+        (value) => {
+          sterileCordy = value;
+        },
+      ],
+      cordySubStock: [
+        () => cordySubStock,
+        (value) => {
+          cordySubStock = value;
+        },
+      ],
+      prepModeRevision: [
+        () => prepModeRevision,
+        (value) => {
+          prepModeRevision = value;
+        },
+      ],
+      sterilizerModeRevision: [
+        () => sterilizerModeRevision,
+        (value) => {
+          sterilizerModeRevision = value;
+        },
+      ],
+      woodFastWater: [
+        () => woodFastWater,
+        (value) => {
+          woodFastWater = value;
+        },
+      ],
+      liquidUnlocked: [
+        () => liquidUnlocked,
+        (value) => {
+          liquidUnlocked = value;
+        },
+      ],
+      liquidEmpty: [
+        () => liquidEmpty,
+        (value) => {
+          liquidEmpty = value;
+        },
+      ],
+      liquidSterile: [
+        () => liquidSterile,
+        (value) => {
+          liquidSterile = value;
+        },
+      ],
+      liquidReady: [
+        () => liquidReady,
+        (value) => {
+          liquidReady = value;
+        },
+      ],
+      liquidPending: [
+        () => liquidPending,
+        (value) => {
+          liquidPending = value;
+        },
+      ],
+      agitationCapacity: [
+        () => agitationCapacity,
+        (value) => {
+          agitationCapacity = value;
+        },
+      ],
+      liquidStirrers: [
+        () => liquidStirrers,
+        (value) => {
+          liquidStirrers = value;
+        },
+      ],
+      liquidHoodJob: [
+        () => liquidHoodJob,
+        (value) => {
+          liquidHoodJob = value;
+        },
+      ],
+      gloveLevel: [
+        () => gloveLevel,
+        (value) => {
+          gloveLevel = value;
+        },
+      ],
+      gloveJarQueue: [
+        () => gloveJarQueue,
+        (value) => {
+          gloveJarQueue = value;
+        },
+      ],
+      woodCapacity: [
+        () => woodCapacity,
+        (value) => {
+          woodCapacity = value;
+        },
+      ],
+      woodAutoWater: [
+        () => woodAutoWater,
+        (value) => {
+          woodAutoWater = value;
+        },
+      ],
+      woodPrepLevel: [
+        () => woodPrepLevel,
+        (value) => {
+          woodPrepLevel = value;
+        },
+      ],
+      woodHopper: [
+        () => woodHopper,
+        (value) => {
+          woodHopper = value;
+        },
+      ],
+      woodPrepExit: [
+        () => woodPrepExit,
+        (value) => {
+          woodPrepExit = value;
+        },
+      ],
+      incubationCapacity: [
+        () => incubationCapacity,
+        (value) => {
+          incubationCapacity = value;
+        },
+      ],
+      fruitingCapacity: [
+        () => fruitingCapacity,
+        (value) => {
+          fruitingCapacity = value;
+        },
+      ],
+      incubationControl: [
+        () => incubationControl,
+        (value) => {
+          incubationControl = value;
+        },
+      ],
+      fruitingControl: [
+        () => fruitingControl,
+        (value) => {
+          fruitingControl = value;
+        },
+      ],
+      compostSold: [
+        () => compostSold,
+        (value) => {
+          compostSold = value;
+        },
+      ],
+      incubation: [
+        () => incubation,
+        (value) => {
+          incubation = value;
+        },
+      ],
+      waitingIncubation: [
+        () => waitingIncubation,
+        (value) => {
+          waitingIncubation = value;
+        },
+      ],
+      climate: [
+        () => climate,
+        (value) => {
+          climate = value;
+        },
+      ],
+      tankCapacity: [
+        () => tankCapacity,
+        (value) => {
+          tankCapacity = value;
+        },
+      ],
+      waterLevel: [
+        () => waterLevel,
+        (value) => {
+          waterLevel = value;
+        },
+      ],
+      treatedLoads: [
+        () => treatedLoads,
+        (value) => {
+          treatedLoads = value;
+        },
+      ],
+      tank: [
+        () => tank,
+        (value) => {
+          tank = value;
+        },
+      ],
+      auxView: [
+        () => auxView,
+        (value) => {
+          auxView = value;
+        },
+      ],
+      lime: [
+        () => lime,
+        (value) => {
+          lime = value;
+        },
+      ],
+      cleaning: [
+        () => cleaning,
+        (value) => {
+          cleaning = value;
+        },
+      ],
+      micelioStock: [
+        () => micelioStock,
+        (value) => {
+          micelioStock = value;
+        },
+      ],
+      guideDone: [
+        () => guideDone,
+        (value) => {
+          guideDone = value;
+        },
+      ],
+      bags: [
+        () => bags,
+        (value) => {
+          bags = value;
+        },
+      ],
+      sentBags: [
+        () => sentBags,
+        (value) => {
+          sentBags = value;
+        },
+      ],
+      bagJob: [
+        () => bagJob,
+        (value) => {
+          bagJob = value;
+        },
+      ],
+      mixView: [
+        () => mixView,
+        (value) => {
+          mixView = value;
+        },
+      ],
+      micelio: [
+        () => micelio,
+        (value) => {
+          micelio = value;
+        },
+      ],
+      mixedStraw: [
+        () => mixedStraw,
+        (value) => {
+          mixedStraw = value;
+        },
+      ],
+      mixedJars: [
+        () => mixedJars,
+        (value) => {
+          mixedJars = value;
+        },
+      ],
+      player: [
+        () => player,
+        (value) => {
+          player = value;
+        },
+      ],
+      close: [
+        () => close,
+        (value) => {
+          close = value;
+        },
+      ],
+      bales: [
+        () => bales,
+        (value) => {
+          bales = value;
+        },
+      ],
+      loads: [
+        () => loads,
+        (value) => {
+          loads = value;
+        },
+      ],
+      job: [
+        () => job,
+        (value) => {
+          job = value;
+        },
+      ],
+      prepPausedAfterRemove: [
+        () => prepPausedAfterRemove,
+        (value) => {
+          prepPausedAfterRemove = value;
+        },
+      ],
+      extractSpecies: [
+        () => extractSpecies,
+        (value) => {
+          extractSpecies = value;
+        },
+      ],
+      extraction: [
+        () => extraction,
+        (value) => {
+          extraction = value;
+        },
+      ],
+      extractInventory: [
+        () => extractInventory,
+        (value) => {
+          extractInventory = value;
+        },
+      ],
+      bottlingJob: [
+        () => bottlingJob,
+        (value) => {
+          bottlingJob = value;
+        },
+      ],
+      dropperStock: [
+        () => dropperStock,
+        (value) => {
+          dropperStock = value;
+        },
+      ],
+      droppersSold: [
+        () => droppersSold,
+        (value) => {
+          droppersSold = value;
+        },
+      ],
+      nutrientRecipe: [
+        () => nutrientRecipe,
+        (value) => {
+          nutrientRecipe = value;
+        },
+      ],
+      nutrientMix: [
+        () => nutrientMix,
+        (value) => {
+          nutrientMix = value;
+        },
+      ],
+      spirulinaNutrients: [
+        () => spirulinaNutrients,
+        (value) => {
+          spirulinaNutrients = value;
+        },
+      ],
+      spirulina: [
+        () => spirulina,
+        (value) => {
+          spirulina = value;
+        },
+      ],
+      spirulinaHarvest: [
+        () => spirulinaHarvest,
+        (value) => {
+          spirulinaHarvest = value;
+        },
+      ],
+      spirulinaSold: [
+        () => spirulinaSold,
+        (value) => {
+          spirulinaSold = value;
+        },
+      ],
+      spirulinaMother: [
+        () => spirulinaMother,
+        (value) => {
+          spirulinaMother = value;
+        },
+      ],
+      spirulinaInoculum: [
+        () => spirulinaInoculum,
+        (value) => {
+          spirulinaInoculum = value;
+        },
+      ],
+      spirulinaFlaskCycle: [
+        () => spirulinaFlaskCycle,
+        (value) => {
+          spirulinaFlaskCycle = value;
+        },
+      ],
+      balanceStats: [
+        () => balanceStats,
+        (value) => replaceSaveObject(balanceStats, value),
+      ],
+      specialHoppers: [
+        () => specialHoppers,
+        (value) => replaceSaveObject(specialHoppers, value),
+      ],
+      helper: [
+        () => ({ ...helper, task: null, target: null, action: 0 }),
+        (value) => replaceSaveObject(helper, value),
+      ],
+      labHelper: [
+        () => ({ ...labHelper, task: null, action: 0 }),
+        (value) => replaceSaveObject(labHelper, value),
+      ],
+      progression: [
+        () => ({ ...progression, harvested: [...progression.harvested] }),
+        (value) =>
+          replaceSaveObject(progression, {
+            ...value,
+            harvested: new Set(value.harvested),
+          }),
+      ],
+      routeCompleted: [
+        () => [...routeGuide.completed],
+        (value) => {
+          routeGuide.completed = new Set(value);
+        },
+      ],
+      revealSeen: [
+        () => [...productRevealSeen],
+        (value) => {
+          productRevealSeen.clear();
+          value.forEach((key) => productRevealSeen.add(key));
+        },
+      ],
+      revealQueue: [
+        () => productRevealQueue,
+        (value) => {
+          productRevealQueue.splice(0, productRevealQueue.length, ...value);
+        },
+      ],
+    };
+    function replaceSaveObject(target, value) {
+      for (const key of Object.keys(target)) delete target[key];
+      Object.assign(target, value);
+    }
+    const cloneSave = (value) => JSON.parse(JSON.stringify(value));
+    function captureSaveState() {
+      return Object.fromEntries(
+        Object.entries(saveFields).map(([key, field]) => [
+          key,
+          cloneSave(field[0]()),
+        ]),
+      );
+    }
+    const initialSaveState = captureSaveState();
+    for (const key of [
+      "guideDone",
+      "woodGuideDone",
+      "gloveGuideDone",
+      "shopGuideDone",
+      "faucetGuideDone",
+      "cleaningGuideDone",
+    ])
+      initialSaveState[key] = false;
+    let saveGate = false,
+      saveElapsed = 0,
+      pendingSave = null,
+      saveProtected = false,
+      resetWasGated = false,
+      saveKnownRaw = undefined;
+    function saveStatus(text) {
+      document.querySelector("#save-status").textContent = text;
+    }
+    function saveChecksum(text) {
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i++)
+        hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
+      return (hash >>> 0).toString(16);
+    }
+    function validSaveTree(value, depth = 0) {
+      if (depth > 16) return false;
+      if (value === null || typeof value === "boolean") return true;
+      if (typeof value === "number")
+        return Number.isFinite(value) && Math.abs(value) <= 1e12;
+      if (typeof value === "string") return value.length <= 1000;
+      if (Array.isArray(value))
+        return (
+          value.length <= 10000 &&
+          value.every((item) => validSaveTree(item, depth + 1))
+        );
+      if (!value || typeof value !== "object") return false;
+      return (
+        Object.keys(value).length <= 500 &&
+        Object.entries(value).every(
+          ([key, item]) =>
+            !["__proto__", "prototype", "constructor"].includes(key) &&
+            validSaveTree(item, depth + 1),
+        )
+      );
+    }
+    function validSaveState(state) {
+      if (
+        !state ||
+        !validSaveTree(state) ||
+        Object.keys(state).length !== Object.keys(saveFields).length
+      )
+        return false;
+      for (const [key, value] of Object.entries(initialSaveState)) {
+        if (!Object.hasOwn(state, key)) return false;
+        const candidate = state[key];
+        if (
+          Array.isArray(value)
+            ? !Array.isArray(candidate)
+            : value !== null &&
+              (candidate === null ||
+                typeof candidate !== typeof value ||
+                (typeof value === "object" && Array.isArray(candidate)))
+        )
+          return false;
+        if (typeof value === "number" && candidate < 0) return false;
+      }
+      const numeric = (value) =>
+        typeof value === "number" && Number.isFinite(value) && value >= 0;
+      const object = (value) =>
+        value && typeof value === "object" && !Array.isArray(value);
+      for (const key of [
+        "job",
+        "bagJob",
+        "woodBagJob",
+        "woodPrepExit",
+        "liquidHoodJob",
+        "bottlingJob",
+        "spirulinaFlaskCycle",
+      ])
+        if (
+          state[key] !== null &&
+          (!object(state[key]) || !numeric(state[key].t))
+        )
+          return false;
+      for (const [key, fields] of Object.entries({
+        woodTank: ["n", "left", "water"],
+        tank: ["n", "left"],
+        player: ["x", "y"],
+        woodPrepState: ["water"],
+        nutrientMix: ["t"],
+        extraction: ["t"],
+        spirulina: ["water", "progress"],
+        spirulinaMother: ["volume", "maturity"],
+        spirulinaInoculum: ["volume", "maturity"],
+        woodHopper: ["sawdust", "nutrients"],
+        balanceStats: ["supplies", "upgrades"],
+      }))
+        if (
+          !object(state[key]) ||
+          fields.some((field) => !numeric(state[key][field]))
+        )
+          return false;
+      if (
+        !object(state.specialHoppers.liquid) ||
+        !object(state.specialHoppers.cordy)
+      )
+        return false;
+      if (
+        !Object.values(state.specialHoppers).every(
+          (h) => numeric(h.sawdust) && numeric(h.nutrients),
+        )
+      )
+        return false;
+      if (
+        !["empty", "grinding", "ground", "loaded", "running"].includes(
+          state.extraction.phase,
+        )
+      )
+        return false;
+      if (
+        state.woodTank.items &&
+        (!Array.isArray(state.woodTank.items) ||
+          state.woodTank.items.length !== state.woodTank.n ||
+          !state.woodTank.items.every((t) =>
+            ["wood", "liquid", "cordy"].includes(t),
+          ))
+      )
+        return false;
+      for (const key of ["incubation", "fruitShelves", "liquidStirrers"])
+        if (!state[key].every((b) => b === null || object(b))) return false;
+      for (const key of [
+        "waitingBagData",
+        "fruitingCart",
+        "harvestCart",
+        "compostCart",
+        "liquidPending",
+        "extractInventory",
+        "shopQueue",
+        "shopDeparting",
+      ])
+        if (!state[key].every(object)) return false;
+      const names = speciesCatalog.map((item) => item.name);
+      if (
+        ![
+          state.selectedSpecies,
+          state.saleSpecies,
+          state.guideSpecies,
+          state.extractSpecies,
+        ].every((name) => names.includes(name))
+      )
+        return false;
+      if (
+        !["paja", "madera", "cordy"].includes(state.selectedSubstrate) ||
+        !["wood", "liquid", "cordy"].includes(state.prepMode) ||
+        !["wood", "liquid", "cordy"].includes(state.sterilizerMode) ||
+        !["solid", "liquid", "cordy"].includes(state.hoodMode) ||
+        !["fungi", "spirulina"].includes(state.nutrientRecipe)
+      )
+        return false;
+      if (
+        state.incubation.length !== 8 ||
+        state.fruitShelves.length !== 8 ||
+        state.liquidStirrers.length !== 6
+      )
+        return false;
+      if (
+        ![state.incubationCapacity, state.fruitingCapacity].every((n) =>
+          [4, 6, 8].includes(n),
+        ) ||
+        ![2, 4, 6].includes(state.tankCapacity) ||
+        ![2, 4, 6].includes(state.woodCapacity) ||
+        ![4, 6].includes(state.agitationCapacity)
+      )
+        return false;
+      if (
+        ![
+          state.climate,
+          state.fruitClimate,
+          state.woodPrepLevel,
+          state.crusherLevel,
+        ].every((n) => [0, 1, 2].includes(n)) ||
+        ![0, 1, 2, 3].includes(state.gloveLevel)
+      )
+        return false;
+      if (
+        !Array.isArray(state.progression.harvested) ||
+        !state.progression.harvested.every((name) => names.includes(name)) ||
+        !Array.isArray(state.progression.notices)
+      )
+        return false;
+      if (
+        !state.routeCompleted.every((id) =>
+          routeModules.some((step) => step.id === id),
+        )
+      )
+        return false;
+      const revealKey = (key) =>
+        names.some(
+          (name) => key === "mushroom:" + name || key === "dropper:" + name,
+        ) || key === "spirulina:Espirulina";
+      if (
+        !state.revealSeen.every(revealKey) ||
+        !state.revealQueue.every(
+          (item) => item && revealKey(item.kind + ":" + item.species),
+        )
+      )
+        return false;
+      const views = [
+        null,
+        "pasteur",
+        "incubation",
+        "fruiting",
+        "shop",
+        "sterileRoom",
+        "woodPrep",
+        "woodSterilizer",
+        "glovebox",
+        "liquidStir",
+        "chemistry",
+        "extraction",
+        "bottling",
+        "nutrients",
+        "spirulina",
+      ];
+      if (!views.includes(state.auxView)) return false;
+      for (const obj of [state.helper, state.labHelper])
+        if (
+          obj.task !== null ||
+          typeof obj.hired !== "boolean" ||
+          !Number.isFinite(obj.paid)
+        )
+          return false;
+      return true;
+    }
+    function decodeSave(raw) {
+      if (!raw || raw.length > 3000000) return null;
+      try {
+        const record = JSON.parse(raw);
+        if (
+          record.version !== saveVersion ||
+          typeof record.savedAt !== "number" ||
+          typeof record.data !== "string" ||
+          record.checksum !== saveChecksum(record.data)
+        )
+          return null;
+        const state = JSON.parse(record.data);
+        return validSaveState(state) ? { ...record, state } : null;
+      } catch {
+        return null;
+      }
+    }
+    function readLocalSave() {
+      try {
+        const raws = saveKeys.map((key) => localStorage.getItem(key));
+        saveKnownRaw = raws[0];
+        // Una versión futura no debe ser reemplazada por este cliente antiguo.
+        saveProtected = raws.some((raw) => {
+          try {
+            return JSON.parse(raw)?.version > saveVersion;
+          } catch {
+            return false;
+          }
+        });
+        if (saveProtected) {
+          saveStatus(
+            "La partida requiere una versión más reciente. Recarga la página.",
+          );
+          return null;
+        }
+        for (let i = 0; i < raws.length; i++) {
+          const record = decodeSave(raws[i]);
+          if (record) return { ...record, recovered: i > 0 };
+        }
+        if (raws.some(Boolean)) {
+          saveProtected = true;
+          saveStatus(
+            "No se pudo leer la partida. Nueva partida permite reemplazarla.",
+          );
+        }
+      } catch {
+        saveStatus(
+          "Guardado no disponible: revisa el almacenamiento del navegador.",
+        );
+      }
+      return null;
+    }
+    function writeLocalSave(manual = false) {
+      if (saveGate || saveProtected) return false;
+      if (
+        testMode ||
+        progressionBypass ||
+        progressionPreview ||
+        testerUnlocked ||
+        hericiumUsed
+      ) {
+        if (manual) saveStatus("La prueba no reemplaza tu partida guardada.");
+        return false;
+      }
+      try {
+        const state = captureSaveState();
+        if (!validSaveState(state)) throw new Error("Estado no válido");
+        const data = JSON.stringify(state),
+          raw = JSON.stringify({
+            version: saveVersion,
+            savedAt: Date.now(),
+            data,
+            checksum: saveChecksum(data),
+          });
+        const previous = localStorage.getItem(saveKeys[0]);
+        if (saveKnownRaw !== undefined && previous !== saveKnownRaw) {
+          saveProtected = true;
+          saveStatus(
+            "Otra pestaña actualizó la partida. Recarga para continuar sin reemplazarla.",
+          );
+          return false;
+        }
+        if (decodeSave(previous)) localStorage.setItem(saveKeys[1], previous);
+        localStorage.setItem(saveKeys[0], raw);
+        saveKnownRaw = raw;
+        saveElapsed = 0;
+        saveStatus("Partida guardada en este navegador.");
+        return true;
+      } catch {
+        saveStatus(
+          "No se pudo guardar. Mantén esta pestaña abierta y revisa el almacenamiento.",
+        );
+        return false;
+      }
+    }
+    function clearSaveInteraction() {
+      drag = null;
+      selected = false;
+      selectedCustomerId = null;
+      walkPath = [];
+      walkView = null;
+      keys.clear();
+      waterRunning = false;
+      helperWaterPermit = false;
+      helper.task = null;
+      helper.target = null;
+      helper.action = 0;
+      labHelper.task = null;
+      labHelper.action = 0;
+      feedbackFlash = null;
+      readySignals.clear();
+      salePops = [];
+      guidePointerAnchor = null;
+      upgradeMenuOpen = false;
+      upgradeMenuCache = "";
+      orderBalanceCache = null;
+      for (const id of [
+        "orders",
+        "mycelium-inventory",
+        "product-reveal",
+        "save-menu",
+        "reset-save",
+      ])
+        document.querySelector("#" + id).close();
+      last = performance.now();
+    }
+    function applySaveState(state) {
+      if (!validSaveState(state)) return false;
+      for (const [key, field] of Object.entries(saveFields))
+        field[1](cloneSave(state[key]));
+      clearSaveInteraction();
+      // Los controles mantenidos por el dedo no se quedan pulsados al regresar.
+      if (!woodPrepLevel) woodPrepState.running = false;
+      if (!woodAutoWater) woodTank.running = false;
+      labFill.prep = false;
+      labFill.sterile = false;
+      progressionBypass = false;
+      progressionPreview = false;
+      testMode = false;
+      testerUnlocked = false;
+      hericiumUsed = false;
+      renderOrders();
+      renderUnlockNotice();
+      updateProgressionControls();
+      updateEconomyControls();
+      updateK0Controls();
+      scene(0);
+      if (productRevealQueue.length) showNextProductReveal();
+      return true;
+    }
+    function continueLocalSave() {
+      if (!pendingSave) return false;
+      const record = pendingSave;
+      if (!applySaveState(record.state)) return false;
+      pendingSave = null;
+      saveGate = false;
+      saveElapsed = 0;
+      saveStatus(
+        record.recovered
+          ? "Partida recuperada desde el respaldo local."
+          : "Partida continuada. Guardado automático activo.",
+      );
+      cv.focus();
+      return true;
+    }
+    function askNewGame() {
+      resetWasGated = saveGate;
+      saveGate = true;
+      keys.clear();
+      walkPath = [];
+      drag = null;
+      document.querySelector("#reset-save").showModal();
+    }
+    function cancelNewGame() {
+      document.querySelector("#reset-save").close();
+      saveGate = resetWasGated;
+      last = performance.now();
+      if (saveGate) document.querySelector("#continue-game").focus();
+      else cv.focus();
+    }
+    function confirmNewGame() {
+      pendingSave = null;
+      saveProtected = false;
+      applySaveState(initialSaveState);
+      saveGate = false;
+      saveElapsed = 0;
+      try {
+        for (const key of saveKeys) localStorage.removeItem(key);
+        for (const suffix of [
+          "cabina",
+          "aserrin",
+          "tienda",
+          "llave",
+          "limpieza",
+          "triturador",
+        ])
+          localStorage.removeItem("lab-beefungi-guia-" + suffix);
+      } catch {}
+      saveKnownRaw = null;
+      writeLocalSave(true);
+      cv.focus();
+    }
+    function tickAutoSave(dt) {
+      if (saveGate) return;
+      saveElapsed += dt;
+      if (saveElapsed >= 5) {
+        saveElapsed = 0;
+        writeLocalSave();
+      }
+    }
+    function initializeLocalSave() {
+      pendingSave = readLocalSave();
+      if (!pendingSave) return;
+      saveGate = true;
+      document.querySelector("#save-summary").textContent =
+        "Hay una partida guardada en este navegador. Los procesos continúan desde donde los dejaste.";
+      scene(0);
+      document.querySelector("#save-menu").showModal();
+      document.querySelector("#continue-game").focus();
+    }
+    document.querySelector("#save-now").onclick = () => writeLocalSave(true);
+    document.querySelector("#new-game").onclick = askNewGame;
+    document.querySelector("#start-new-game").onclick = askNewGame;
+    document.querySelector("#continue-game").onclick = continueLocalSave;
+    document.querySelector("#cancel-reset").onclick = cancelNewGame;
+    document.querySelector("#confirm-reset").onclick = confirmNewGame;
+    document.querySelector("#reset-save").oncancel = (e) => {
+      e.preventDefault();
+      cancelNewGame();
+    };
+    document.querySelector("#save-menu").oncancel = (e) => {
+      e.preventDefault();
+    };
+    for (const id of ["save-menu", "reset-save"])
+      document.querySelector("#" + id).onkeydown = (e) => e.stopPropagation?.();
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) writeLocalSave();
+    });
+    window.addEventListener("pagehide", () => writeLocalSave());
+    initializeLocalSave();
+
     requestAnimationFrame(frame);
   </script>
 </html>

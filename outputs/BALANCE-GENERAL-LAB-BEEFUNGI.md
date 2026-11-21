@@ -75,6 +75,6 @@ La reposición de dos bloques Pleurotus con una limpieza cuesta cinco. Es recome
 
 ## Verificación
 
-Se comprueban cobros, rechazo sin saldo, costo correcto por medio/especie, menús y contrataciones, exención de pruebas, nóminas, presupuesto de reposición y el recorrido completo de desbloqueos con economía real. Se mantienen también las regresiones del recorrido gratuito mediante una fixture explícita. La partida continúa en memoria y recargar reinicia.
+Se comprueban cobros, rechazo sin saldo, costo correcto por medio/especie, menús y contrataciones, exención de pruebas, nóminas, presupuesto de reposición y el recorrido completo de desbloqueos con economía real. Se mantienen también las regresiones del recorrido gratuito mediante una fixture explícita. Actualización posterior: el guardado local conserva la partida al recargar. No hay producción ni salarios fuera de línea; las reglas de balance se conservan.
 
 Resultado: 206 grupos de verificación aprobados y build correcto. Navegador: saldo 15 → 12 → 8 → 5 → 2 al comprar etapas; compras de paja y micelio 2 → 1 → 0, inventarios actualizados y pedidos deshabilitados sin saldo. Las ofertas futuras permanecen ocultas y las visibles sin fondos conservan su precio deshabilitado. Catálogo regenerado; captura local BALANCE-GENERAL-QA.jpg.
