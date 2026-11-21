@@ -2347,6 +2347,122 @@
       artRect(18, 30, 11, 0.5, "#d2bc92");
       c.restore();
     }
+    // Confirmación visual local: no retrasa la receta ni se guarda en la partida.
+    const cleaningAnimations = new Map();
+    const cleaningAnimationDuration = 1.35;
+    function beginCleaningAnimation(station, amount = 0) {
+      const rect =
+        station === "mix" ? mixContentRect() : gloveRect([116, 92, 119, 58]);
+      cleaningAnimations.set(station, {
+        t: 0,
+        rect: [...rect],
+        amount: Math.min(3, Math.max(0, amount)),
+        automatic: autoMixer,
+        level: gloveLevel,
+      });
+    }
+    function advanceCleaningAnimations(dt) {
+      for (const [station, effect] of cleaningAnimations) {
+        effect.t += dt;
+        if (effect.t >= cleaningAnimationDuration)
+          cleaningAnimations.delete(station);
+      }
+    }
+    function drawCleaningAnimation() {
+      const station =
+        auxView === "glovebox" && !isCordyHood() && !isCordyBlockHood()
+          ? "glovebox"
+          : !auxView && close && mixView
+            ? "mix"
+            : null;
+      const effect = cleaningAnimations.get(station);
+      if (
+        !effect ||
+        (station === "mix" && effect.automatic !== autoMixer) ||
+        (station === "glovebox" && effect.level !== gloveLevel)
+      )
+        return;
+      const [x, y, w, h] = effect.rect,
+        t = effect.t,
+        progress = Math.max(0, Math.min(1, (t - 0.18) / 0.72));
+      c.save();
+      c.beginPath();
+      c.rect(x, y, w, h);
+      c.clip();
+      // Unas motas residuales se retiran al pasar el trapo, sin cambiar el riesgo ya calculado.
+      if (effect.amount && t < 0.9)
+        for (let i = 0; i < Math.ceil(effect.amount * 4); i++) {
+          const u = ((i * 37 + 13) % 97) / 100,
+            v = ((i * 19 + 23) % 83) / 100;
+          if (t < 0.18 || u > progress) {
+            box(x + u * (w - 5), y + v * (h - 4), 3, 2, "#89a184");
+            box(x + u * (w - 5) + 1, y + v * (h - 4), 1, 1, "#bccdb2");
+          }
+        }
+      if (t < 0.28) {
+        c.globalAlpha = Math.max(0, 1 - t / 0.28);
+        for (let i = 0; i < 14; i++) {
+          const u = (i % 7) / 6,
+            v = Math.floor(i / 7);
+          box(
+            x + w - 8 - u * (w * 0.8) * Math.min(1, t / 0.12),
+            y + 5 + v * 7 + u * (h - 12),
+            i % 3 === 0 ? 3 : 2,
+            1,
+            "#c7f0df",
+          );
+        }
+      }
+      c.globalAlpha = 1;
+      if (t >= 0.12 && t < 0.96) {
+        const cx = x + 9 + progress * (w - 23),
+          cy =
+            y +
+            h * 0.5 +
+            Math.sin(progress * Math.PI * 4) * Math.min(4, h * 0.12);
+        softShadow(cx + 3, cy + 5, 9, 1.6, 0.15);
+        drawLaminarFace(
+          [
+            [cx - 8, cy - 5],
+            [cx + 6, cy - 6],
+            [cx + 10, cy + 3],
+            [cx + 5, cy + 7],
+            [cx - 7, cy + 5],
+          ],
+          "#799b96",
+        );
+        drawLaminarFace(
+          [
+            [cx - 7, cy - 5],
+            [cx + 5, cy - 5],
+            [cx + 8, cy + 2],
+            [cx + 4, cy + 5],
+            [cx - 6, cy + 3],
+          ],
+          "#eee9cf",
+        );
+        artRect(cx - 5, cy - 3, 8, 1, "#fff5dc");
+        artRect(cx + 3, cy - 3, 1, 6, "#bdd2c0");
+        artRect(cx - 4, cy + 2, 7, 1, "#c5d6c3");
+      }
+      if (t >= 0.85) {
+        const fade = Math.sin(Math.PI * Math.min(1, (t - 0.85) / 0.5));
+        c.globalAlpha = Math.max(0, fade);
+        for (const [u, v, size] of [
+          [0.2, 0.32, 3],
+          [0.5, 0.7, 4],
+          [0.8, 0.28, 3],
+        ]) {
+          const px = x + w * u,
+            py = y + h * v;
+          box(px - size, py, size * 2 + 1, 1, "#edf7dc");
+          box(px, py - size, 1, size * 2 + 1, "#edf7dc");
+          box(px, py, 1, 1, "#fffdf0");
+        }
+        artRect(x + 5, y + h - 4, w - 10, 0.7, "#d7eee0");
+      }
+      c.restore();
+    }
     function cleanMix() {
       if (!dirt && !bagsSinceClean) {
         say("La bandeja está limpia. Puedes seguir mezclando.");
@@ -2359,6 +2475,7 @@
         return;
       }
       cleaning--;
+      beginCleaningAnimation("mix", dirt);
       cleaningGuideActive = false;
       cleaningGuideDone = true;
       try {
@@ -6828,6 +6945,7 @@
         return;
       }
       cleaning--;
+      beginCleaningAnimation("glovebox", Math.floor(gloveUses / 3));
       gloveUses = 0;
       gloveCleanedForLoad = true;
       say("Cabina limpia. Puedes verter el micelio dentro de la bolsa.");
@@ -16164,6 +16282,7 @@
         if (spirulina.progress > 0)
           drawProcessClock(284, 177, 9, spirulina.progress);
       }
+      drawCleaningAnimation();
       drawRouteGuide();
       drawSignalFeedback();
       drawDragPreview();
@@ -17265,6 +17384,7 @@
         return;
       }
       feedbackTime += dt;
+      advanceCleaningAnimations(dt);
       advanceChemistry(dt);
       advanceLiquid(dt);
       advanceLabHelper(dt);
@@ -18510,6 +18630,7 @@
       avatarMotion.moving = false;
       avatarMotion.phase = 0;
       feedbackFlash = null;
+      cleaningAnimations.clear();
       readySignals.clear();
       salePops = [];
       guidePointerAnchor = null;

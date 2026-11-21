@@ -169,3 +169,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Selector con dos opciones](outputs/TANDA-PERSONAJES-DOS-OPCIONES.md): chico de cabello corto y chica con coleta; partidas anteriores compatibles.
 
 [Demanda adaptativa y arrastre móvil](outputs/TANDA-DEMANDA-Y-ARRASTRE-MOVIL.md): llegadas y pedidos según existencias, mejoras posteriores más costosas e icono táctil a 12 px del dedo.
+
+[Animación de limpieza](outputs/TANDA-ANIMACION-LIMPIEZA.md): rociado, trapo y brillo al limpiar bandeja, llenadora o cabina.

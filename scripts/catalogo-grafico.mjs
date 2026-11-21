@@ -30,6 +30,7 @@ const scenes = [
   ['Espirulina', 'drawSpirulina', 'Madre/inóculo, vertido, maduración por color, garrafón, agua, luz y burbujas'],
   ['Tienda', 'drawShop', 'Mesa, nueve productos, unidades, clientes, pedidos, monedas y salida'],
   ['Personaje y selector', 'paintLabCharacter', 'Dos apariencias, bata común, cuatro direcciones, reposo y caminata; miniaturas y salas comparten sprite'],
+  ['Limpieza visual', 'drawCleaningAnimation', 'Rociado breve, pasada de trapo, desaparición de motas y brillo; bandeja, llenadora y cabina'],
   ['Avisos', 'drawSignalFeedback', 'Marcos temporales sobre requisitos; sin cartel explicativo'],
 ];
 const functions = [...source.matchAll(/\bfunction\s+(draw\w+|paintLabCharacter|box|text|smallText|bale|bench|jar|roomBase|scene)\s*\(/g)];
