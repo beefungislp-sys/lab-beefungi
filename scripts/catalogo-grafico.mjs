@@ -29,7 +29,7 @@ const scenes = [
   ['Nutrientes', 'drawNutrients', 'Selector de receta, sales A/B, recipiente, mezcla y existencias'],
   ['Espirulina', 'drawSpirulina', 'Madre/inóculo, vertido, maduración por color, garrafón, agua, luz y burbujas'],
   ['Tienda', 'drawShop', 'Mesa, nueve productos, unidades, clientes, pedidos, monedas y salida'],
-  ['Personaje y selector', 'paintLabCharacter', 'Tres apariencias, bata común, cuatro direcciones, reposo y caminata; miniaturas y salas comparten sprite'],
+  ['Personaje y selector', 'paintLabCharacter', 'Dos apariencias, bata común, cuatro direcciones, reposo y caminata; miniaturas y salas comparten sprite'],
   ['Avisos', 'drawSignalFeedback', 'Marcos temporales sobre requisitos; sin cartel explicativo'],
 ];
 const functions = [...source.matchAll(/\bfunction\s+(draw\w+|paintLabCharacter|box|text|smallText|bale|bench|jar|roomBase|scene)\s*\(/g)];

@@ -578,7 +578,7 @@
 
     .avatar-options {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
       margin: 16px 0;
     }
@@ -719,9 +719,6 @@
       <button class="avatar-choice" data-avatar="sage" aria-pressed="true">
         <canvas width="96" height="144" aria-hidden="true"></canvas>Cabello
         corto
-      </button>
-      <button class="avatar-choice" data-avatar="cobalt" aria-pressed="false">
-        <canvas width="96" height="144" aria-hidden="true"></canvas>Rizos
       </button>
       <button class="avatar-choice" data-avatar="terra" aria-pressed="false">
         <canvas width="96" height="144" aria-hidden="true"></canvas>Coleta
@@ -5040,15 +5037,6 @@
         badge: "#6ea6a0",
         style: 0,
       },
-      cobalt: {
-        skin: "#a86843",
-        shade: "#78452f",
-        hair: "#34313a",
-        light: "#67504a",
-        shirt: "#6b879d",
-        badge: "#d6b26a",
-        style: 1,
-      },
       terra: {
         skin: "#d49a73",
         shade: "#a2684f",
@@ -5315,37 +5303,6 @@
           r(11, 5, 5, 2, p.light);
           r(16, 4, 4, 1, p.light);
           r(8, 8, 2, 5, p.hair);
-        } else if (p.style === 1) {
-          poly(
-            [
-              [8, 3],
-              [12, 1],
-              [19, 1],
-              [24, 4],
-              [26, 9],
-              [25, 16],
-              [22, 15],
-              [22, 8],
-              [18, 9],
-              [15, 6],
-              [10, 10],
-              [9, 15],
-              [6, 14],
-              [5, 8],
-            ],
-            p.hair,
-          );
-          for (const [hx, hy] of [
-            [7, 5],
-            [12, 3],
-            [18, 3],
-            [22, 6],
-            [6, 11],
-            [23, 12],
-          ]) {
-            r(hx, hy, 3, 2, p.light);
-            r(hx + 1, hy, 1, 1, "#816450");
-          }
         } else {
           poly(
             [
@@ -18419,6 +18376,11 @@
           !Object.hasOwn(state, "avatarId") &&
           !Object.hasOwn(state, "avatarChosen")
         ) {
+          state.avatarId = "sage";
+          state.avatarChosen = false;
+        }
+        // El personaje retirado vuelve a la selección sin perder el avance.
+        if (state.avatarId === "cobalt") {
           state.avatarId = "sage";
           state.avatarChosen = false;
         }

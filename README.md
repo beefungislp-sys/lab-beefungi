@@ -164,4 +164,6 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 
 [Guardar y continuar partida](outputs/TANDA-GUARDAR-Y-CONTINUAR.md): guardado local automático, respaldo y nueva partida con confirmación.
 
-[Tres personajes seleccionables](outputs/TANDA-PERSONAJES-SELECCIONABLES.md): referencia propia y sprites nativos compartidos, animación de reposo/caminata y elección incluida en la partida.
+[Personajes seleccionables](outputs/TANDA-PERSONAJES-SELECCIONABLES.md): referencia propia y sprites nativos compartidos, animación de reposo/caminata y elección incluida en la partida.
+
+[Selector con dos opciones](outputs/TANDA-PERSONAJES-DOS-OPCIONES.md): chico de cabello corto y chica con coleta; partidas anteriores compatibles.
