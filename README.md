@@ -171,3 +171,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Demanda adaptativa y arrastre móvil](outputs/TANDA-DEMANDA-Y-ARRASTRE-MOVIL.md): llegadas y pedidos según existencias, mejoras posteriores más costosas e icono táctil a 12 px del dedo.
 
 [Animación de limpieza](outputs/TANDA-ANIMACION-LIMPIEZA.md): rociado, trapo y brillo al limpiar bandeja, llenadora o cabina.
+
+[Sonidos de cosecha y compostaje](outputs/TANDA-SONIDOS-COSECHA-COMPOSTA.md): golpes orgánicos breves de madera y tierra, sólo en acciones completadas.
