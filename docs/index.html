@@ -14223,15 +14223,6 @@
           drag?.kind === "shopInventory" && drag.card.key === card.key;
         drawShopDisplayProduct(card, selected);
       }
-      if (!shopGuideDone) {
-        const card = visibleShopCards().find((item) => shopUnits(item) >= 1);
-        if (card) {
-          const [x, y] = card.r,
-            bounce = (Math.floor(performance.now() / 300) % 2) * 2;
-          box(x + 16, y - 8 + bounce, 3, 7, "#ffe16a");
-          box(x + 13, y - 3 + bounce, 9, 2, "#ffe16a");
-        }
-      }
       drawShopCharacterLayer();
       for (const customer of shopQueue) {
         if (customerId(customer) === selectedCustomerId) {
@@ -15653,6 +15644,12 @@
     function routeRecoveryPlan() {
       const base = currentRouteModule();
       if (!base) return null;
+      // Dentro de la tienda, la guía de venta no debe pedir insumos para
+      // otro módulo. Al salir se retoma el hito histórico, sin modificarlo.
+      if (auxView === "shop" && base.id !== "shop")
+        return shopGuideDone
+          ? { step: guideStep("shop"), wait: true }
+          : guideShopDeliveryPlan(guideStep("shop"));
       const plan = guideResolveStep(base);
       if (!plan) return null;
       return { ...plan, recovery: !!plan.order || plan.step.id !== base.id };
@@ -15893,7 +15890,7 @@
       if (mode !== "liquid" && !prep.sawdust)
         return hopper?.sawdust > 0 && woodPrepLevel === 2
           ? { step, wait: true }
-          : { step, point: [50, 61] };
+          : { step, point: [50, 78] };
       if (!prep.nutrients)
         return hopper?.nutrients > 0 && woodPrepLevel === 2
           ? { step, wait: true }
@@ -15935,7 +15932,7 @@
     function guideAdvancedHoodPlan(step, mode, species, next) {
       // Un trabajo en cabina ya consumió sus ingredientes: esperarlo, no volver a pedirlos.
       if (woodBagJob || liquidHoodJob) return { step, wait: true };
-      if (gloveJar && gloveJar !== species)
+      if (mode === "wood" && gloveJar && gloveJar !== species)
         return guideAdvancedNextHood("wood", gloveJar, next);
       if (mode !== "wood") {
         const live = guideAdvancedLiveCordy();
@@ -15954,7 +15951,7 @@
         if (speciesStockTotal("Cordyceps") <= 0)
           return guideNeed(step, "micelio", { species: "Cordyceps" });
         if (needsSelector) return { step, action: "selector" };
-        return { step, point: [49, 47] };
+        return { step, point: [43, 67] };
       }
       if (mode === "cordy") {
         if (matureLiquidCount() <= 0)
@@ -15964,7 +15961,7 @@
         if (sterileCordy <= 0)
           return guideAdvancedNextPot("cordy", "Cordyceps", next);
         if (needsSelector) return { step, action: "selector" };
-        return { step, point: [49, 47] };
+        return { step, point: [43, 67] };
       }
       if (!gloveWood && sterileWood <= 0)
         return guideAdvancedNextPot("wood", species, next);
@@ -16121,6 +16118,22 @@
       return undefined;
     }
 
+    function guideShopDeliveryPlan(step) {
+      const card = visibleShopCards().find(
+        (card) =>
+          shopUnits(card) >= 1 &&
+          shopQueue.some(
+            (customer) =>
+              customerReady(customer) &&
+              (customer.product || "mushroom") === card.product &&
+              (customer.species || "Pleurotus") === card.species,
+          ),
+      );
+      return card
+        ? { step, point: [card.r[0] + card.r[2] / 2, card.r[1] - 19] }
+        : { step, wait: true };
+    }
+
     // Recovery planner: read-only, with a historical route step retained by the caller.
     function guideCultivationPlan(step, next) {
       const id = step.id;
@@ -16176,20 +16189,12 @@
       };
 
       if (id === "shop") {
-        const cards = visibleShopCards().filter((card) => shopUnits(card) >= 1);
-        const card = cards.find((card) =>
-          shopQueue.some(
-            (customer) =>
-              customerReady(customer) &&
-              (customer.product || "mushroom") === card.product &&
-              (customer.species || "Pleurotus") === card.species,
-          ),
-        );
-        if (card)
-          return { step, point: [card.r[0] + card.r[2] / 2, card.r[1] - 19] };
-        // A complete portion already exists: customer arrival is the missing event,
-        // not additional production. Residual grams never count across species.
-        if (cards.length) return { step, wait: true };
+        const delivery = guideShopDeliveryPlan(step);
+        if (
+          !delivery.wait ||
+          visibleShopCards().some((card) => shopUnits(card) >= 1)
+        )
+          return delivery;
         const active =
           fruit.find(healthy) ||
           fruitingCart.find(healthy) ||
