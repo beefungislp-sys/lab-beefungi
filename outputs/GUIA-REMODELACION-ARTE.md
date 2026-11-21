@@ -110,3 +110,9 @@ La mesa de sustrato se delegó con límites claros: dibujantes propios y composi
 El [plan de cierre por familias](PLAN-CIERRE-REMODELACION.md) enlaza las notas posteriores. En cada familia se generó referencia sólo para las piezas nuevas y se tradujo a dibujantes nativos; la referencia no se pega como fondo dentro del juego. Origen, arrastre, animación, tienda y miniatura llaman al mismo dibujante cuando representan el mismo objeto.
 
 Para cristalería se recorta el líquido al interior y se diferencian vacío, parcial, lleno y madurez. Los polvos y la solución N tienen una lectura distinta. Los equipos se reducen proporcionalmente en la vista de sala; se comprueba que su base quede en la superficie de acero y no sobre el faldón o las patas. Las pruebas visuales incluyen recorrido real y galería de los 32 arrastres sobre crema/azul, además de horizontal y vertical.
+
+## Protagonistas seleccionables
+
+La referencia `assets/referencias/personajes-laboratorio-v1.png` se reconstruye en `paintLabCharacter`, un sprite nativo de 32 × 48 con tres paletas, peinados, bata y cuatro orientaciones. El selector y las salas utilizan el mismo dibujante. `drawLabAvatar` sólo posiciona y escala; `drawPlayer` compone protagonista, asistentes y destino. La sala principal conserva ese mismo camino, sin una copia de rectángulos propia.
+
+La animación avanza por desplazamiento real, no por mantener una tecla contra un obstáculo. El reposo incluye respiración y parpadeo; caminar alterna piernas y brazos. Los canvases de selección conservan su relación 2:3 y fondo transparente. Los clientes y asistentes conservan sus identidades y el protagonista sigue oculto en tienda.

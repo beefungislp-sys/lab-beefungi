@@ -163,3 +163,5 @@ Nutrientes y espirulina: [nota de remodelación](outputs/TANDA-NUTRIENTES-ESPIRU
 [Música de flauta y sonidos de acciones](outputs/TANDA-MUSICA-FLAUTA-Y-SONIDOS.md).
 
 [Guardar y continuar partida](outputs/TANDA-GUARDAR-Y-CONTINUAR.md): guardado local automático, respaldo y nueva partida con confirmación.
+
+[Tres personajes seleccionables](outputs/TANDA-PERSONAJES-SELECCIONABLES.md): referencia propia y sprites nativos compartidos, animación de reposo/caminata y elección incluida en la partida.

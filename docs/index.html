@@ -575,6 +575,42 @@
     [hidden] {
       display: none !important;
     }
+
+    .avatar-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .avatar-choice {
+      min-width: 0;
+      padding: 8px 3px;
+      background: #d4ddc6;
+      border: 3px solid #9cae9b;
+    }
+    .avatar-choice[aria-pressed="true"] {
+      border-color: #386e75;
+      background: #f5e7be;
+      box-shadow: 0 0 0 2px #e6b760 inset;
+    }
+    .avatar-choice canvas {
+      display: block;
+      width: 80px;
+      max-width: 100%;
+      height: auto;
+      aspect-ratio: 2 / 3;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      margin: 0 auto 6px;
+      image-rendering: pixelated;
+    }
+    #avatar-picker h2 {
+      margin-top: 4px;
+    }
+    #avatar-start {
+      width: 100%;
+    }
   </style>
   <main>
     <h1>LAB BEEFUNGI</h1>
@@ -676,6 +712,23 @@
       </div>
     </details>
   </main>
+  <dialog id="avatar-picker" aria-labelledby="avatar-title">
+    <h2 id="avatar-title">Elige tu personaje</h2>
+    <p>Solo cambia la apariencia.</p>
+    <div class="avatar-options">
+      <button class="avatar-choice" data-avatar="sage" aria-pressed="true">
+        <canvas width="96" height="144" aria-hidden="true"></canvas>Cabello
+        corto
+      </button>
+      <button class="avatar-choice" data-avatar="cobalt" aria-pressed="false">
+        <canvas width="96" height="144" aria-hidden="true"></canvas>Rizos
+      </button>
+      <button class="avatar-choice" data-avatar="terra" aria-pressed="false">
+        <canvas width="96" height="144" aria-hidden="true"></canvas>Coleta
+      </button>
+    </div>
+    <button id="avatar-start">Empezar</button>
+  </dialog>
   <dialog id="save-menu" aria-labelledby="save-title">
     <h2 id="save-title">Lab BeeFungi</h2>
     <p id="save-summary"></p>
@@ -1029,6 +1082,9 @@
     let bags = 6,
       sentBags = 0,
       bagJob = null;
+    let avatarId = "sage",
+      avatarChosen = false;
+    const avatarMotion = { facing: "down", moving: false, phase: 0 };
     let mixView = false,
       micelio = 6,
       mixedStraw = 0,
@@ -1565,25 +1621,7 @@
       text(">", 308, 154);
       drawGrowBag(292, 110, 1, 0.5);
       drawOysterCluster(294, 114, 1, 0.45, 2);
-      drawHelper();
-      drawLabHelper();
-      drawWalkTarget();
-      const x = Math.round(player.x),
-        y = Math.round(player.y);
-      softShadow(x, y + 9, 10, 4, 0.3);
-      box(x - 6, y + 7, 13, 4, "#85987d");
-      box(x - 4, y - 15, 9, 9, "#eac59a");
-      box(x - 6, y - 17, 13, 4, "#4f625e");
-      artRect(x - 5, y - 17, 9, 1, "#73816c");
-      artRect(x - 4, y - 13, 1, 4, "#f8dcaf");
-      artRect(x + 2, y - 12, 1, 1, "#405652");
-      drawCoat(x, y);
-      const walk =
-        keys.size || walkPath.length
-          ? Math.floor(performance.now() / 130) % 2
-          : 0;
-      box(x - 4, y + 4, 4, 6 + walk, "#344b57");
-      box(x + 2, y + 4, 4, 7 - walk, "#344b57");
+      drawPlayer();
     }
 
     function drawBaseScene(dt) {
@@ -4991,11 +5029,376 @@
       updateShopControls();
     };
 
+    // Un solo sprite procedural para el protagonista, derivado de la referencia de personajes.
+    const labAvatarStyles = {
+      sage: {
+        skin: "#e4ae82",
+        shade: "#bd805e",
+        hair: "#4c3835",
+        light: "#95694d",
+        shirt: "#7e9678",
+        badge: "#6ea6a0",
+        style: 0,
+      },
+      cobalt: {
+        skin: "#a86843",
+        shade: "#78452f",
+        hair: "#34313a",
+        light: "#67504a",
+        shirt: "#6b879d",
+        badge: "#d6b26a",
+        style: 1,
+      },
+      terra: {
+        skin: "#d49a73",
+        shade: "#a2684f",
+        hair: "#53333b",
+        light: "#965a46",
+        shirt: "#b47d69",
+        badge: "#80a5cb",
+        style: 2,
+      },
+    };
+    function paintLabCharacter(ctx, id, facing = "down", frame = 0, tick = 0) {
+      const p = labAvatarStyles[id] || labAvatarStyles.sage;
+      const moving = frame > 0,
+        stride = frame === 1 ? -1 : frame === 3 ? 1 : 0;
+      const back = facing === "up",
+        side = facing === "left" || facing === "right";
+      const bob = moving
+        ? frame === 2
+          ? 0
+          : -1
+        : Math.floor(tick / 900) % 2 === 1
+          ? -0.5
+          : 0;
+      const r = (x, y, w, h, color) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, w, h);
+      };
+      const poly = (points, color) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        points.forEach(([x, y], i) =>
+          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y),
+        );
+        ctx.closePath();
+        ctx.fill();
+      };
+      ctx.save();
+      if (facing === "left") {
+        ctx.translate(32, 0);
+        ctx.scale(-1, 1);
+      }
+      // La huella queda fija: sólo se animan cuerpo y extremidades.
+      r(7, 45, 18, 2, "#27434c40");
+      r(9, 44, 14, 2, "#27434c25");
+      r(10, 34, 5, 10 + stride, "#354854");
+      r(17, 34, 5, 10 - stride, "#354854");
+      r(11, 35, 2, 7 + stride, "#607181");
+      r(18, 35, 2, 7 - stride, "#536474");
+      r(9, 43 + stride, 7, 3, "#28333d");
+      r(17, 43 - stride, 7, 3, "#28333d");
+      r(10, 43 + stride, 4, 1, "#74828a");
+      r(18, 43 - stride, 4, 1, "#687780");
+      ctx.translate(0, bob);
+      // Coleta y pelo posterior se dibujan detrás del cuello y la bata.
+      if (p.style === 2) {
+        poly(
+          [
+            [21, 5],
+            [27, 4],
+            [29, 10],
+            [27, 20],
+            [24, 24],
+            [23, 17],
+          ],
+          p.hair,
+        );
+        r(25, 7, 2, 11, p.light);
+        r(24, 5, 3, 2, "#d6b26a");
+      }
+      r(12, 17, 8, 7, "#29404a");
+      r(13, 17, 6, 7, p.skin);
+      r(13, 20, 6, 2, p.shade);
+      // Brazos en contrafase con las piernas; manos pequeñas legibles.
+      const armA = moving ? stride * 2 : 0,
+        armB = moving ? -stride * 2 : 0;
+      poly(
+        [
+          [8, 22 + armA],
+          [5, 25 + armA],
+          [4, 34 + armA],
+          [8, 37 + armA],
+          [11, 31 + armA],
+        ],
+        "#40515a",
+      );
+      r(5, 26 + armA, 5, 9, "#d4cdb9");
+      r(5, 26 + armA, 2, 7, "#eee7d3");
+      r(5, 34 + armA, 4, 4, p.shade);
+      r(5, 34 + armA, 3, 2, p.skin);
+      poly(
+        [
+          [24, 22 + armB],
+          [27, 25 + armB],
+          [28, 34 + armB],
+          [24, 37 + armB],
+          [21, 31 + armB],
+        ],
+        "#40515a",
+      );
+      r(23, 26 + armB, 4, 9, "#c1bdad");
+      r(23, 26 + armB, 2, 7, "#e4ddc9");
+      r(24, 34 + armB, 3, 4, p.shade);
+      r(24, 34 + armB, 2, 2, p.skin);
+      poly(
+        [
+          [9, 21],
+          [12, 20],
+          [20, 20],
+          [24, 22],
+          [25, 38],
+          [20, 40],
+          [11, 39],
+          [7, 38],
+        ],
+        "#3b505a",
+      );
+      poly(
+        [
+          [9, 22],
+          [13, 21],
+          [19, 21],
+          [23, 23],
+          [24, 37],
+          [20, 39],
+          [10, 38],
+          [8, 37],
+        ],
+        "#d7d0bc",
+      );
+      r(9, 24, 3, 12, "#eee7d4");
+      r(11, 24, 2, 12, "#e4ddc8");
+      r(21, 25, 2, 12, "#b7baad");
+      r(10, 37, 12, 1, "#f5ebd6");
+      if (back) {
+        r(12, 22, 8, 2, "#eee5d1");
+        r(15, 25, 1, 11, "#b9baad");
+        r(11, 31, 10, 1, "#eee5d1");
+        r(11, 32, 10, 1, "#c1bdae");
+      } else {
+        r(side ? 16 : 13, 22, side ? 4 : 6, 13, p.shirt);
+        r(side ? 17 : 15, 24, 1, 9, "#59665e");
+        poly(
+          [
+            [11, 21],
+            [14, 22],
+            [14, 27],
+            [11, 25],
+            [12, 23],
+          ],
+          "#faf0d8",
+        );
+        poly(
+          [
+            [20, 21],
+            [18, 23],
+            [18, 27],
+            [21, 24],
+          ],
+          "#ece4ce",
+        );
+        r(13, 34, 7, 2, "#3a454d");
+        r(15, 34, 2, 1, "#d0b487");
+        r(19, 28, 4, 5, "#a8b0a7");
+        r(19, 28, 3, 4, "#ece2cb");
+        r(20, 25, 1, 4, "#436a88");
+        r(9, 28, 4, 5, "#566f70");
+        r(9, 28, 3, 4, p.badge);
+        r(10, 29, 1, 2, "#e7ead9");
+        r(10, 26, 1, 2, "#596d6c");
+        r(14, 31, 1, 1, "#f5eddb");
+        r(17, 31, 1, 1, "#c1bca9");
+      }
+      // Cabeza redondeada con sombra de mentón y ojos, sin marco de tarjeta.
+      poly(
+        [
+          [10, 5],
+          [21, 4],
+          [25, 8],
+          [25, 16],
+          [22, 20],
+          [12, 20],
+          [8, 16],
+          [7, 10],
+        ],
+        "#3b3436",
+      );
+      poly(
+        [
+          [11, 7],
+          [20, 6],
+          [23, 9],
+          [23, 16],
+          [20, 19],
+          [13, 19],
+          [10, 16],
+          [9, 11],
+        ],
+        p.shade,
+      );
+      poly(
+        [
+          [11, 8],
+          [20, 7],
+          [22, 10],
+          [22, 16],
+          [19, 18],
+          [13, 18],
+          [10, 15],
+          [10, 10],
+        ],
+        p.skin,
+      );
+      r(8, 12, 2, 4, p.shade);
+      r(23, 12, 2, 4, p.shade);
+      if (back) {
+        poly(
+          [
+            [10, 3],
+            [19, 2],
+            [24, 6],
+            [26, 12],
+            [23, 18],
+            [13, 20],
+            [8, 17],
+            [6, 10],
+          ],
+          p.hair,
+        );
+        r(10, 7, 2, 7, p.light);
+        r(13, 5, 6, 2, p.light);
+      } else {
+        const blink = !moving && Math.floor(tick / 120) % 40 === 30;
+        const eyeY = 12;
+        if (side) {
+          r(19, eyeY, 3, blink ? 1 : 4, "#3a3033");
+          if (!blink) r(20, eyeY, 1, 1, "#fff0d8");
+          r(22, 15, 2, 1, p.shade);
+          r(20, 17, 2, 1, "#805345");
+        } else {
+          for (const ex of [12, 19]) {
+            r(ex, eyeY, 3, blink ? 1 : 4, "#3a3033");
+            if (!blink) r(ex + 1, eyeY, 1, 1, "#fff0d8");
+          }
+          r(16, 15, 1, 1, p.shade);
+          r(15, 17, 4, 1, "#805345");
+          r(10, 16, 2, 1, "#d29476");
+        }
+        if (p.style === 0) {
+          poly(
+            [
+              [8, 4],
+              [14, 2],
+              [20, 3],
+              [24, 6],
+              [25, 10],
+              [22, 9],
+              [20, 6],
+              [15, 9],
+              [9, 11],
+              [7, 9],
+            ],
+            p.hair,
+          );
+          r(11, 5, 5, 2, p.light);
+          r(16, 4, 4, 1, p.light);
+          r(8, 8, 2, 5, p.hair);
+        } else if (p.style === 1) {
+          poly(
+            [
+              [8, 3],
+              [12, 1],
+              [19, 1],
+              [24, 4],
+              [26, 9],
+              [25, 16],
+              [22, 15],
+              [22, 8],
+              [18, 9],
+              [15, 6],
+              [10, 10],
+              [9, 15],
+              [6, 14],
+              [5, 8],
+            ],
+            p.hair,
+          );
+          for (const [hx, hy] of [
+            [7, 5],
+            [12, 3],
+            [18, 3],
+            [22, 6],
+            [6, 11],
+            [23, 12],
+          ]) {
+            r(hx, hy, 3, 2, p.light);
+            r(hx + 1, hy, 1, 1, "#816450");
+          }
+        } else {
+          poly(
+            [
+              [10, 3],
+              [17, 2],
+              [22, 5],
+              [24, 9],
+              [22, 11],
+              [20, 7],
+              [16, 10],
+              [10, 11],
+              [7, 14],
+              [7, 8],
+            ],
+            p.hair,
+          );
+          r(10, 6, 4, 2, p.light);
+          r(15, 4, 4, 2, p.light);
+          r(8, 10, 2, 4, p.hair);
+        }
+      }
+      ctx.restore();
+    }
+    function updateAvatarMotion(dt, before) {
+      const dx = player.x - before.x,
+        dy = player.y - before.y;
+      avatarMotion.moving = Math.hypot(dx, dy) > 0.001;
+      if (avatarMotion.moving) {
+        avatarMotion.facing =
+          Math.abs(dx) > Math.abs(dy)
+            ? dx > 0
+              ? "right"
+              : "left"
+            : dy > 0
+              ? "down"
+              : "up";
+        avatarMotion.phase += dt;
+      } else avatarMotion.phase = 0;
+    }
     function drawLabAvatar(x, y) {
       c.save();
-      c.translate(x, y);
-      c.scale(0.92, 0.86);
-      drawPixelShopAvatar(0, 0, "#e8e6d0", 3, true);
+      c.translate(x - 10.88, y - 22.28);
+      c.scale(0.68, 0.68);
+      const frame = avatarMotion.moving
+        ? [1, 2, 3, 2][Math.floor(avatarMotion.phase * 8) % 4]
+        : 0;
+      paintLabCharacter(
+        c,
+        avatarId,
+        avatarMotion.facing,
+        frame,
+        feedbackTime * 1000,
+      );
       c.restore();
     }
     function drawPixelShopAvatar(x, y, color, variant = 0, lab = false) {
@@ -16888,8 +17291,10 @@
       advanceShop(dt);
       for (const b of fruitShelves) advanceFruiting(b, dt);
       for (const b of incubation) advanceIncubation(b, dt);
+      const avatarBefore = { x: player.x, y: player.y };
       advanceWalk(dt);
       movePlayer(dt);
+      updateAvatarMotion(dt, avatarBefore);
       limePour = Math.max(0, limePour - dt);
       if (autoWater || helperWaterPermit)
         waterRunning =
@@ -17000,6 +17405,18 @@
         "lab-beefungi-partida-respaldo-v1",
       ];
     const saveFields = {
+      avatarId: [
+        () => avatarId,
+        (value) => {
+          avatarId = value;
+        },
+      ],
+      avatarChosen: [
+        () => avatarChosen,
+        (value) => {
+          avatarChosen = value;
+        },
+      ],
       gloveGuideDone: [
         () => gloveGuideDone,
         (value) => {
@@ -17889,6 +18306,7 @@
         "shopDeparting",
       ])
         if (!state[key].every(object)) return false;
+      if (!Object.hasOwn(labAvatarStyles, state.avatarId)) return false;
       const names = speciesCatalog.map((item) => item.name);
       if (
         ![
@@ -17961,6 +18379,8 @@
         "incubation",
         "fruiting",
         "shop",
+        "warehouse",
+        "cultivation",
         "sterileRoom",
         "woodPrep",
         "woodSterilizer",
@@ -17994,6 +18414,14 @@
         )
           return null;
         const state = JSON.parse(record.data);
+        // Extensión compatible del esquema 1: las partidas previas eligen apariencia al continuar.
+        if (
+          !Object.hasOwn(state, "avatarId") &&
+          !Object.hasOwn(state, "avatarChosen")
+        ) {
+          state.avatarId = "sage";
+          state.avatarChosen = false;
+        }
         return validSaveState(state) ? { ...record, state } : null;
       } catch {
         return null;
@@ -18091,6 +18519,9 @@
       helper.action = 0;
       labHelper.task = null;
       labHelper.action = 0;
+      avatarMotion.facing = "down";
+      avatarMotion.moving = false;
+      avatarMotion.phase = 0;
       feedbackFlash = null;
       readySignals.clear();
       salePops = [];
@@ -18104,6 +18535,7 @@
         "product-reveal",
         "save-menu",
         "reset-save",
+        "avatar-picker",
       ])
         document.querySelector("#" + id).close();
       last = performance.now();
@@ -18144,7 +18576,8 @@
           ? "Partida recuperada desde el respaldo local."
           : "Partida continuada. Guardado automático activo.",
       );
-      cv.focus();
+      if (!avatarChosen && !window.__BEEFUNGI_FIXTURE__) beginAvatarChoice();
+      else cv.focus();
       return true;
     }
     function askNewGame() {
@@ -18181,8 +18614,11 @@
           localStorage.removeItem("lab-beefungi-guia-" + suffix);
       } catch {}
       saveKnownRaw = null;
-      writeLocalSave(true);
-      cv.focus();
+      if (!window.__BEEFUNGI_FIXTURE__) beginAvatarChoice();
+      else {
+        writeLocalSave(true);
+        cv.focus();
+      }
     }
     function tickAutoSave(dt) {
       if (saveGate) return;
@@ -18194,7 +18630,10 @@
     }
     function initializeLocalSave() {
       pendingSave = readLocalSave();
-      if (!pendingSave) return;
+      if (!pendingSave) {
+        if (!window.__BEEFUNGI_FIXTURE__) beginAvatarChoice();
+        return;
+      }
       saveGate = true;
       document.querySelector("#save-summary").textContent =
         "Hay una partida guardada en este navegador. Los procesos continúan desde donde los dejaste.";
@@ -18221,6 +18660,60 @@
       if (document.hidden) writeLocalSave();
     });
     window.addEventListener("pagehide", () => writeLocalSave());
+
+    function renderAvatarChoice() {
+      for (const id of Object.keys(labAvatarStyles)) {
+        const button = document.querySelector('[data-avatar="' + id + '"]');
+        button.setAttribute?.("aria-pressed", String(id === avatarId));
+        const portrait = button.querySelector?.("canvas");
+        if (portrait) {
+          const ctx = portrait.getContext("2d");
+          ctx.setTransform(3, 0, 0, 3, 0, 0);
+          ctx.clearRect(0, 0, 32, 48);
+          ctx.imageSmoothingEnabled = false;
+          paintLabCharacter(ctx, id, "down", 0, 900);
+        }
+      }
+    }
+    function chooseAvatar(id) {
+      if (!Object.hasOwn(labAvatarStyles, id)) return false;
+      avatarId = id;
+      renderAvatarChoice();
+      return true;
+    }
+    function beginAvatarChoice() {
+      saveGate = true;
+      keys.clear();
+      walkPath = [];
+      drag = null;
+      renderAvatarChoice();
+      scene(0);
+      document.querySelector("#avatar-start").textContent =
+        progression.harvested.size || saleCoins !== 15
+          ? "Continuar"
+          : "Empezar";
+      document.querySelector("#avatar-picker").showModal();
+      document.querySelector('[data-avatar="' + avatarId + '"]').focus();
+    }
+    function finishAvatarChoice() {
+      if (!document.querySelector("#avatar-picker").open) return false;
+      avatarChosen = true;
+      document.querySelector("#avatar-picker").close();
+      saveGate = false;
+      last = performance.now();
+      writeLocalSave();
+      scene(0);
+      cv.focus();
+      return true;
+    }
+    for (const id of Object.keys(labAvatarStyles))
+      document.querySelector('[data-avatar="' + id + '"]').onclick = () =>
+        chooseAvatar(id);
+    document.querySelector("#avatar-start").onclick = finishAvatarChoice;
+    document.querySelector("#avatar-picker").oncancel = (e) =>
+      e.preventDefault();
+    document.querySelector("#avatar-picker").onkeydown = (e) =>
+      e.stopPropagation?.();
     initializeLocalSave();
 
     requestAnimationFrame(frame);
