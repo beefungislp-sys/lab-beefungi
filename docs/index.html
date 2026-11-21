@@ -3975,8 +3975,8 @@
     function drawCordyFruit(progress, count) {
       const g = 0.2 + 0.8 * progress;
       for (let k = 0; k < Math.min(count * 3, 9); k++) {
-        const height = (9 + texHash(k, 3, 209) * 17) * g,
-          cx = 3 + k * 3.2,
+        const height = (8 + texHash(k, 3, 209) * 13) * g,
+          cx = 7 + k * 1.65,
           cy = 29 - (k % 2);
         artRect(cx, cy - height, 1.4, height, "#cb7634");
         artRect(cx, cy - height, 0.5, height, "#f5b85a");
@@ -3987,7 +3987,7 @@
     const speciesPrices = {
       Pleurotus: 1,
       "Melena de leon": 2.5,
-      Reishi: 3.5,
+      Reishi: 3,
       Cordyceps: 3,
     };
     function speciesShort(name) {
@@ -4036,8 +4036,20 @@
       count = 3,
       species = "Pleurotus",
     ) {
-      if (species === "Cordyceps") drawCordyJar(x, y, scale, 1, true);
-      else drawGrowBag(x, y, 1, scale, species);
+      if (species === "Cordyceps") {
+        drawCordyJar(x, y, scale, 1, true);
+        // Frutos y vidrio comparten coordenadas: nada sobresale del frasco.
+        c.save();
+        c.translate(x, y);
+        c.scale(scale, scale);
+        c.beginPath();
+        c.rect(5, 5, 18, 27);
+        c.clip();
+        drawSpeciesFruit(species, 0, 0, progress, 1, count);
+        c.restore();
+        return;
+      }
+      drawGrowBag(x, y, 1, scale, species);
       const oyster = species === "Pleurotus" || !species;
       drawSpeciesFruit(
         species,
@@ -6795,14 +6807,7 @@
       );
       box(130, 199, 140, 28, woodTank.left ? "#b3c6be" : "#edbd69");
       smallText(woodTank.left ? "EN PROCESO" : "INICIAR", 171, 217);
-      smallText(
-        performance.now() < potNoticeUntil
-          ? "CL: USA UNA TANDA APARTE"
-          : "MADERA + CORDY / CL APARTE",
-        12,
-        238,
-        performance.now() < potNoticeUntil ? "#a34f3a" : "#243b49",
-      );
+      smallText("MADERA + CL + CORDY", 12, 238, "#243b49");
       if (woodTank.left) drawProcessClock(291, 186, 11, 1 - woodTank.left / 8);
     }
     function tankItemTypes() {
@@ -6815,24 +6820,10 @@
               : woodTank.type || sterilizerMode,
           );
     }
-    function compatibleTankType(type) {
-      const loaded = tankItemTypes();
-      return (
-        !loaded.length ||
-        loaded.every((item) => (item === "liquid") === (type === "liquid"))
-      );
-    }
     function loadWood(type = sterilizerMode) {
       if (!["wood", "liquid", "cordy"].includes(type)) return;
       if (woodTank.left || (woodTank.lid || 0) > 0.1) {
         say("El esterilizador está trabajando.");
-        return;
-      }
-      if (!compatibleTankType(type)) {
-        potNoticeUntil = performance.now() + 3000;
-        say(
-          "Madera y sustrato Cordyceps pueden compartir tanda. El CL va separado.",
-        );
         return;
       }
       if (!preparedFor(type) || woodTank.n >= woodCapacity) {
@@ -6853,14 +6844,6 @@
     }
     function startWoodCycle() {
       if (woodTank.left || !woodTank.n) return;
-      const types = tankItemTypes();
-      if (
-        types.some((t) => t === "liquid") &&
-        types.some((t) => t !== "liquid")
-      ) {
-        say("El CL necesita una tanda separada.");
-        return;
-      }
       if ((woodTank.water || 0) < 1) {
         say("Llena la olla con la llave antes de iniciar.");
         return;
@@ -9324,16 +9307,11 @@
         const types = [
           ...new Set([selectedInput, prepMode, "wood", "cordy", "liquid"]),
         ];
-        const type = types.find(
-          (type) => preparedFor(type) > 0 && compatibleTankType(type),
-        );
+        const type = types.find((type) => preparedFor(type) > 0);
         if (type && woodTank.n < woodCapacity)
           return tankTask(
             "load",
-            () =>
-              woodTank.n < woodCapacity &&
-              preparedFor(type) > 0 &&
-              compatibleTankType(type),
+            () => woodTank.n < woodCapacity && preparedFor(type) > 0,
             () => loadWood(type),
             type,
           );
@@ -10597,8 +10575,7 @@
       smallText("A INCUBACION " + waitingIncubation, 112, 221);
     }
 
-    let potNoticeUntil = 0,
-      prepPausedAfterRemove = false;
+    let prepPausedAfterRemove = false;
     const preparedPoolCards = [
       { type: "wood", r: [12, 54, 80, 42] },
       { type: "liquid", r: [12, 101, 80, 42] },
@@ -10645,15 +10622,13 @@
       artRect(11, 52, 1, rackBottom - 52, "#d6e3cd");
       artRect(92, 52, 1, rackBottom - 52, "#4f777d");
       cards.forEach((card, index) => {
-        const [x, y, w, h] = card.r,
-          compatible = compatibleTankType(card.type);
+        const [x, y, w, h] = card.r;
         box(x, y, w, h, card.type === sterilizerMode ? "#e2c88f" : "#9db7b6");
-        box(x + 2, y + 2, w - 4, h - 4, compatible ? "#bdcfbf" : "#8b9e9d");
+        box(x + 2, y + 2, w - 4, h - 4, "#bdcfbf");
         smallText(modeShort(card.type) + " " + counts[index], x + 4, y + 11);
         for (let i = 0; i < shown[index]; i++)
           drawPreparedContainer(card.type, x + 7 + i * 13, y + 17, 0.55);
         if (!counts[index]) smallText("—", x + 33, y + 32);
-        if (!compatible) smallText("APARTE", x + 43, y + 32);
         artRect(x + 2, y + h - 2, w - 4, 1, "#dde5c9");
       });
     }
@@ -15911,8 +15886,11 @@
             : { step, point: [285, 34] };
         return { step, point: [198, 180] };
       }
-      if (types.length && !compatibleTankType(mode)) {
-        // La carga incompatible ya puesta se termina con su tipo original.
+      if (
+        types.length &&
+        (types.length >= woodCapacity || preparedFor(mode) <= 0)
+      ) {
+        // Terminar la carga existente si no cabe o no hay otra lista para añadir.
         const loaded = types[0];
         return guideAdvancedNextPot(
           loaded,

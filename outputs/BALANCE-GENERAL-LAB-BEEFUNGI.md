@@ -31,7 +31,7 @@ El Petri inicial del desbloqueo sigue regalándose una sola vez. Agua y sales A/
 | --- | ---: | ---: |
 | Pleurotus | 1 | 0,5 |
 | Melena | 2,5 | 0,75 |
-| Reishi | 3,5 | 1 |
+| Reishi | 3 | 1 |
 | Cordyceps | 3 | 1,5 |
 
 Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros. Sus precios se mantienen independientes de las setas: el lote vale 2 / 3 / 4 / 6 monedas según la especie. Sigue agregando valor al producto usado, aunque el aumento de Melena y Reishi reduce ese margen de transformación. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
@@ -62,7 +62,7 @@ Valores del juego, con clima óptimo, sin salarios ni fallos en esta primera tab
 | --- | ---: | ---: | ---: | ---: |
 | Pleurotus | 2,25 | 3,8 | 1 | 2,55 |
 | Melena | 3 | 9,5 | 1 | 7,5 |
-| Reishi | 3,5 | 13,3 | 1 | 10,8 |
+| Reishi | 3,5 | 11,4 | 1 | 8,9 |
 | Cordyceps | 5,5 | 11,4 | 1 | 6,9 |
 
 Pleurotus incluye media paca, micelio, bolsa y media cal (tanque inicial de dos); limpiar cada tres añade aproximadamente 0,17 por bloque y cada seis aproximadamente 0,08. En seis cargas se reparte menos cal por bloque. Cordyceps incluye dos frascos, dos nutrientes, arroz y Petri. Su primer flush de 500 g ya vende seis monedas frente a 5,5 de insumos, y el primer Petri regalado facilita el arranque de la ruta.
@@ -87,4 +87,4 @@ La espera de llegada se conserva mientras la fila está llena, para ocupar una v
 
 ## Ajuste de venta de Melena y Reishi
 
-Melena aumenta una moneda por porción (1,5 → 2,5) y Reishi una y media (2 → 3,5). Se aplican a nuevas ventas, sin revalorizar ventas anteriores ni inventar saldo al cargar. Insumos, mejoras, goteros, otras especies, demanda y desbloqueos se conservan. [Nota del ajuste](TANDA-VENTAS-MELENA-REISHI.md).
+Melena aumenta una moneda por porción (1,5 → 2,5) y Reishi una moneda (2 → 3), corregido desde el aumento provisional de 1,5. Se aplican a nuevas ventas, sin revalorizar ventas anteriores ni inventar saldo al cargar. Insumos, mejoras, goteros, otras especies, demanda y desbloqueos se conservan. [Nota inicial](TANDA-VENTAS-MELENA-REISHI.md) y [corrección vigente](TANDA-REISHI-ESTERILIZADOR-CORDY.md).
