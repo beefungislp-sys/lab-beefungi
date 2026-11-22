@@ -33,6 +33,14 @@ def write_wav(path,audio):
  with wave.open(str(path),'wb') as f:
   f.setnchannels(1);f.setsampwidth(2);f.setframerate(SR);f.writeframes((np.clip(audio,-1,1)*32767).astype('<i2').tobytes())
 
+def fade_track(audio, fade_in=2.0, fade_out=4.0):
+ # Curva coseno: nivel y pendiente suaves al llegar a silencio/volumen completo.
+ result=audio.copy()
+ start=min(len(result),round(fade_in*SR));end=min(len(result),round(fade_out*SR))
+ result[:start]*=(.5-.5*np.cos(np.linspace(0,np.pi,start)))[:,None]
+ result[-end:]*=(.5+.5*np.cos(np.linspace(0,np.pi,end)))[:,None]
+ return result
+
 def render(theme):
  assert sum(d for _,d in theme['melody'])==32
  spb=60/theme['bpm'];length=96*spb;N=round(length*SR);audio=np.zeros((N,2),np.float64);events=[];rng=np.random.default_rng(20261120)
@@ -67,11 +75,11 @@ def render(theme):
  dry=audio.copy()
  for delay,gain in [(.113,.1),(.239,.075),(.379,.055),(.563,.035)]:audio+=np.roll(dry,round(delay*SR),axis=0)[:,::-1]*gain
  peak=float(np.max(np.abs(audio)));audio*=.58/max(peak,1e-9);audio=audio.astype(np.float32)
+ # Las canciones se escuchan completas con fades; el reproductor deja la pausa.
+ audio=fade_track(audio)
  write_wav(OUT/(theme['id']+'.wav'),audio.mean(axis=1))
- # Copia para escucha independiente con entrada/salida suaves; el juego usa el loop.
- preview=audio.copy();fade=round(.8*SR);preview[:fade]*=np.linspace(0,1,fade)[:,None];preview[-fade:]*=np.linspace(1,0,fade)[:,None]
- write_wav(PREVIEW/(theme['id']+'.wav'),preview.mean(axis=1));midi(PREVIEW/(theme['id']+'.mid'),events,theme['bpm'])
- return dict(id=theme['id'],name=theme['name'],bpm=theme['bpm'],bars=24,seconds=round(length,3),sourceBeats=theme['origin'],sourceSeconds=[round(x*60/110,2) for x in theme['origin']],peak=float(np.max(np.abs(audio))),rms=float(np.sqrt(np.mean(audio**2))),events=len(events))
+ write_wav(PREVIEW/(theme['id']+'.wav'),audio.mean(axis=1));midi(PREVIEW/(theme['id']+'.mid'),events,theme['bpm'])
+ return dict(id=theme['id'],name=theme['name'],bpm=theme['bpm'],bars=24,seconds=round(length,3),sourceBeats=theme['origin'],sourceSeconds=[round(x*60/110,2) for x in theme['origin']],peak=float(np.max(np.abs(audio))),rms=float(np.sqrt(np.mean(audio**2))),events=len(events),fadeInSeconds=2,fadeOutSeconds=4)
 if __name__=='__main__':
  OUT.mkdir(parents=True,exist_ok=True);PREVIEW.mkdir(parents=True,exist_ok=True)
  report=[render(t) for t in THEMES];(PREVIEW/'analisis.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8');print(json.dumps(report,ensure_ascii=False,indent=2))

@@ -702,30 +702,13 @@
           </button>
           <button id="save-now">Guardar partida</button>
           <button id="new-game">Nueva partida</button>
-          <p id="save-status" role="status" aria-live="polite">
-            Guardado automático en este navegador.
-          </p>
-          <p id="status" role="status">
-            Selecciona una estación para acercarte.
-          </p>
-          <p>
-            Empiezas con 15 monedas y un kit de insumos. Compra una unidad por
-            clic; las mejoras y los asistentes se pagan con tus ventas.
-            Pleurotus se prepara sólo en la mezcla principal. Triturador,
-            pasteurizado y mezcla tienen mejoras desde el inicio en la barra
-            superior. Primera cosecha: tienda y primer cliente; primera venta:
-            mejoras de incubación y fructificación. Completa las tres estaciones
-            principales y amplía ambas cámaras a seis para abrir sala estéril y
-            contratar al primer asistente. Cosecha Melena para Reishi; completa
-            las estaciones estériles para Cordyceps, su placa Petri inicial y el
-            segundo asistente. La guía de Cordyceps recorre medio líquido,
-            esterilización, Petri en campana, agitación, arroz, esterilización,
-            CL en campana, incubación y fructificación. Cosechar Cordyceps abre
-            extracción/envasado; el primer gotero abre mesa de química y
-            espirulina. La guía de química prepara solución de espirulina. E
-            cierra el menú de mejoras; WASD y el suelo permiten caminar. La
-            partida se guarda en este navegador; no se sincroniza entre
-            dispositivos.
+          <p id="save-status" role="status" aria-live="polite" hidden></p>
+          <p id="status" role="status" hidden></p>
+          <p id="quick-help">
+            Sigue las flechas. Arrastra los materiales o haz doble clic.
+            Cultiva, cosecha y vende para comprar mejoras. Toca el suelo para
+            caminar; en computadora usa WASD y E para entrar o salir. Tu partida
+            se guarda automáticamente en este navegador.
           </p>
         </div>
       </details>
@@ -13350,7 +13333,7 @@
       "02-luz-de-vidrio",
       "03-jardin-burbujeante",
     ];
-    const musicGapMs = 15000;
+    const musicGapMs = 5000;
     let musicBreakUntil = 0,
       musicResumeTimer = null;
     let musicEnabled = true,
@@ -18431,8 +18414,10 @@
       saveProtected = false,
       resetWasGated = false,
       saveKnownRaw = undefined;
-    function saveStatus(text) {
-      document.querySelector("#save-status").textContent = text;
+    function saveStatus(text, visible = true) {
+      const status = document.querySelector("#save-status");
+      status.textContent = text;
+      status.hidden = !visible;
     }
     function saveChecksum(text) {
       let hash = 2166136261;
@@ -18752,7 +18737,7 @@
         localStorage.setItem(saveKeys[0], raw);
         saveKnownRaw = raw;
         saveElapsed = 0;
-        saveStatus("Partida guardada en este navegador.");
+        saveStatus("Partida guardada en este navegador.", manual);
         return true;
       } catch {
         saveStatus(
@@ -18832,6 +18817,7 @@
         record.recovered
           ? "Partida recuperada desde el respaldo local."
           : "Partida continuada. Guardado automático activo.",
+        record.recovered,
       );
       if (!avatarChosen && !window.__BEEFUNGI_FIXTURE__) beginAvatarChoice();
       else cv.focus();

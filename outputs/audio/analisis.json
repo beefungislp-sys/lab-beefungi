@@ -14,8 +14,10 @@
       22.74
     ],
     "peak": 0.5799999833106995,
-    "rms": 0.1844053864479065,
-    "events": 246
+    "rms": 0.1796918362379074,
+    "events": 246,
+    "fadeInSeconds": 2,
+    "fadeOutSeconds": 4
   },
   {
     "id": "02-luz-de-vidrio",
@@ -32,8 +34,10 @@
       40.55
     ],
     "peak": 0.5799999833106995,
-    "rms": 0.16446219384670258,
-    "events": 241
+    "rms": 0.1598048210144043,
+    "events": 241,
+    "fadeInSeconds": 2,
+    "fadeOutSeconds": 4
   },
   {
     "id": "03-jardin-burbujeante",
@@ -50,7 +54,9 @@
       131.65
     ],
     "peak": 0.5799999833106995,
-    "rms": 0.17729339003562927,
-    "events": 258
+    "rms": 0.17273299396038055,
+    "events": 258,
+    "fadeInSeconds": 2,
+    "fadeOutSeconds": 4
   }
 ]
