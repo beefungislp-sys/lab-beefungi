@@ -30,11 +30,11 @@ El Petri inicial del desbloqueo sigue regalándose una sola vez. Agua y sales A/
 | Producto | Setas por 250 g | Cada gotero |
 | --- | ---: | ---: |
 | Pleurotus | 1 | 3 |
-| Melena | 2,5 | 3 |
+| Melena | 2 | 3 |
 | Reishi | 3 | 3 |
 | Cordyceps | 3 | 3 |
 
-Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros. Todos los goteros valen ahora 3 monedas por unidad: cada matraz produce cuatro y su venta completa suma 12 monedas, independientemente de la especie. Sus precios son independientes de los de las setas. La extracción consume 250 g: el valor añadido respecto a vender esas setas directamente es de 11 / 9,5 / 9 / 9 monedas por lote, antes de otros costes. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
+Composta: una moneda por unidad. Espirulina: tres monedas por cosecha. Se mantienen los tres flushes de 500/300/150 g, la unidad de venta de 250 g y los remanentes en inventario; no se redondea el material para regalar ventas. Un matraz produce cuatro goteros. Todos los goteros valen ahora 3 monedas por unidad: cada matraz produce cuatro y su venta completa suma 12 monedas, independientemente de la especie. Sus precios son independientes de los de las setas. La extracción consume 250 g: el valor añadido respecto a vender esas setas directamente es de 11 / 10 / 9 / 9 monedas por lote, antes de otros costes. Química y espirulina continúan como bonificación rentable, sin nuevas mejoras ni gastos añadidos.
 
 ## Mejoras y asistentes
 
@@ -61,7 +61,7 @@ Valores del juego, con clima óptimo, sin salarios ni fallos en esta primera tab
 | Bloque | Insumos directos | Venta de 950 g a largo plazo | Composta | Margen antes de limpieza |
 | --- | ---: | ---: | ---: | ---: |
 | Pleurotus | 2,25 | 3,8 | 1 | 2,55 |
-| Melena | 3 | 9,5 | 1 | 7,5 |
+| Melena | 3 | 7,6 | 1 | 5,6 |
 | Reishi | 3,5 | 11,4 | 1 | 8,9 |
 | Cordyceps | 5,5 | 11,4 | 1 | 6,9 |
 
@@ -92,3 +92,7 @@ Melena aumenta una moneda por porción (1,5 → 2,5) y Reishi una moneda (2 → 
 ## Cierre de balance: goteros
 
 Se fija el precio de todos los goteros en 3 monedas por unidad, incluido el inventario guardado que se venda a partir de esta versión. No se modifican ingresos de ventas anteriores, rendimiento, desbloqueos ni otros precios. [Nota del cierre](TANDA-BALANCE-GOTEROS.md).
+
+## Ajuste final de setas
+
+Melena de León queda en 2 monedas por porción de 250 g; Reishi se conserva en 3. Todos los goteros siguen en 3 monedas. Los apartados de ajustes anteriores se mantienen como historial. [Nota vigente](TANDA-PERSONAJES-Y-PRECIOS-FINALES.md).

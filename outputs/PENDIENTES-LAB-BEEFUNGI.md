@@ -1,5 +1,13 @@
 # Revisión de pendientes — Lab BeeFungi
 
+## Estado vigente — 22 de noviembre de 2026
+
+Recorrido completo probado por el usuario. Progresión, mejoras/asistentes, cuatro especies, tienda, química/espirulina, arte, música/efectos y guardado/continuar ya están construidos. Precios vigentes: Melena 2, Reishi 3 por porción; goteros 3 por unidad. Selección inicial por dos iconos sin nombres.
+
+Para cerrar el MVP se recomienda una última prueba manual en celulares reales de inicio, selección, guardado/continuación, controles, ventas y audio. Deshidratación queda fuera del cierre actual y CL se conserva sin contaminación. La mejora interna opcional de avisos por códigos está en `PENDIENTES-REVISION-FLUJO.md`.
+
+Ver [nota de cierre y validación](TANDA-PERSONAJES-Y-PRECIOS-FINALES.md). Los apartados siguientes se conservan como historial y sus pendientes antiguos no describen el estado vigente.
+
 ## Última tanda
 Implementado: limpieza preventiva, bacterias palpitantes, primera guía de limpieza, riesgo creciente hasta 100%, contaminación visible en incubación, tres flushes con rendimientos 500/300/150 g, cosecha sin retirar bloque, composta desde incubación y fructificación, y botones de llenado de prueba.
 

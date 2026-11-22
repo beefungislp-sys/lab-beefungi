@@ -608,9 +608,6 @@
     #avatar-picker h2 {
       margin-top: 4px;
     }
-    #avatar-start {
-      width: 100%;
-    }
   </style>
   <main>
     <h1>LAB BEEFUNGI</h1>
@@ -714,17 +711,24 @@
   </main>
   <dialog id="avatar-picker" aria-labelledby="avatar-title">
     <h2 id="avatar-title">Elige tu personaje</h2>
-    <p>Solo cambia la apariencia.</p>
     <div class="avatar-options">
-      <button class="avatar-choice" data-avatar="sage" aria-pressed="true">
-        <canvas width="96" height="144" aria-hidden="true"></canvas>Cabello
-        corto
+      <button
+        class="avatar-choice"
+        data-avatar="sage"
+        aria-pressed="true"
+        aria-label="Elegir personaje de pelo corto"
+      >
+        <canvas width="96" height="144" aria-hidden="true"></canvas>
       </button>
-      <button class="avatar-choice" data-avatar="terra" aria-pressed="false">
-        <canvas width="96" height="144" aria-hidden="true"></canvas>Coleta
+      <button
+        class="avatar-choice"
+        data-avatar="terra"
+        aria-pressed="false"
+        aria-label="Elegir personaje con coleta"
+      >
+        <canvas width="96" height="144" aria-hidden="true"></canvas>
       </button>
     </div>
-    <button id="avatar-start">Empezar</button>
   </dialog>
   <dialog id="save-menu" aria-labelledby="save-title">
     <h2 id="save-title">Lab BeeFungi</h2>
@@ -3986,7 +3990,7 @@
     }
     const speciesPrices = {
       Pleurotus: 1,
-      "Melena de leon": 2.5,
+      "Melena de leon": 2,
       Reishi: 3,
       Cordyceps: 3,
     };
@@ -18905,10 +18909,6 @@
       drag = null;
       renderAvatarChoice();
       scene(0);
-      document.querySelector("#avatar-start").textContent =
-        progression.harvested.size || saleCoins !== 15
-          ? "Continuar"
-          : "Empezar";
       document.querySelector("#avatar-picker").showModal();
       document.querySelector('[data-avatar="' + avatarId + '"]').focus();
     }
@@ -18924,9 +18924,9 @@
       return true;
     }
     for (const id of Object.keys(labAvatarStyles))
-      document.querySelector('[data-avatar="' + id + '"]').onclick = () =>
-        chooseAvatar(id);
-    document.querySelector("#avatar-start").onclick = finishAvatarChoice;
+      document.querySelector('[data-avatar="' + id + '"]').onclick = () => {
+        if (chooseAvatar(id)) finishAvatarChoice();
+      };
     document.querySelector("#avatar-picker").oncancel = (e) =>
       e.preventDefault();
     document.querySelector("#avatar-picker").onkeydown = (e) =>
