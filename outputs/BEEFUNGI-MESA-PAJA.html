@@ -637,6 +637,8 @@
           ><span id="upgrade-count" hidden></span></button
         ><button
           id="tester-unlock"
+          hidden
+          disabled
           title="Desbloquear todas las áreas y mejoras para probar"
         >
           Tester</button
@@ -692,7 +694,7 @@
       <details class="game-help" name="game-menu">
         <summary>Opciones</summary>
         <div class="help-content">
-          <button id="test-mode" aria-pressed="false">
+          <button id="test-mode" aria-pressed="false" hidden disabled>
             Modo prueba: apagado</button
           ><button id="sound-toggle" aria-pressed="true">
             Sonido: activado
@@ -777,6 +779,10 @@
   </dialog>
   <div id="route-pointer" hidden aria-hidden="true"></div>
   <script>
+    // La página pública no ofrece herramientas de desarrollo. Solo el harness
+    // interno puede habilitarlas antes de ejecutar el juego.
+    const developmentToolsEnabled = window.__BEEFUNGI_DEV_TOOLS__ === true;
+
     // === CONFIGURACION Y ESTADO ===
     // Balance amable: los precios cambian, los hitos y recetas se conservan.
     const gameBalance = {
@@ -4210,6 +4216,7 @@
       document.querySelector("#orders").showModal();
     }
     function fillTestChamber() {
+      if (!developmentToolsEnabled) return false;
       const target =
         auxView === "incubation"
           ? incubation
@@ -9159,6 +9166,7 @@
       );
     }
     function unlockLabTest() {
+      if (!developmentToolsEnabled) return false;
       crusherLevel = 2;
       autoWater = true;
       autoMixer = true;
@@ -14707,23 +14715,24 @@
       playerAction(() => buyStationUpgrade());
     const prototypeTestCoins = document.querySelector("#test-coins").onclick;
     document.querySelector("#test-coins").onclick = () => {
-      if (testMode) prototypeTestCoins();
+      if (developmentToolsEnabled && testMode) prototypeTestCoins();
     };
     const prototypeTestStraw = document.querySelector("#test-straw").onclick;
     document.querySelector("#test-straw").onclick = () => {
-      if (testMode) prototypeTestStraw();
+      if (developmentToolsEnabled && testMode) prototypeTestStraw();
     };
     document.querySelector("#test-chamber").onclick = () => {
-      if (testMode) fillTestChamber();
+      if (developmentToolsEnabled && testMode) fillTestChamber();
     };
     document.querySelector("#test-lab-unlock").onclick = () => {
-      if (testMode && progressionBypass) unlockLabTest();
+      if (developmentToolsEnabled && testMode && progressionBypass)
+        unlockLabTest();
     };
     const prototypeOrderClick = document.querySelector("#order-items").onclick;
     document.querySelector("#order-items").onclick = (e) =>
       playerAction(() => prototypeOrderClick(e));
     document.querySelector("#test-mode").onclick = () => {
-      if (progressionPreview) return;
+      if (!developmentToolsEnabled || progressionPreview) return;
       testMode = !testMode;
       updateEconomyControls();
       renderOrders();
@@ -14748,6 +14757,7 @@
       updateWallet();
       updateTesterControls();
       const toggle = document.querySelector("#test-mode");
+      toggle.disabled = !developmentToolsEnabled;
       toggle.textContent = testMode
         ? "Modo prueba: activado"
         : "Modo prueba: apagado";
@@ -15002,7 +15012,7 @@
     function activateHericium(
       message = "HERICIUM · Todas las áreas disponibles · +1 000 000 monedas",
     ) {
-      if (hericiumUsed) return false;
+      if (!developmentToolsEnabled || hericiumUsed) return false;
       hericiumUsed = true;
       shopUnlocked = true;
       progression.sterile = true;
@@ -15021,6 +15031,7 @@
     }
     let testerUnlocked = false;
     function enableTester() {
+      if (!developmentToolsEnabled) return false;
       if (testerUnlocked) return false;
       const rewarded = activateHericium(
         "TESTER · Todas las áreas y mejoras disponibles · +1 000 000 monedas",
@@ -15038,8 +15049,8 @@
     }
     function updateTesterControls() {
       const button = document.querySelector("#tester-unlock");
-      button.hidden = false;
-      button.disabled = testerUnlocked;
+      button.hidden = !developmentToolsEnabled;
+      button.disabled = !developmentToolsEnabled || testerUnlocked;
       button.textContent = testerUnlocked ? "Tester ✓" : "Tester";
       button.setAttribute?.(
         "aria-label",
@@ -15050,6 +15061,7 @@
     }
     document.querySelector("#tester-unlock").onclick = enableTester;
     function handleHericiumKey(e) {
+      if (!developmentToolsEnabled) return false;
       if (
         e.isComposing ||
         e.ctrlKey ||

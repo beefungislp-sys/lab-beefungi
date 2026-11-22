@@ -13,3 +13,6 @@ outputs/*.jpg
 
 # Preescuchas generadas: el juego conserva los WAV fuente en assets/audio
 /outputs/audio/*.wav
+
+# Fork de exploracion local; conservar fuera del respaldo y la version publica.
+/outputs/BEEFUNGI-fork-electronicwave/

@@ -1,10 +1,10 @@
 {
   "name": "lab-beefungi",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Prototipo pixel art de Lab BeeFungi",
+  "description": "Juego pixel art de Lab BeeFungi",
   "scripts": {
-    "test": "node tests/game.cjs && node tests/save.cjs && node tests/characters.cjs && node tests/demand.cjs && node tests/cleaning.cjs && node tests/organic-audio.cjs && node tests/guide-context.cjs && node tests/mixed-sterilizer.cjs && node tests/music-break.cjs && node tests/music-fades.cjs",
+    "test": "node tests/game.cjs && node tests/save.cjs && node tests/characters.cjs && node tests/demand.cjs && node tests/cleaning.cjs && node tests/organic-audio.cjs && node tests/guide-context.cjs && node tests/mixed-sterilizer.cjs && node tests/music-break.cjs && node tests/music-fades.cjs && node tests/public-release.cjs",
     "build": "node scripts/build.mjs",
     "format": "prettier --write outputs/BEEFUNGI-MESA-PAJA.html",
     "catalog": "node scripts/catalogo-grafico.mjs"

@@ -2,6 +2,8 @@
 
 ## Estado vigente — 22 de noviembre de 2026
 
+Entrega pública 1.0.0 preparada: sin Tester, modo prueba ni hericium en el flujo público; regresiones internas conservadas. Ver [nota de versión pública](TANDA-VERSION-PUBLICA.md).
+
 Recorrido completo probado por el usuario. Progresión, mejoras/asistentes, cuatro especies, tienda, química/espirulina, arte, música/efectos y guardado/continuar ya están construidos. Precios vigentes: Melena 2, Reishi 3 por porción; goteros 3 por unidad. Selección inicial por dos iconos sin nombres.
 
 El usuario confirma completadas satisfactoriamente las pruebas manuales en celular y la revisión de final/logros. No quedan como tareas pendientes. Deshidratación queda fuera del cierre actual y CL se conserva sin contaminación. La mejora interna opcional de avisos por códigos está en `PENDIENTES-REVISION-FLUJO.md`.

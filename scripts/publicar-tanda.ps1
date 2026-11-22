@@ -6,7 +6,7 @@ $gitArgs = @('-c', ('safe.directory=' + $PWD.Path))
 if ($LASTEXITCODE -ne 0) { throw 'Las pruebas fallaron. No se publica.' }
 & npm run build
 if ($LASTEXITCODE -ne 0) { throw 'La preparación falló. No se publica.' }
-& git @gitArgs add -- outputs tests scripts docs README.md AGENTS.md .gitignore package.json
+& git @gitArgs add -- outputs tests scripts assets docs README.md AGENTS.md .gitignore package.json package-lock.json
 if ($LASTEXITCODE -ne 0) { throw 'No se pudo preparar el respaldo.' }
 & git @gitArgs diff --cached --quiet
 if ($LASTEXITCODE -eq 1) {
