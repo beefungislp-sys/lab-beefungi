@@ -15663,6 +15663,31 @@
         return gameBalance.mycelium[order.species || selectedSpecies];
       return gameBalance.supplies[order.id];
     }
+    // Si el recurso ya existe, cambiar la fila visible nunca implica comprarlo.
+    function guideSupplySelector(step) {
+      if (!step) return null;
+      const view = step.view || step.id,
+        mode = guideAdvancedMode(step),
+        substrate =
+          view === "crusher"
+            ? "paja"
+            : view === "woodPrep" && mode !== "liquid"
+              ? mode === "cordy"
+                ? "cordy"
+                : "madera"
+              : null;
+      if (substrate && selectedSubstrate !== substrate)
+        return document.querySelector("#order-items [data-substrate]");
+      const species =
+        view === "mix"
+          ? "Pleurotus"
+          : view === "glovebox" && mode !== "cordy"
+            ? guideAdvancedSpecies(step, mode)
+            : null;
+      if (species && selectedSpecies !== species)
+        return document.querySelector("#order-items [data-species]");
+      return null;
+    }
     function guideOrderTarget(plan = routeRecoveryPlan()) {
       if (!plan || guideBlocked()) return null;
       if (document.querySelector("#mycelium-inventory").open)
@@ -15670,7 +15695,11 @@
       const orders = document.querySelector("#orders");
       if (!orders.open)
         return plan.order ? document.querySelector("#more") : null;
-      if (!plan.order) return document.querySelector("#close-orders");
+      if (!plan.order)
+        return (
+          guideSupplySelector(plan.step) ||
+          document.querySelector("#close-orders")
+        );
       const order = plan.order;
       if (
         order.id === "paja" &&
@@ -15926,9 +15955,9 @@
           return next("liquidStir", { species: "Cordyceps", mode: "liquid" });
         if (liquidSterile <= 0)
           return guideAdvancedNextPot("liquid", "Cordyceps", next);
+        if (needsSelector) return { step, action: "selector" };
         if (speciesStockTotal("Cordyceps") <= 0)
           return guideNeed(step, "micelio", { species: "Cordyceps" });
-        if (needsSelector) return { step, action: "selector" };
         return { step, point: [43, 67] };
       }
       if (mode === "cordy") {
@@ -15943,12 +15972,12 @@
       }
       if (!gloveWood && sterileWood <= 0)
         return guideAdvancedNextPot("wood", species, next);
+      if (needsSelector) return { step, action: "selector" };
       const inside = [gloveJar, ...gloveJarQueue].filter(
         (name) => name === species,
       ).length;
       if (inside <= 0 && speciesStockTotal(species) <= 0)
         return guideNeed(step, "micelio", { species });
-      if (needsSelector) return { step, action: "selector" };
       if (gloveLevel < 3 && !gloveWood) return { step, point: [49, 114] };
       if (gloveLevel < 3 && !gloveJar) return { step, point: [48, 47] };
       if (!gloveGuideDone && gloveLevel < 3 && !gloveCleanedForLoad)

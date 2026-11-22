@@ -42,3 +42,18 @@ pendingRoute('shop');progression.chemistry=true;shopUnlocked=true;auxView='shop'
 shopQueue=[{id:1,product:'dropper',species:'Reishi',y:shopQueueY(0),remaining:1}];
 const card=visibleShopCards().find(c=>c.species==='Reishi'&&c.product==='dropper'),p=routeRecoveryPlan();assert(card);assert.equal(p.point[0],card.r[0]+card.r[2]/2);assert.equal(p.point[1],card.r[1]-19);
 `);
+check('madera en existencia cambia solo la fila paja sin compras', `
+pendingRoute('woodPrep');auxView='woodPrep';prepMode='wood';woodStock=2;selectedSubstrate='paja';woodPrepState={bag:false,sawdust:false,nutrients:false,water:0,blend:0};document.querySelector('#orders').open=true;
+const snap=()=>JSON.stringify([saleCoins,bales,woodStock,cordySubStock,[...routeGuide.completed]]),before=snap();
+assert(!routeRecoveryPlan().order);assert.equal(guideOrderTarget(),document.querySelector('#order-items [data-substrate]'));
+selectedSubstrate='cordy';assert.equal(guideOrderTarget(),document.querySelector('#order-items [data-substrate]'));
+selectedSubstrate='madera';assert.equal(guideOrderTarget(),document.querySelector('#close-orders'));assert.equal(snap(),before);
+`);
+check('arroz y CL cambian el modo de mesa sin pedir material existente', `
+for(const [id,mode] of [['cordySubstratePrep','cordy'],['cordyLiquidPrep','liquid']]){pendingRoute(id);auxView='woodPrep';prepMode='wood';woodPrepState={bag:false,sawdust:false,nutrients:false,water:0,blend:0};cordySubStock=2;woodStock=0;bales=3;nutrientStock=2;liquidEmpty=2;let p=routeRecoveryPlan();assert.equal(p.action,'selector');assert(!p.order);setPrepRecipeMode(mode);p=routeRecoveryPlan();assert(!p.order);document.querySelector('#orders').open=true;selectedSubstrate='paja';if(mode==='cordy'){assert.equal(guideOrderTarget(),document.querySelector('#order-items [data-substrate]'));selectedSubstrate='cordy'}assert.equal(guideOrderTarget(),document.querySelector('#close-orders'));document.querySelector('#orders').open=false;}
+`);
+check('campana cambia a CL antes de pedir Petri y respeta las reservas Cordy', `
+pendingRoute('cordyLiquidInoculate');auxView='glovebox';gloveJar=null;gloveJarQueue=[];gloveWood=false;liquidSterile=1;setSpecies('Melena de leon');hoodMode='solid';speciesStocks.Cordyceps={visible:1,reserve:0};
+let p=routeRecoveryPlan();assert.equal(p.action,'selector');assert(!p.order);document.querySelector('#orders').open=true;assert.equal(guideOrderTarget(),document.querySelector('#order-items [data-species]'));setSpecies('Reishi');assert.equal(guideOrderTarget(),document.querySelector('#order-items [data-species]'));setSpecies('Cordyceps');hoodMode='liquid';assert.equal(guideOrderTarget(),document.querySelector('#close-orders'));document.querySelector('#orders').open=false;p=routeRecoveryPlan();assert(p.point);assert(!p.order);assert.equal(speciesStockTotal('Cordyceps'),1);
+micelio=micelioStock=0;assert.equal(routeRecoveryPlan().order.species,'Cordyceps');
+`);
