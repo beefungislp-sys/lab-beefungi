@@ -116,3 +116,8 @@ Para cristalería se recorta el líquido al interior y se diferencian vacío, pa
 La referencia `assets/referencias/personajes-laboratorio-v1.png` se reconstruye en `paintLabCharacter`, un sprite nativo de 32 × 48 con dos apariencias activas, bata y cuatro orientaciones. Se utilizan las columnas primera y tercera de la referencia original; la lámina histórica no se altera. El selector y las salas utilizan el mismo dibujante. `drawLabAvatar` sólo posiciona y escala; `drawPlayer` compone protagonista, asistentes y destino. La sala principal conserva ese mismo camino, sin una copia de rectángulos propia.
 
 La animación avanza por desplazamiento real, no por mantener una tecla contra un obstáculo. El reposo incluye respiración y parpadeo; caminar alterna piernas y brazos. Los canvases de selección conservan su relación 2:3 y fondo transparente. Los clientes y asistentes conservan sus identidades y el protagonista sigue oculto en tienda.
+## Personajes y asistentes frontales
+
+Reutilizar `paintLabCharacter` para el protagonista y las variantes de asistentes. El dibujo es siempre frontal; el desplazamiento del personaje no rota el sprite. Se conserva la posición del argumento de dirección para compatibilidad de llamadas, pero no genera vistas de lado o espalda.
+
+`labAvatarStyles` define únicamente las dos opciones del jugador. `assistantArtStyles` aporta vestuario y accesorios de preparación/laboratorio; `drawAssistantCharacter` coloca el mismo cuerpo y sombra a escala coherente con el protagonista. Conservar las capas de pelo posterior, extremidades, ropa, cara, pelo frontal y accesorio. Los avisos se dibujan por encima y suprimen el rótulo duplicado mientras están presentes. El dibujo no cambia las tareas ni las reservas del asistente.

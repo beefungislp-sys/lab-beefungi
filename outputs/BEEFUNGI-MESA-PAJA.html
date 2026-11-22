@@ -5255,12 +5255,17 @@
         style: 2,
       },
     };
-    function paintLabCharacter(ctx, id, facing = "down", frame = 0, tick = 0) {
-      const p = labAvatarStyles[id] || labAvatarStyles.sage;
+    function paintLabCharacter(
+      ctx,
+      id,
+      _facing = "down",
+      frame = 0,
+      tick = 0,
+      palette = null,
+    ) {
+      const p = palette || labAvatarStyles[id] || labAvatarStyles.sage;
       const moving = frame > 0,
         stride = frame === 1 ? -1 : frame === 3 ? 1 : 0;
-      const back = facing === "up",
-        side = facing === "left" || facing === "right";
       const bob = moving
         ? frame === 2
           ? 0
@@ -5282,10 +5287,7 @@
         ctx.fill();
       };
       ctx.save();
-      if (facing === "left") {
-        ctx.translate(32, 0);
-        ctx.scale(-1, 1);
-      }
+
       // La huella queda fija: sólo se animan cuerpo y extremidades.
       r(7, 45, 18, 2, "#27434c40");
       r(9, 44, 14, 2, "#27434c25");
@@ -5330,8 +5332,8 @@
         ],
         "#40515a",
       );
-      r(5, 26 + armA, 5, 9, "#d4cdb9");
-      r(5, 26 + armA, 2, 7, "#eee7d3");
+      r(5, 26 + armA, 5, 9, p.coat || "#d4cdb9");
+      r(5, 26 + armA, 2, 7, p.coatLight || "#eee7d3");
       r(5, 34 + armA, 4, 4, p.shade);
       r(5, 34 + armA, 3, 2, p.skin);
       poly(
@@ -5344,8 +5346,8 @@
         ],
         "#40515a",
       );
-      r(23, 26 + armB, 4, 9, "#c1bdad");
-      r(23, 26 + armB, 2, 7, "#e4ddc9");
+      r(23, 26 + armB, 4, 9, p.coatShade || "#c1bdad");
+      r(23, 26 + armB, 2, 7, p.coatLight || "#e4ddc9");
       r(24, 34 + armB, 3, 4, p.shade);
       r(24, 34 + armB, 2, 2, p.skin);
       poly(
@@ -5372,51 +5374,46 @@
           [10, 38],
           [8, 37],
         ],
-        "#d7d0bc",
+        p.coat || "#d7d0bc",
       );
-      r(9, 24, 3, 12, "#eee7d4");
-      r(11, 24, 2, 12, "#e4ddc8");
-      r(21, 25, 2, 12, "#b7baad");
-      r(10, 37, 12, 1, "#f5ebd6");
-      if (back) {
-        r(12, 22, 8, 2, "#eee5d1");
-        r(15, 25, 1, 11, "#b9baad");
-        r(11, 31, 10, 1, "#eee5d1");
-        r(11, 32, 10, 1, "#c1bdae");
-      } else {
-        r(side ? 16 : 13, 22, side ? 4 : 6, 13, p.shirt);
-        r(side ? 17 : 15, 24, 1, 9, "#59665e");
-        poly(
-          [
-            [11, 21],
-            [14, 22],
-            [14, 27],
-            [11, 25],
-            [12, 23],
-          ],
-          "#faf0d8",
-        );
-        poly(
-          [
-            [20, 21],
-            [18, 23],
-            [18, 27],
-            [21, 24],
-          ],
-          "#ece4ce",
-        );
-        r(13, 34, 7, 2, "#3a454d");
-        r(15, 34, 2, 1, "#d0b487");
-        r(19, 28, 4, 5, "#a8b0a7");
-        r(19, 28, 3, 4, "#ece2cb");
-        r(20, 25, 1, 4, "#436a88");
-        r(9, 28, 4, 5, "#566f70");
-        r(9, 28, 3, 4, p.badge);
-        r(10, 29, 1, 2, "#e7ead9");
-        r(10, 26, 1, 2, "#596d6c");
-        r(14, 31, 1, 1, "#f5eddb");
-        r(17, 31, 1, 1, "#c1bca9");
-      }
+      r(9, 24, 3, 12, p.coatLight || "#eee7d4");
+      r(11, 24, 2, 12, p.coatLight || "#e4ddc8");
+      r(21, 25, 2, 12, p.coatShade || "#b7baad");
+      r(10, 37, 12, 1, p.coatLight || "#f5ebd6");
+
+      r(13, 22, 6, 13, p.shirt);
+      r(15, 24, 1, 9, "#59665e");
+      poly(
+        [
+          [11, 21],
+          [14, 22],
+          [14, 27],
+          [11, 25],
+          [12, 23],
+        ],
+        p.coatLight || "#faf0d8",
+      );
+      poly(
+        [
+          [20, 21],
+          [18, 23],
+          [18, 27],
+          [21, 24],
+        ],
+        p.coatLight || "#ece4ce",
+      );
+      r(13, 34, 7, 2, "#3a454d");
+      r(15, 34, 2, 1, "#d0b487");
+      r(19, 28, 4, 5, "#a8b0a7");
+      r(19, 28, 3, 4, "#ece2cb");
+      r(20, 25, 1, 4, "#436a88");
+      r(9, 28, 4, 5, "#566f70");
+      r(9, 28, 3, 4, p.badge);
+      r(10, 29, 1, 2, "#e7ead9");
+      r(10, 26, 1, 2, "#596d6c");
+      r(14, 31, 1, 1, "#f5eddb");
+      r(17, 31, 1, 1, "#c1bca9");
+
       // Cabeza redondeada con sombra de mentón y ojos, sin marco de tarjeta.
       poly(
         [
@@ -5459,94 +5456,145 @@
       );
       r(8, 12, 2, 4, p.shade);
       r(23, 12, 2, 4, p.shade);
-      if (back) {
+
+      const blink = !moving && Math.floor(tick / 120) % 40 === 30;
+      const eyeY = 12;
+
+      for (const ex of [12, 19]) {
+        r(ex, eyeY, 3, blink ? 1 : 4, "#3a3033");
+        if (!blink) r(ex + 1, eyeY, 1, 1, "#fff0d8");
+      }
+      r(16, 15, 1, 1, p.shade);
+      r(15, 17, 4, 1, "#805345");
+      r(10, 16, 2, 1, "#d29476");
+
+      if (p.style === 0) {
         poly(
           [
-            [10, 3],
-            [19, 2],
+            [8, 4],
+            [14, 2],
+            [20, 3],
             [24, 6],
-            [26, 12],
-            [23, 18],
-            [13, 20],
-            [8, 17],
-            [6, 10],
+            [25, 10],
+            [22, 9],
+            [20, 6],
+            [15, 9],
+            [9, 11],
+            [7, 9],
           ],
           p.hair,
         );
-        r(10, 7, 2, 7, p.light);
-        r(13, 5, 6, 2, p.light);
+        r(11, 5, 5, 2, p.light);
+        r(16, 4, 4, 1, p.light);
+        r(8, 8, 2, 5, p.hair);
       } else {
-        const blink = !moving && Math.floor(tick / 120) % 40 === 30;
-        const eyeY = 12;
-        if (side) {
-          r(19, eyeY, 3, blink ? 1 : 4, "#3a3033");
-          if (!blink) r(20, eyeY, 1, 1, "#fff0d8");
-          r(22, 15, 2, 1, p.shade);
-          r(20, 17, 2, 1, "#805345");
-        } else {
-          for (const ex of [12, 19]) {
-            r(ex, eyeY, 3, blink ? 1 : 4, "#3a3033");
-            if (!blink) r(ex + 1, eyeY, 1, 1, "#fff0d8");
+        poly(
+          [
+            [10, 3],
+            [17, 2],
+            [22, 5],
+            [24, 9],
+            [22, 11],
+            [20, 7],
+            [16, 10],
+            [10, 11],
+            [7, 14],
+            [7, 8],
+          ],
+          p.hair,
+        );
+        r(10, 6, 4, 2, p.light);
+        r(15, 4, 4, 2, p.light);
+        r(8, 10, 2, 4, p.hair);
+      }
+
+      if (p.headwear) {
+        const cap = p.headwear === "lab";
+        poly(
+          [
+            [8, 5],
+            [10, 2],
+            [16, 1],
+            [22, 3],
+            [25, 6],
+            [24, 8],
+            [8, 8],
+          ],
+          cap ? "#6faaa9" : "#bb9350",
+        );
+        r(10, 3, 10, 2, cap ? "#a4cfbf" : "#e3c47d");
+        r(9, 6, 15, 2, cap ? "#527c85" : "#806344");
+        r(9, 6, 12, 1, cap ? "#c9dfcf" : "#f1d28a");
+        if (cap) {
+          for (const x of [11, 18]) {
+            r(x, 11, 5, 1, "#5d747a");
+            r(x, 15, 5, 1, "#5d747a");
+            r(x, 12, 1, 3, "#5d747a");
+            r(x + 4, 12, 1, 3, "#5d747a");
+            r(x + 1, 12, 2, 0.5, "#d3e7df");
           }
-          r(16, 15, 1, 1, p.shade);
-          r(15, 17, 4, 1, "#805345");
-          r(10, 16, 2, 1, "#d29476");
-        }
-        if (p.style === 0) {
-          poly(
-            [
-              [8, 4],
-              [14, 2],
-              [20, 3],
-              [24, 6],
-              [25, 10],
-              [22, 9],
-              [20, 6],
-              [15, 9],
-              [9, 11],
-              [7, 9],
-            ],
-            p.hair,
-          );
-          r(11, 5, 5, 2, p.light);
-          r(16, 4, 4, 1, p.light);
-          r(8, 8, 2, 5, p.hair);
+          r(16, 12, 2, 1, "#5d747a");
         } else {
-          poly(
-            [
-              [10, 3],
-              [17, 2],
-              [22, 5],
-              [24, 9],
-              [22, 11],
-              [20, 7],
-              [16, 10],
-              [10, 11],
-              [7, 14],
-              [7, 8],
-            ],
-            p.hair,
-          );
-          r(10, 6, 4, 2, p.light);
-          r(15, 4, 4, 2, p.light);
-          r(8, 10, 2, 4, p.hair);
+          r(7, 8, 16, 1, "#e3c47d");
+          r(6, 9, 17, 1, "#866b48");
+          r(15, 3, 2, 2, "#f4e3ac");
         }
       }
       ctx.restore();
+    }
+    const assistantArtStyles = {
+      helper: {
+        ...labAvatarStyles.sage,
+        hair: "#664337",
+        shirt: "#728d7d",
+        badge: "#dbc17c",
+        coat: "#b58a64",
+        coatLight: "#dec2a0",
+        coatShade: "#896a53",
+        headwear: "cap",
+      },
+      lab: {
+        ...labAvatarStyles.sage,
+        hair: "#73604d",
+        shirt: "#6e9ba1",
+        badge: "#80b8bd",
+        coat: "#e0e7dc",
+        coatLight: "#f2f0dc",
+        coatShade: "#a6babb",
+        headwear: "lab",
+      },
+    };
+    function drawAssistantCharacter(kind, x, y, moving, paused) {
+      const palette = assistantArtStyles[kind],
+        tick = performance.now(),
+        frame =
+          moving && !paused ? [1, 2, 3, 2][Math.floor(tick / 140) % 4] : 0;
+      c.save();
+      c.translate(x - 10.88, y - 22.28);
+      c.scale(0.68, 0.68);
+      paintLabCharacter(
+        c,
+        kind,
+        "down",
+        frame,
+        tick,
+        paused
+          ? {
+              ...palette,
+              coat: "#9caaa3",
+              coatLight: "#c4cfc1",
+              coatShade: "#7c908e",
+            }
+          : palette,
+      );
+      c.restore();
     }
     function updateAvatarMotion(dt, before) {
       const dx = player.x - before.x,
         dy = player.y - before.y;
       avatarMotion.moving = Math.hypot(dx, dy) > 0.001;
+      avatarMotion.facing = "down";
       if (avatarMotion.moving) {
-        avatarMotion.facing =
-          Math.abs(dx) > Math.abs(dy)
-            ? dx > 0
-              ? "right"
-              : "left"
-            : dy > 0
-              ? "down"
-              : "up";
         avatarMotion.phase += dt;
       } else avatarMotion.phase = 0;
     }
@@ -5557,13 +5605,7 @@
       const frame = avatarMotion.moving
         ? [1, 2, 3, 2][Math.floor(avatarMotion.phase * 8) % 4]
         : 0;
-      paintLabCharacter(
-        c,
-        avatarId,
-        avatarMotion.facing,
-        frame,
-        feedbackTime * 1000,
-      );
+      paintLabCharacter(c, avatarId, "down", frame, feedbackTime * 1000);
       c.restore();
     }
     function drawPixelShopAvatar(x, y, color, variant = 0, lab = false) {
@@ -8659,13 +8701,12 @@
       if (!helper.hired) return;
       const x = Math.round(helper.x),
         y = Math.round(helper.y),
-        step = Math.floor(performance.now() / 180) % 2;
-      box(x - 5, y - 15, 10, 8, "#edc29a");
-      box(x - 6, y - 18, 12, 4, "#edc858");
-      box(x - 6, y - 6, 12, 10, helper.paused ? "#84928b" : "#b88562");
-      box(x - 4, y + 4, 3, 5 + step, "#344b62");
-      box(x + 2, y + 4, 3, 6 - step, "#344b62");
-      smallText(helper.paused ? "SIN SALDO" : "AYUDANTE", x - 22, y - 22);
+        moving =
+          helper.task &&
+          Math.hypot(helper.task.x - helper.x, 145 - helper.y) > 1;
+      drawAssistantCharacter("helper", x, y, moving, helper.paused);
+      if (!helper.notice)
+        smallText(helper.paused ? "SIN SALDO" : "AYUDANTE", x - 22, y - 27);
       drawAssistantNotice(helper.notice, x, y);
     }
     function drawAssistantNotice(notice, x, y, lift = 0) {
@@ -9102,13 +9143,7 @@
       for (let i = 0; i < 4; i++)
         box(x + 2 + i * 8, y + 6, 6, 3, i < n ? "#e4c47c" : "#6e8c8b");
     }
-    function drawCoat(x, y) {
-      box(x - 6, y - 6, 13, 15, "#e4e9d9");
-      box(x - 1, y - 5, 2, 14, "#8fa9ac");
-      box(x - 4, y - 5, 3, 3, "#b9cecd");
-      box(x + 2, y - 5, 3, 3, "#b9cecd");
-      box(x + 3, y + 1, 3, 2, "#87aab7");
-    }
+
     function labUnlocked() {
       if (!progressionBypass) return liquidUnlocked;
       return (
@@ -9525,12 +9560,13 @@
       if (!labHelper.hired || room !== labHelper.room) return;
       const x = Math.round(labHelper.x),
         y = 145;
-      box(x - 4, y - 15, 9, 9, "#eac8a0");
-      box(x - 6, y - 17, 13, 4, "#6da9ba");
-      drawCoat(x, y);
-      box(x - 4, y + 7, 4, 5, "#344b62");
-      box(x + 2, y + 7, 4, 5, "#344b62");
-      smallText(labHelper.paused ? "SIN SALDO" : "LAB", x - 12, y - 23);
+      const moving =
+        labHelper.task &&
+        (labHelper.room !== labHelper.task.room ||
+          Math.abs(labHelper.task.x - labHelper.x) > 1);
+      drawAssistantCharacter("lab", x, y + 2, moving, labHelper.paused);
+      if (!labHelper.notice)
+        smallText(labHelper.paused ? "SIN SALDO" : "LAB", x - 12, y - 27);
       const lift =
         room === "main" &&
         helper.hired &&
