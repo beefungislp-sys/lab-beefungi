@@ -550,10 +550,10 @@ check('Audio: musica diferida, tres pistas, pausa y controles independientes', `
 let plays=0,pauses=0;window.Audio=class{constructor(){this.paused=true}play(){this.paused=false;plays++;return {catch(){}}}pause(){this.paused=true;pauses++}};
 syncGameMusic();if(musicPlayer||plays)throw Error('Autoplay antes de gesto');
 unlockGameAudio();if(plays!==1||!musicPlayer.src.endsWith('01-micelio.wav')||musicPlayer.volume>.2)throw Error('Inicio');
-musicPlayer.onended();if(!musicPlayer.src.endsWith('02-luz-de-vidrio.wav'))throw Error('Secuencia');musicPlayer.onended();musicPlayer.onended();if(musicIndex!==0)throw Error('Repeticion');
+const now=performance.now;let clock=0,timer=null;performance.now=()=>clock;setTimeout=(fn,ms)=>{if(ms!==15000)throw Error('Silencio');timer=fn;return 1};for(const track of ['02-luz-de-vidrio','03-jardin-burbujeante','01-micelio']){const before=plays;musicPlayer.onended();if(!musicPlayer.src.endsWith(track+'.wav')||!musicPlayer.paused)throw Error('Secuencia');clock+=14999;syncGameMusic();if(plays!==before)throw Error('Pausa corta');clock++;timer();if(plays!==before+1)throw Error('No retoma')}if(musicIndex!==0)throw Error('Repeticion');
 document.hidden=true;syncGameMusic();if(!musicPlayer.paused)throw Error('No pausa oculta');document.hidden=false;syncGameMusic();if(musicPlayer.paused)throw Error('No reanuda');
 document.querySelector('#music-toggle').onclick();if(musicEnabled||!musicPlayer.paused||!soundEnabled)throw Error('Control independiente');
-document.querySelector('#music-toggle').onclick();document.querySelector('#sound-toggle').onclick();if(soundEnabled||!musicPlayer.paused||!musicEnabled)throw Error('Silencio maestro');
+document.querySelector('#music-toggle').onclick();document.querySelector('#sound-toggle').onclick();if(soundEnabled||!musicPlayer.paused||!musicEnabled)throw Error('Silencio maestro');performance.now=now;
 `);
 check('Audio: sintesis acotada no acumula una cola interminable', `
 let count=0;audioContext={state:'running',currentTime:0,createOscillator:()=>({type:'',frequency:{setValueAtTime(){}},connect(){},disconnect(){},start(){count++},stop(){}}),createGain:()=>({gain:{setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){},disconnect(){}})};

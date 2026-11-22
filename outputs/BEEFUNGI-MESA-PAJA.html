@@ -344,8 +344,20 @@
       padding: 6px 4px;
       background: #c4d3b6;
     }
+    .game-menu-bar {
+      display: flex;
+      gap: 8px;
+      position: relative;
+      margin-top: 8px;
+    }
+    .game-menu-bar .help-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 6;
+    }
     .game-help {
-      margin: 8px 0 0;
+      margin: 0;
       font-size: 12px;
       color: #c8d5cb;
     }
@@ -392,7 +404,7 @@
       h1 {
         display: none;
       }
-      .game-help {
+      .game-menu-bar {
         position: fixed;
         right: max(8px, env(safe-area-inset-right));
         bottom: max(8px, env(safe-area-inset-bottom));
@@ -405,6 +417,7 @@
       }
       .game-help[open] .help-content {
         position: fixed;
+        left: auto;
         right: 8px;
         top: 8px;
         width: min(92vw, 480px);
@@ -675,39 +688,52 @@
         ><button data-extra id="liquid-room" hidden>Cultivo líquido</button>
       </footer>
     </div>
-    <details class="game-help">
-      <summary>Ayuda</summary>
-      <div class="help-content">
-        <button id="test-mode" aria-pressed="false">Modo prueba: apagado</button
-        ><button id="sound-toggle" aria-pressed="true">Sonido: activado</button>
-        <button id="music-toggle" aria-pressed="true">Música: activada</button>
-        <button id="save-now">Guardar partida</button>
-        <button id="new-game">Nueva partida</button>
-        <p id="save-status" role="status" aria-live="polite">
-          Guardado automático en este navegador.
-        </p>
-        <p id="status" role="status">Selecciona una estación para acercarte.</p>
-        <p>
-          Empiezas con 15 monedas y un kit de insumos. Compra una unidad por
-          clic; las mejoras y los asistentes se pagan con tus ventas. Pleurotus
-          se prepara sólo en la mezcla principal. Triturador, pasteurizado y
-          mezcla tienen mejoras desde el inicio en la barra superior. Primera
-          cosecha: tienda y primer cliente; primera venta: mejoras de incubación
-          y fructificación. Completa las tres estaciones principales y amplía
-          ambas cámaras a seis para abrir sala estéril y contratar al primer
-          asistente. Cosecha Melena para Reishi; completa las estaciones
-          estériles para Cordyceps, su placa Petri inicial y el segundo
-          asistente. La guía de Cordyceps recorre medio líquido, esterilización,
-          Petri en campana, agitación, arroz, esterilización, CL en campana,
-          incubación y fructificación. Cosechar Cordyceps abre
-          extracción/envasado; el primer gotero abre mesa de química y
-          espirulina. La guía de química prepara solución de espirulina. E
-          cierra el menú de mejoras; WASD y el suelo permiten caminar. La
-          partida se guarda en este navegador; no se sincroniza entre
-          dispositivos.
-        </p>
-      </div>
-    </details>
+    <div class="game-menu-bar">
+      <details class="game-help" name="game-menu">
+        <summary>Opciones</summary>
+        <div class="help-content">
+          <button id="test-mode" aria-pressed="false">
+            Modo prueba: apagado</button
+          ><button id="sound-toggle" aria-pressed="true">
+            Sonido: activado
+          </button>
+          <button id="music-toggle" aria-pressed="true">
+            Música: activada
+          </button>
+          <button id="save-now">Guardar partida</button>
+          <button id="new-game">Nueva partida</button>
+          <p id="save-status" role="status" aria-live="polite">
+            Guardado automático en este navegador.
+          </p>
+          <p id="status" role="status">
+            Selecciona una estación para acercarte.
+          </p>
+          <p>
+            Empiezas con 15 monedas y un kit de insumos. Compra una unidad por
+            clic; las mejoras y los asistentes se pagan con tus ventas.
+            Pleurotus se prepara sólo en la mezcla principal. Triturador,
+            pasteurizado y mezcla tienen mejoras desde el inicio en la barra
+            superior. Primera cosecha: tienda y primer cliente; primera venta:
+            mejoras de incubación y fructificación. Completa las tres estaciones
+            principales y amplía ambas cámaras a seis para abrir sala estéril y
+            contratar al primer asistente. Cosecha Melena para Reishi; completa
+            las estaciones estériles para Cordyceps, su placa Petri inicial y el
+            segundo asistente. La guía de Cordyceps recorre medio líquido,
+            esterilización, Petri en campana, agitación, arroz, esterilización,
+            CL en campana, incubación y fructificación. Cosechar Cordyceps abre
+            extracción/envasado; el primer gotero abre mesa de química y
+            espirulina. La guía de química prepara solución de espirulina. E
+            cierra el menú de mejoras; WASD y el suelo permiten caminar. La
+            partida se guarda en este navegador; no se sincroniza entre
+            dispositivos.
+          </p>
+        </div>
+      </details>
+      <details class="game-help" name="game-menu" id="game-credits">
+        <summary>Créditos</summary>
+        <div class="help-content"><p>Por Angel Romo</p></div>
+      </details>
+    </div>
   </main>
   <dialog id="avatar-picker" aria-labelledby="avatar-title">
     <h2 id="avatar-title">Elige tu personaje</h2>
@@ -13324,6 +13350,9 @@
       "02-luz-de-vidrio",
       "03-jardin-burbujeante",
     ];
+    const musicGapMs = 15000;
+    let musicBreakUntil = 0,
+      musicResumeTimer = null;
     let musicEnabled = true,
       musicPlayer = null,
       musicIndex = 0,
@@ -13341,12 +13370,19 @@
         musicPlayer.preload = "none";
         musicPlayer.volume = 0.16;
         musicPlayer.onended = () => {
+          if (musicResumeTimer !== null) return;
+          musicPlayer.pause();
+          musicBreakUntil = performance.now() + musicGapMs;
           musicIndex = (musicIndex + 1) % musicTracks.length;
           loadMusicTrack();
-          syncGameMusic();
+          musicResumeTimer = setTimeout(() => {
+            musicResumeTimer = null;
+            syncGameMusic();
+          }, musicGapMs);
         };
         loadMusicTrack();
       }
+      if (performance.now() < musicBreakUntil) return;
       if (musicPlayer?.paused) musicPlayer.play()?.catch?.(() => {});
     }
     function loadMusicTrack() {

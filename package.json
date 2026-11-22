@@ -4,7 +4,7 @@
   "private": true,
   "description": "Prototipo pixel art de Lab BeeFungi",
   "scripts": {
-    "test": "node tests/game.cjs && node tests/save.cjs && node tests/characters.cjs && node tests/demand.cjs && node tests/cleaning.cjs && node tests/organic-audio.cjs && node tests/guide-context.cjs && node tests/mixed-sterilizer.cjs",
+    "test": "node tests/game.cjs && node tests/save.cjs && node tests/characters.cjs && node tests/demand.cjs && node tests/cleaning.cjs && node tests/organic-audio.cjs && node tests/guide-context.cjs && node tests/mixed-sterilizer.cjs && node tests/music-break.cjs",
     "build": "node scripts/build.mjs",
     "format": "prettier --write outputs/BEEFUNGI-MESA-PAJA.html",
     "catalog": "node scripts/catalogo-grafico.mjs"

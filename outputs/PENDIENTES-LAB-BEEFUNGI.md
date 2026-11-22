@@ -4,7 +4,7 @@
 
 Recorrido completo probado por el usuario. Progresión, mejoras/asistentes, cuatro especies, tienda, química/espirulina, arte, música/efectos y guardado/continuar ya están construidos. Precios vigentes: Melena 2, Reishi 3 por porción; goteros 3 por unidad. Selección inicial por dos iconos sin nombres.
 
-Para cerrar el MVP se recomienda una última prueba manual en celulares reales de inicio, selección, guardado/continuación, controles, ventas y audio. Deshidratación queda fuera del cierre actual y CL se conserva sin contaminación. La mejora interna opcional de avisos por códigos está en `PENDIENTES-REVISION-FLUJO.md`.
+El usuario confirma completadas satisfactoriamente las pruebas manuales en celular y la revisión de final/logros. No quedan como tareas pendientes. Deshidratación queda fuera del cierre actual y CL se conserva sin contaminación. La mejora interna opcional de avisos por códigos está en `PENDIENTES-REVISION-FLUJO.md`.
 
 Ver [nota de cierre y validación](TANDA-PERSONAJES-Y-PRECIOS-FINALES.md). Los apartados siguientes se conservan como historial y sus pendientes antiguos no describen el estado vigente.
 
